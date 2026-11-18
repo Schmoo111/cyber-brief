@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyber Brief</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#1d4fb8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cyber Brief">
+<meta name="description" content="Daily cyber threat intelligence brief for banking, with audio.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: single reading column, a sticky audio bar, severity stripes on incident blocks */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --fg:#151a22; --muted:#5a6472; --line:#d9dde3;
+  --accent:#1d4fb8; --accent-soft:#e6edfa;
+  --crit:#b3261e; --high:#b35c00; --med:#7a6a00; --low:#3b6e45;
+  --crit-bg:#fbe9e7; --high-bg:#fdf0e1; --med-bg:#f6f2d8; --low-bg:#e5f1e7;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f131a; --surface:#171c25; --fg:#e6e9ee; --muted:#9aa4b2; --line:#2a313d;
+  --accent:#7ea6ff; --accent-soft:#1c2740;
+  --crit:#ff8a80; --high:#ffb35c; --med:#e3d36a; --low:#8fd19e;
+  --crit-bg:#3a1714; --high-bg:#3a2610; --med-bg:#322d10; --low-bg:#16301d;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f131a; --surface:#171c25; --fg:#e6e9ee; --muted:#9aa4b2; --line:#2a313d;
+  --accent:#7ea6ff; --accent-soft:#1c2740;
+  --crit:#ff8a80; --high:#ffb35c; --med:#e3d36a; --low:#8fd19e;
+  --crit-bg:#3a1714; --high-bg:#3a2610; --med-bg:#322d10; --low-bg:#16301d;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:36px}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,44px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:22px;margin:0 0 12px;text-wrap:balance;display:flex;gap:10px;align-items:baseline}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:500}
+h3{font-size:17px;margin:0;font-weight:600;text-wrap:balance}
+p{margin:0}
+.meta{color:var(--muted);font-size:14px}
+.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.player .lbl{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.player .lbl strong{color:var(--fg);font-weight:600}
+audio{width:100%;height:40px}
+.speed{display:flex;gap:6px;flex-wrap:wrap}
+.speed button{font:500 12px var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:4px 9px;cursor:pointer}
+.speed button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.relevance{margin-top:14px;padding:12px 14px;background:var(--accent-soft);border-radius:8px;font-size:15px}
+.incident{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--sev);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.incidents{display:flex;flex-direction:column;gap:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--line);color:var(--fg)}
+.sev{background:var(--sevbg);color:var(--sev)}
+.crit{--sev:var(--crit);--sevbg:var(--crit-bg)}
+.high{--sev:var(--high);--sevbg:var(--high-bg)}
+.med{--sev:var(--med);--sevbg:var(--med-bg)}
+.low{--sev:var(--low);--sevbg:var(--low-bg)}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:15px}
+dt{font-weight:600;color:var(--muted);font-size:13px;padding-top:2px}
+dd{margin:0;min-width:0}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{padding-top:6px}}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.cve{font-family:var(--mono);font-size:13px;white-space:nowrap}
+.actors{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.actor{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;font-size:15px}
+sup a{font-family:var(--mono);font-size:11px;text-decoration:none}
+.sources ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.sources a{word-break:break-all}
+.tag{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-left:4px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+.ctx{font-size:14px;color:var(--muted);border-left:2px solid var(--line);padding-left:10px}
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;font-size:15px}
+.gloss dt{color:var(--fg);font-size:14px}
+@media (max-width:520px){.gloss{grid-template-columns:1fr}}
+
+.archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.archive li{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.archive li:last-child{border-bottom:0}
+.archive .today{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.backlink{font-size:14px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;font-size:14px}
+.toolbar a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--surface)}
+.search form{display:flex;gap:8px;flex-wrap:wrap}
+.search input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.btn{font:500 14px var(--body);border:1px solid var(--accent);background:var(--accent);color:var(--surface);border-radius:8px;padding:9px 14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn[disabled]{opacity:.5;cursor:default}
+.results{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.results h3{font-size:13px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 6px}
+.hits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hits li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.hits .when{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hits mark{background:var(--accent-soft);color:var(--fg);border-radius:3px;padding:0 2px}
+.weblinks{display:flex;gap:8px;flex-wrap:wrap}
+.weblinks a{font-size:14px;border:1px solid var(--line);border-radius:6px;padding:5px 10px;text-decoration:none;background:var(--surface)}
+.ai{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:15px;white-space:pre-wrap;min-width:0}
+.ai-note{font-size:12px;color:var(--muted)}
+.idx{display:flex;flex-direction:column;gap:10px}
+.idx .row{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--sev,var(--line));border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:14px;min-width:0}
+.idx .row h3{font-size:16px}
+.idx .dates{display:flex;gap:6px;flex-wrap:wrap}
+.idx .dates a{font:500 12px var(--mono);border:1px solid var(--line);border-radius:6px;padding:2px 8px;text-decoration:none}
+.terms{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.terms a{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;text-decoration:none;background:var(--surface)}
+details.term{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:15px}
+details.term+details.term{margin-top:8px}
+details.term summary{cursor:pointer;font-weight:600}
+details.term p{margin-top:6px}
+details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Daily threat intelligence · Global banking</span>
+  <h1>Cyber Brief, 18 November 2026</h1>
+  <p class="meta">Compiled 18 Nov 2026, ~09:00 UTC; covers roughly 17–18 Nov. Built from live web search. Technical terms are explained in the glossary at the end.</p>
+</header>
+<div class="player" role="region" aria-label="Audio briefing">
+  <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
+  <audio id="audio" controls preload="metadata" src="audio/2026-11-18.mp3"></audio>
+  <div class="speed" role="group" aria-label="Playback speed">
+    <button type="button" id="sp1" data-r="1" aria-pressed="true">1×</button>
+    <button type="button" id="sp125" data-r="1.25" aria-pressed="false">1.25×</button>
+    <button type="button" id="sp15" data-r="1.5" aria-pressed="false">1.5×</button>
+  </div>
+</div>
+<nav class="toolbar" aria-label="Page sections"><a href="#search">Search</a><a href="#incidents">Incident index</a><a href="#glossary">Glossary</a><a href="#archive">Archive</a></nav>
+
+<section class="search" id="search">
+  <h2>Search</h2>
+  <p class="meta" style="margin-bottom:10px">Search every brief, the incident index and the glossary. Web links open live searches in a new tab.</p>
+  <form id="sform" role="search">
+    <label for="q" class="meta" hidden>Search the briefs</label>
+    <input type="search" id="q" name="q" placeholder="e.g. Optimizely, n0n, Puppet, ransomware" autocomplete="off">
+    <button class="btn" type="submit" id="go">Search</button>
+  </form>
+  <div id="results" class="results" aria-live="polite"></div>
+  <div id="aibox" class="results" hidden>
+    <div><h3>Ask Claude</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" type="button" id="askai">Explain this in plain English</button><button class="btn ghost" type="button" id="stopai" hidden>Stop</button></div>
+    </div>
+    <div id="aiout" class="ai" hidden></div>
+    <p id="ainote" class="ai-note"></p>
+  </div>
+</section>
+
+
+<section>
+  <h2><span class="n">1</span>Top line</h2>
+  <ul>
+    <li><strong>A website-tool hack hit banks hardest.</strong> Optimizely sells software that companies add to their websites to test different page designs. On 16 Nov attackers used a flaw in it to slip card-stealing code onto the websites of 178 of its customers. Researchers now say 32 of those are banks and finance firms, including HSBC and Equifax.<sup><a href="https://blog.report-uri.com/worlds-largest-brands-infected-with-malware-via-optimizely/" target="_blank" rel="noopener">[1]</a><a href="https://therecord.media/optimizely-malicious-code-customer-sites" target="_blank" rel="noopener">[2]</a></sup></li>
+    <li><strong>Attackers are exploiting a flaw in Puppet Enterprise.</strong> This is software many companies use to manage the settings of thousands of servers from one central control server. US cyber agency CISA confirmed active attacks on 17 Nov.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/17/cisa-adds-one-known-exploited-vulnerability-catalog" target="_blank" rel="noopener">[3]</a><a href="https://shattered.io/puppet-enterprise-cve-2026-115731-cisa-kev-cvss-9-4-dec-1-deadline/" target="_blank" rel="noopener">[4]</a></sup></li>
+    <li><strong>China is building AI hacking tools.</strong> Google says Chinese state-backed hacking groups are developing their own versions of ARTEX, a free AI tool that can carry out much of a cyberattack automatically.<sup><a href="https://therecord.media/chinese-state-group-developing-automated-attack-tool-espionage" target="_blank" rel="noopener">[5]</a></sup></li>
+    <li><strong>Claims against Visa, Mastercard and JPMorgan are still unproven.</strong> A criminal group called n0n says it stole their data. No data has been published, and the group has exaggerated before.<sup><a href="https://secritic.com/2026/11/16/n0n-extortion-jpmorgan-visa-mastercard-walmart-whats-real/" target="_blank" rel="noopener">[6]</a></sup></li>
+  </ul>
+  <p class="relevance"><strong>Bank relevance:</strong> today's theme is trusting suppliers, and the software and data they hand you.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>New incidents (past 24 hours)</h2>
+  <div class="incidents">
+    <article class="incident med" data-incident="kokoro" data-name="Kokoro AI model account takeover" id="inc-kokoro">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: Medium</span><span class="chip">AI supply chain</span></div>
+      <h3>Kokoro AI voice model: publisher's account taken over</h3>
+      <p class="ctx">Kokoro is a free AI model that turns text into natural-sounding speech with millions of downloads a month. Hugging Face is the main public website where AI models are shared and downloaded, a bit like an app store for AI.</p>
+      <dl>
+        <dt>What happened</dt><dd>Security researchers bought a web address the model's publisher had let expire. That let them reset the publisher's password and take over the account. They showed they could alter the model to say different words from the text it was given. They did this as a demonstration and did not release the altered version.<sup><a href="https://www.techtimes.com/articles/330990/20261118/domain-lapse-let-researchers-hijack-kokoro-voice-ai-hugging-face-account-edit-weights-87-seconds.htm" target="_blank" rel="noopener">[7]</a></sup> <em>Details rest on one original report.</em></dd>
+        <dt>Why it matters</dt><dd>Banks increasingly build public AI models into their tools. If an attacker controls a publisher's account, they can quietly swap in a tampered model. Only use models from verified sources, and lock to a specific checked version.</dd>
+      </dl>
+    </article>
+  </div>
+  <p class="meta" style="margin-top:10px">No new confirmed cyberattack on a bank or payments firm was found. JPMorgan Chase, the largest US bank, still says its 16 Nov outage was a software fault, not an attack.<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[8]</a></sup></p>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Updates to ongoing cases</h2>
+  <div class="incidents">
+    <article class="incident crit" data-incident="optimizely" data-name="Optimizely website supply-chain attack" id="inc-optimizely">
+      <div class="chips"><span class="chip sev">Critical</span><span class="chip">Confidence: High</span><span class="chip">Supply chain</span></div>
+      <h3>Optimizely website attack</h3>
+      <p class="ctx"><b>Background:</b> Optimizely's tool works by loading a small piece of code from Optimizely onto each customer's web pages. On 16 Nov an attacker used a flaw in Optimizely's sign-up process to change that code for 178 customers. Visitors to those sites unknowingly ran code that tried to copy card details typed into payment forms ("card skimming"), swap cryptocurrency payment addresses for the attacker's, and attack iPhones. Report URI, the web-security firm that uncovered it, raised the alarm.</p>
+      <dl>
+        <dt>What's new</dt><dd>Banks and finance were the largest group hit: 32 organisations, plus 6 crypto-trading and 6 insurance firms.<sup><a href="https://blog.report-uri.com/worlds-largest-brands-infected-with-malware-via-optimizely/" target="_blank" rel="noopener">[1]</a></sup> Named firms include:
+          <ul style="margin-top:6px">
+            <li><b>HSBC</b>, a UK-based global bank (sites in 11 countries)</li>
+            <li><b>ABN AMRO</b>, a major Dutch bank</li>
+            <li><b>Equifax</b>, one of the three big credit-reporting agencies</li>
+            <li><b>Hang Seng Investment</b>, the fund arm of a large Hong Kong bank</li>
+            <li><b>Funding Circle</b>, a UK online lender to small businesses</li>
+          </ul>
+        </dd>
+        <dt>Timeline</dt><dd>The card-stealing code was active for several hours on 16 Nov. All affected files were cleaned by late that night (UTC).<sup><a href="https://blog.report-uri.com/worlds-largest-brands-infected-with-malware-via-optimizely/" target="_blank" rel="noopener">[1]</a></sup></dd>
+        <dt>Optimizely says</dt><dd>The flaw is fixed, the code removed, and affected customers contacted directly.<sup><a href="https://therecord.media/optimizely-malicious-code-customer-sites" target="_blank" rel="noopener">[2]</a></sup></dd>
+        <dt>Action</dt><dd>If you or your suppliers use Optimizely, check for unauthorised code, reset access credentials, and assess whether customers who paid on 16 Nov need notifying.</dd>
+      </dl>
+    </article>
+
+    <article class="incident high" data-incident="n0n-visa-jpmorgan" data-name="n0n extortion claims: Visa, Mastercard, JPMorgan Chase" id="inc-n0n-visa-jpmorgan">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Extortion claim</span></div>
+      <h3>n0n's claims against Visa, Mastercard, JPMorgan and Walmart</h3>
+      <p class="ctx"><b>Background:</b> n0n is a criminal group, first seen in September 2026, that steals data and threatens to publish it unless paid (extortion). On 16 Nov it named Visa and Mastercard (the two biggest card payment networks), JPMorgan Chase (the largest US bank) and Walmart (the world's largest retailer) on its website, and gave them 48 hours to pay.</p>
+      <dl>
+        <dt>Confirmed</dt><dd>Visa says one of its suppliers in Asia-Pacific had a security incident, but no card data was affected.<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[8]</a></sup></dd>
+        <dt>Unconfirmed</dt><dd>No data has been published. Mastercard and Walmart have said nothing. n0n claims marketing and booking records, not card numbers or passwords. Researchers suspect a marketing supplier shared by these firms, but this is unproven.<sup><a href="https://secritic.com/2026/11/16/n0n-extortion-jpmorgan-visa-mastercard-walmart-whats-real/" target="_blank" rel="noopener">[6]</a></sup></dd>
+        <dt>Credibility</dt><dd>Security firm Bitdefender found n0n claimed 149 victims in October but had evidence for only about 20.<sup><a href="https://secritic.com/2026/11/16/n0n-extortion-jpmorgan-visa-mastercard-walmart-whats-real/" target="_blank" rel="noopener">[6]</a></sup></dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="tsmc" data-name="TSMC employee data leak" id="inc-tsmc">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: High</span><span class="chip">Supplier data leak</span></div>
+      <h3>TSMC employee data leaked</h3>
+      <p class="ctx">TSMC (Taiwan Semiconductor Manufacturing Company) makes most of the world's advanced computer chips for firms such as Apple and NVIDIA.</p>
+      <dl>
+        <dt>Confirmed</dt><dd>TSMC says data on current and former employees appeared on a criminal website. It came from an unnamed cloud-storage supplier, not TSMC's own systems.<sup><a href="https://www.techradar.com/pro/security/tsmc-confirms-cyberattack-and-data-breach-chip-giant-says-personal-employee-data-has-been-leaked-online" target="_blank" rel="noopener">[9]</a></sup></dd>
+        <dt>Claimed</dt><dd>The seller claims 46,000 records.</dd>
+        <dt>Why it matters</dt><dd>Another case of data leaking through a supplier. Low direct risk to banks.</dd>
+      </dl>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Vulnerabilities being exploited</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Flaw</th><th>What the product is</th><th>What to know</th></tr></thead>
+    <tbody>
+      <tr><td class="cve" id="inc-cve-2026-115731">CVE-2026-115731</td><td><b>Puppet Enterprise</b>, made by US software firm Perforce. Companies use it to set up and update thousands of servers automatically. A central "Puppet server" sends instructions to small helper programs ("agents") on every other server.</td><td>An attacker who gets one agent's digital ID card (certificate) can take over the central Puppet server, and from there potentially every server it manages. Attacks confirmed by CISA on 17 Nov. <b>Upgrade to Puppet Enterprise 2026.0.1 or newer</b> (fixes exist for older supported lines too). US federal deadline: 1 Dec.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/17/cisa-adds-one-known-exploited-vulnerability-catalog" target="_blank" rel="noopener">[3]</a><a href="https://shattered.io/puppet-enterprise-cve-2026-115731-cisa-kev-cvss-9-4-dec-1-deadline/" target="_blank" rel="noopener">[4]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-123039">CVE-2026-123039</td><td><b>Check Point</b> firewalls. Check Point is a major Israeli maker of firewalls, the devices that guard the edge of a company network.</td><td>Carried over from yesterday: attackers are using it to take full control of firewalls. <b>Upgrade to a supported, patched version.</b></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Threat actors</h2>
+  <div class="actors">
+    <div class="actor">
+      <h3>Chinese state-backed groups (unnamed)</h3>
+      <dl>
+        <dt>Type</dt><dd>Government hackers</dd>
+        <dt>Origin</dt><dd>China, according to Google's threat research team. Google did not name the specific groups.</dd>
+        <dt>Motive</dt><dd>Spying (espionage).</dd>
+        <dt>Activity</dt><dd>Building their own versions of ARTEX. ARTEX is a free AI tool, released by a Chinese researcher in July 2026, that the FBI says can automate a hack from scouting a target to stealing data. Similar AI tools have been used against US aerospace firms.<sup><a href="https://therecord.media/chinese-state-group-developing-automated-attack-tool-espionage" target="_blank" rel="noopener">[5]</a></sup></dd>
+      </dl>
+    </div>
+    <div class="actor">
+      <h3>n0n</h3>
+      <dl>
+        <dt>Type</dt><dd>Criminal extortion group</dd>
+        <dt>Origin</dt><dd>Unknown.</dd>
+        <dt>Motive</dt><dd>Money.</dd>
+        <dt>Methods</dt><dd>Breaks in using weak or reused passwords on remote-access systems, and old cloud access keys that were never cancelled.<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[8]</a></sup></dd>
+        <dt>Reliability</dt><dd>Has exaggerated its victim numbers before.<sup><a href="https://secritic.com/2026/11/16/n0n-extortion-jpmorgan-visa-mastercard-walmart-whats-real/" target="_blank" rel="noopener">[6]</a></sup></dd>
+      </dl>
+    </div>
+  </div>
+  <p class="meta" style="margin-top:10px">Who carried out the Optimizely attack is unknown.</p>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Regulators and governments</h2>
+  <ul>
+    <li><strong>European Central Bank (ECB)</strong>, which supervises the eurozone's largest banks. Its vice-president, Boris Vujčić, urged banks to strengthen cyber defences and fix weaknesses faster. He warned of "greater dependence on a small number of technology providers" (16 Nov).<sup><a href="https://www.eunews.it/en/2026/11/16/ecb-warns-artificial-intelligence-creates-new-vulnerabilities-for-the-banking-system/" target="_blank" rel="noopener">[10]</a></sup></li>
+    <li><strong>CISA</strong>, the US government's cybersecurity agency. Its acting director said there was no sign of a cyberattack behind this week's US flight groundings, and urged organisations to plan to keep running through any kind of outage.<sup><a href="https://cyberscoop.com/cisa-nick-andersen-cyber-resilience-outages/" target="_blank" rel="noopener">[11]</a></sup></li>
+    <li>Nothing found in the past 24 hours from the UK's FCA, New York's NYDFS, Singapore's MAS or the US SEC.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Watchlist: next 1–3 days</h2>
+  <ul>
+    <li><strong>n0n:</strong> whether any data is published, and whether Mastercard or Walmart comment.</li>
+    <li><strong>Optimizely:</strong> banks or finance firms announcing that customer cards were exposed.</li>
+    <li><strong>Puppet Enterprise:</strong> confirm it is upgraded.</li>
+    <li><strong>Check Point:</strong> confirm firewalls are upgraded.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Confidence and gaps</h2>
+  <ul>
+    <li>It is not known how many card details were actually stolen in the Optimizely attack.</li>
+    <li>n0n's claims remain unproven; no company has confirmed data theft.</li>
+    <li>The Chinese groups building AI hacking tools are not named.</li>
+    <li>The Kokoro story rests on one original report; Hugging Face has not commented.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Glossary</h2>
+  <dl class="gloss">
+    <dt>CVE</dt><dd>A standard ID number given to each publicly known software flaw, e.g. CVE-2026-115731.</dd>
+    <dt>CISA exploited list (KEV)</dt><dd>The US cyber agency's list of flaws it has confirmed attackers are actively using. US federal agencies must fix them by a deadline; it is a good priority list for everyone.</dd>
+    <dt>Supply-chain attack</dt><dd>Attacking a supplier's product so that the damage spreads to all of that supplier's customers.</dd>
+    <dt>Card skimming</dt><dd>Hidden code on a payment page that copies card details as customers type them.</dd>
+    <dt>Extortion group</dt><dd>Criminals who steal data and demand payment to not publish it.</dd>
+    <dt>Puppet server / agents</dt><dd>In Puppet Enterprise, the central server that sends configuration instructions, and the helper programs on each managed server that receive them.</dd>
+    <dt>Certificate</dt><dd>A digital ID card that lets computers prove who they are to each other.</dd>
+    <dt>AI model</dt><dd>The trained "brain" file behind an AI tool. Swapping it changes what the tool does without changing the app around it.</dd>
+  </dl>
+</section>
+
+<section class="sources">
+  <h2>Sources</h2>
+  <ol>
+    <li>Report URI, "World's Largest Brands Infected With Malware Via Optimizely", 16–17 Nov 2026 <span class="tag">Primary</span><br><a href="https://blog.report-uri.com/worlds-largest-brands-infected-with-malware-via-optimizely/" target="_blank" rel="noopener">blog.report-uri.com/worlds-largest-brands-infected-with-malware-via-optimizely/</a></li>
+    <li>The Record, "Website management platform Optimizely confirms hackers put malicious code into customer sites", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://therecord.media/optimizely-malicious-code-customer-sites" target="_blank" rel="noopener">therecord.media/optimizely-malicious-code-customer-sites</a></li>
+    <li>CISA, "CISA Adds One Known Exploited Vulnerability to Catalog", 17 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.cisa.gov/news-events/alerts/2026/11/17/cisa-adds-one-known-exploited-vulnerability-catalog" target="_blank" rel="noopener">cisa.gov/news-events/alerts/2026/11/17/cisa-adds-one-known-exploited-vulnerability-catalog</a></li>
+    <li>Shattered, "Puppet CVE-2026-115731 Hits CISA KEV: CVSS 9.4 Flaw", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://shattered.io/puppet-enterprise-cve-2026-115731-cisa-kev-cvss-9-4-dec-1-deadline/" target="_blank" rel="noopener">shattered.io/puppet-enterprise-cve-2026-115731-cisa-kev-cvss-9-4-dec-1-deadline/</a></li>
+    <li>The Record, "Chinese state group developing automated attack tool for cyber espionage, Google says", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://therecord.media/chinese-state-group-developing-automated-attack-tool-espionage" target="_blank" rel="noopener">therecord.media/chinese-state-group-developing-automated-attack-tool-espionage</a></li>
+    <li>Secritic, "n0n Extortion JPMorgan Visa Mastercard Walmart: What's Real?", 16 Nov 2026 <span class="tag">Secondary</span><br><a href="https://secritic.com/2026/11/16/n0n-extortion-jpmorgan-visa-mastercard-walmart-whats-real/" target="_blank" rel="noopener">secritic.com/2026/11/16/n0n-extortion-jpmorgan-visa-mastercard-walmart-whats-real/</a></li>
+    <li>Tech Times, "Domain Lapse Let Researchers Hijack Kokoro Voice AI Hugging Face Account…", 18 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.techtimes.com/articles/330990/20261118/domain-lapse-let-researchers-hijack-kokoro-voice-ai-hugging-face-account-edit-weights-87-seconds.htm" target="_blank" rel="noopener">techtimes.com/articles/330990/20261118/domain-lapse-let-researchers-hijack-kokoro-voice-ai-hugging-face-account-edit-weights-87-seconds.htm</a></li>
+    <li>SecureBlink, "n0n Ransomware Gang Claims Visa &amp; JPMorgan Chase Data Breach", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/</a></li>
+    <li>TechRadar, "TSMC confirms cyberattack and data breach…", 16 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.techradar.com/pro/security/tsmc-confirms-cyberattack-and-data-breach-chip-giant-says-personal-employee-data-has-been-leaked-online" target="_blank" rel="noopener">techradar.com/pro/security/tsmc-confirms-cyberattack-and-data-breach-chip-giant-says-personal-employee-data-has-been-leaked-online</a></li>
+    <li>Eunews, "Artificial intelligence: ECB sees 'new vulnerabilities for banks'", 16 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.eunews.it/en/2026/11/16/ecb-warns-artificial-intelligence-creates-new-vulnerabilities-for-the-banking-system/" target="_blank" rel="noopener">eunews.it/en/2026/11/16/ecb-warns-artificial-intelligence-creates-new-vulnerabilities-for-the-banking-system/</a></li>
+    <li>CyberScoop, "Cyberattack or no, parade of tech outages highlight need for resilient systems, CISA acting director says", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://cyberscoop.com/cisa-nick-andersen-cyber-resilience-outages/" target="_blank" rel="noopener">cyberscoop.com/cisa-nick-andersen-cyber-resilience-outages/</a></li>
+  </ol>
+</section>
+
+
+<section id="incidents">
+  <h2>Incident index</h2>
+  <p class="meta" style="margin-bottom:10px">Every incident and exploited vulnerability covered so far, most recently updated first. Click a date to open that day's brief.</p>
+  <div class="idx">
+<div class="row crit" id="i-optimizely"><div class="chips"><span class="chip sev">Critical</span><span class="chip">Incident</span></div><h3>Optimizely website supply-chain attack</h3><p>Optimizely&#x27;s tool works by loading a small piece of code from Optimizely onto each customer&#x27;s web pages. On 16 Nov an attacker used a flaw in Optimizely&#x27;s sign-up process to change that code for 178 customers. Visitors to those sites unknowingly ran code that tried to copy card d…</p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-17.html#inc-optimizely">17 Nov 2026</a><a href="briefs/2026-11-18.html#inc-optimizely">18 Nov 2026</a></div></div>
+<div class="row high" id="i-n0n-visa-jpmorgan"><div class="chips"><span class="chip sev">High</span><span class="chip">Incident</span></div><h3>n0n extortion claims: Visa, Mastercard, JPMorgan Chase</h3><p>n0n is a criminal group, first seen in September 2026, that steals data and threatens to publish it unless paid (extortion). On 16 Nov it named Visa and Mastercard (the two biggest card payment networks), JPMorgan Chase (the largest US bank) and Walmart (the world&#x27;s largest retai…</p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-17.html#inc-n0n-visa-jpmorgan">17 Nov 2026</a><a href="briefs/2026-11-18.html#inc-n0n-visa-jpmorgan">18 Nov 2026</a></div></div>
+<div class="row med" id="i-kokoro"><div class="chips"><span class="chip sev">Medium</span><span class="chip">Incident</span></div><h3>Kokoro AI model account takeover</h3><p>Kokoro is a free AI model that turns text into natural-sounding speech with millions of downloads a month. Hugging Face is the main public website where AI models are shared and downloaded, a bit like an app store for AI.</p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-18.html#inc-kokoro">18 Nov 2026</a></div></div>
+<div class="row med" id="i-tsmc"><div class="chips"><span class="chip sev">Medium</span><span class="chip">Incident</span></div><h3>TSMC employee data leak</h3><p>TSMC (Taiwan Semiconductor Manufacturing Company) makes most of the world&#x27;s advanced computer chips for firms such as Apple and NVIDIA.</p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-18.html#inc-tsmc">18 Nov 2026</a></div></div>
+<div class="row" id="i-cve-2026-115731"><div class="chips"><span class="chip">Vulnerability</span></div><h3>CVE-2026-115731 · Puppet Enterprise</h3><p>Puppet Enterprise, made by US software firm Perforce. Companies use it to set up and update thousands of servers automatically. A central &quot;Puppet server&quot; sends instructions to small helper programs (&quot;agents&quot;) on every other server. An attacker who gets one agent&#x27;s digital ID card</p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-18.html#inc-cve-2026-115731">18 Nov 2026</a></div></div>
+<div class="row" id="i-cve-2026-123039"><div class="chips"><span class="chip">Vulnerability</span></div><h3>CVE-2026-123039 · Check Point</h3><p>Check Point firewalls. Check Point is a major Israeli maker of firewalls, the devices that guard the edge of a company network. Carried over from yesterday: attackers are using it to take full control of firewalls. Upgrade to a supported, patched version.</p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-17.html#inc-cve-2026-123039">17 Nov 2026</a><a href="briefs/2026-11-18.html#inc-cve-2026-123039">18 Nov 2026</a></div></div>
+<div class="row low" id="i-coles"><div class="chips"><span class="chip sev">Low</span><span class="chip">Incident</span></div><h3>Coles Group cyber incident</h3><p>Disclosed a cyber incident to the ASX on 16 Nov; working with the Australian Cyber Security Centre. No evidence so far that customer, staff or supplier data was taken; operations unaffected.</p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-17.html#inc-coles">17 Nov 2026</a></div></div>
+<div class="row" id="i-cve-2026-114713"><div class="chips"><span class="chip">Vulnerability</span></div><h3>CVE-2026-114713 · UnrealIRCd</h3><p>UnrealIRCd, open-source chat server software Exploited; added to CISA&#x27;s Known Exploited Vulnerabilities (KEV) list on 13 Nov. Low bank relevance. </p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-17.html#inc-cve-2026-114713">17 Nov 2026</a></div></div>
+<div class="row" id="i-cve-2026-124194"><div class="chips"><span class="chip">Vulnerability</span></div><h3>CVE-2026-124194 · Microsoft Outlook; Google Chromium (web browser engine)</h3><p>Microsoft Outlook; Google Chromium (web browser engine) Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched. </p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-17.html#inc-cve-2026-124194">17 Nov 2026</a></div></div>
+<div class="row" id="i-cve-2026-125350"><div class="chips"><span class="chip">Vulnerability</span></div><h3>CVE-2026-125350 · Microsoft Outlook; Google Chromium (web browser engine)</h3><p>Microsoft Outlook; Google Chromium (web browser engine) Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched. </p><div class="dates"><span class="meta">Covered in:</span><a href="briefs/2026-11-17.html#inc-cve-2026-125350">17 Nov 2026</a></div></div>
+  </div>
+</section>
+
+<section id="glossary">
+  <h2>Glossary</h2>
+  <p class="meta" style="margin-bottom:10px">Every technical term explained in the briefs. Click a term to see its meaning.</p>
+<div class="terms"><a href="#g-ai-model" data-term="g-ai-model">AI model</a><a href="#g-card-skimming" data-term="g-card-skimming">Card skimming</a><a href="#g-certificate" data-term="g-certificate">Certificate</a><a href="#g-cisa-exploited-list-kev" data-term="g-cisa-exploited-list-kev">CISA exploited list (KEV)</a><a href="#g-cve" data-term="g-cve">CVE</a><a href="#g-extortion-group" data-term="g-extortion-group">Extortion group</a><a href="#g-puppet-server-agents" data-term="g-puppet-server-agents">Puppet server / agents</a><a href="#g-supply-chain-attack" data-term="g-supply-chain-attack">Supply-chain attack</a></div><details class="term" id="g-ai-model"><summary>AI model</summary><p>The trained &quot;brain&quot; file behind an AI tool. Swapping it changes what the tool does without changing the app around it.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details><details class="term" id="g-card-skimming"><summary>Card skimming</summary><p>Hidden code on a payment page that copies card details as customers type them.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details><details class="term" id="g-certificate"><summary>Certificate</summary><p>A digital ID card that lets computers prove who they are to each other.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details><details class="term" id="g-cisa-exploited-list-kev"><summary>CISA exploited list (KEV)</summary><p>The US cyber agency&#x27;s list of flaws it has confirmed attackers are actively using. US federal agencies must fix them by a deadline; it is a good priority list for everyone.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details><details class="term" id="g-cve"><summary>CVE</summary><p>A standard ID number given to each publicly known software flaw, e.g. CVE-2026-115731.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details><details class="term" id="g-extortion-group"><summary>Extortion group</summary><p>Criminals who steal data and demand payment to not publish it.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details><details class="term" id="g-puppet-server-agents"><summary>Puppet server / agents</summary><p>In Puppet Enterprise, the central server that sends configuration instructions, and the helper programs on each managed server that receive them.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details><details class="term" id="g-supply-chain-attack"><summary>Supply-chain attack</summary><p>Attacking a supplier&#x27;s product so that the damage spreads to all of that supplier&#x27;s customers.</p><p class="seen">Used in: <a href="briefs/2026-11-18.html">18 Nov 2026</a></p></details>
+</section>
+
+<section class="archive" id="archive">
+  <h2>Archive</h2>
+  <p class="meta" style="margin-bottom:10px">Every brief is kept with its audio. Newest first.</p>
+  <ol><li><a href="briefs/2026-11-18.html">Wednesday 18 November 2026</a><span class=today>Latest</span></li><li><a href="briefs/2026-11-17.html">Tuesday 17 November 2026</a></li></ol>
+</section>
+<footer>Automated open-source intelligence; verify before acting. Audio is a machine-read summary of the page.</footer>
+</div>
+<script type="application/json" id="search-data">{"docs": [{"d": "2026-11-17", "t": "Optimizely Web Experimentation", "k": "Incident", "h": "briefs/2026-11-17.html#inc-optimizely", "x": "Optimizely Web Experimentation What happened Malicious code injected from 16 Nov, 04:21 UTC. Optimizely says an attacker exploited a flaw in its Experimentation signup flow; it has fixed the flaw and removed the code.  Scope Report URI found 188 infected scripts across 178 organisations, including HSBC, Equifax, Salesforce and CNN. Payloads Card skimmer, crypto address swapper, and redirects to iPhone/iPad exploit kits. Hudson Rock found no evidence devices were actually compromised. About $7,000 in crypto reached the attacker. Actor Unknown. Who they are Optimizely sells A/B testing and personalisation tools; its code runs directly on customers' web pages. Why it matters Any bank page loading Optimizely, Kissmetrics, StorifyMe or Minute-ly scripts could have exposed customer card details. Blocking the attacker's domain may not be enough: some poisoned scripts carried the full payload."}, {"d": "2026-11-17", "t": "Visa, Mastercard and JPMorgan Chase: n0n claim", "k": "Incident", "h": "briefs/2026-11-17.html#inc-n0n-visa-jpmorgan", "x": "Visa, Mastercard and JPMorgan Chase: n0n claim Visa confirmed An incident that began at an unnamed third-party provider in Asia-Pacific. Visa says its systems and card data were not affected.  n0n claims Data stolen from all three firms; a 48-hour deadline to negotiate before publishing.  JPMorgan said A concurrent outage was caused by a software bug, with no evidence of a cyberattack.  Analysts say Listings appear to involve marketing or partner data, not core payment data (Unverified).  Mastercard has made no statement found. Who they are Visa and Mastercard run global card payment networks. JPMorgan Chase is the largest US bank. Why it matters Possibly a supplier shared across the card ecosystem. Check whether your APAC payment and marketing vendors overlap with Visa's."}, {"d": "2026-11-17", "t": "Coles Group (Australia)", "k": "Incident", "h": "briefs/2026-11-17.html#inc-coles", "x": "Coles Group (Australia) What happened Disclosed a cyber incident to the ASX on 16 Nov; working with the Australian Cyber Security Centre. No evidence so far that customer, staff or supplier data was taken; operations unaffected.  Actor Unknown. Who they are One of Australia's two largest supermarket chains. Why it matters Low direct exposure. Expect phishing that impersonates Coles."}, {"d": "2026-11-17", "t": "CVE-2026-123039 (Check Point Gaia OS)", "k": "Vulnerability", "h": "briefs/2026-11-17.html#inc-cve-2026-123039", "x": "CVE-2026-123039 Check Point Gaia OS, the operating system on Check Point firewalls and management servers Exploited, chained with PHP2Shell (CVE-2026-109618/109619), which needs no login. About two dozen systems compromised (30 Oct–4 Nov) with web shells, a backdoor and a wiper. Fixed in Jumbo Hotfix takes for R81.20–R82.20. R81 and R81.10 are end-of-life with no fix: apply the workaround and upgrade. CISA federal deadline: 16 Nov.  "}, {"d": "2026-11-17", "t": "CVE-2026-114713 (UnrealIRCd)", "k": "Vulnerability", "h": "briefs/2026-11-17.html#inc-cve-2026-114713", "x": "CVE-2026-114713 UnrealIRCd, open-source chat server software Exploited; added to CISA's Known Exploited Vulnerabilities (KEV) list on 13 Nov. Low bank relevance. "}, {"d": "2026-11-17", "t": "CVE-2026-124194 (Microsoft Outlook; Google Chromium (web browser engine))", "k": "Vulnerability", "h": "briefs/2026-11-17.html#inc-cve-2026-124194", "x": "CVE-2026-124194 CVE-2026-125350 Microsoft Outlook; Google Chromium (web browser engine) Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched. "}, {"d": "2026-11-17", "t": "CVE-2026-125350 (Microsoft Outlook; Google Chromium (web browser engine))", "k": "Vulnerability", "h": "briefs/2026-11-17.html#inc-cve-2026-125350", "x": "CVE-2026-124194 CVE-2026-125350 Microsoft Outlook; Google Chromium (web browser engine) Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched. "}, {"d": "2026-11-17", "t": "Top line", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "Top line Supply-chain attack on Optimizely. Attackers abused this website-testing service to plant code on about 178 organisations' sites, including HSBC and Equifax, skimming payment cards and swapping crypto addresses.  Visa confirms an incident at a supplier. Extortion group n0n claims data from Visa, Mastercard and JPMorgan Chase. Visa confirmed an incident at an unnamed Asia-Pacific provider and says payment data was not affected.   Check Point firewall flaw exploited. CVE-2026-123039 gives attackers root control of gateways. CISA's federal deadline passed on 16 Nov.   Extradition. US DOJ extradited an alleged member of the \"8-Digits Team\", an extortion crew linked to INC and Lynx ransomware.  Bank relevance: today's main risk comes through third parties: website scripts, payment-network suppliers and edge devices such as firewalls."}, {"d": "2026-11-17", "t": "New breaches and incidents", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "New breaches and incidents"}, {"d": "2026-11-17", "t": "Updates to open cases", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "Updates to open cases Barracuda cloud breach. An attacker used a cloud access key Barracuda had given an AI vendor and never revoked, moving across about 10 cloud accounts over 44 hours (1–2 Nov). The activity matches ARTEX, an open-source AI-driven penetration-testing tool; Barracuda says that does not identify who ran it. Contacted customers must revoke and reissue XDR integration credentials.  Lesson: audit and revoke old keys held by suppliers."}, {"d": "2026-11-17", "t": "Emerging threats and vulnerabilities", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "Emerging threats and vulnerabilities CVE Product Status CVE-2026-123039 Check Point Gaia OS, the operating system on Check Point firewalls and management servers Exploited, chained with PHP2Shell (CVE-2026-109618/109619), which needs no login. About two dozen systems compromised (30 Oct–4 Nov) with web shells, a backdoor and a wiper. Fixed in Jumbo Hotfix takes for R81.20–R82.20. R81 and R81.10 are end-of-life with no fix: apply the workaround and upgrade. CISA federal deadline: 16 Nov.   CVE-2026-114713 UnrealIRCd, open-source chat server software Exploited; added to CISA's Known Exploited Vulnerabilities (KEV) list on 13 Nov. Low bank relevance.  CVE-2026-124194 CVE-2026-125350 Microsoft Outlook; Google Chromium (web browser engine) Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched.  No KEV additions dated 16 or 17 Nov were found."}, {"d": "2026-11-17", "t": "Threat actor profiles", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "Threat actor profiles n0n Type Financially motivated extortion group Origin Unknown. A staging server in Sweden does not establish where it is based. Motive Financial gain. SOCRadar (medium confidence): multi-operator, no state backing. Activity First seen mid-Sept 2026. Claims 100+ victims, 23% in financial services (another report says 59). Methods Credential stuffing on FortiGate SSL VPNs (T1110.004), weak RDP/WinRM passwords (T1021), long-lived AWS keys (T1078.004).  8-Digits Team Type Extortion crew affiliated with INC and Lynx ransomware Arrest Roman Khlynovskiy, Kazakh national, extradited from Italy; appeared in court in Tennessee on 16 Nov. Targets US hospitals and schools. Claimed 70M+ health records; ransom demands over $500M.  Origin Wider group's origin not established. The Optimizely attacker and the Check Point exploiters are unattributed."}, {"d": "2026-11-17", "t": "Regulatory and geopolitical signals", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "Regulatory and geopolitical signals Nothing significant found from the SEC, FCA, ECB (including DORA), NYDFS or MAS in the past 24 hours."}, {"d": "2026-11-17", "t": "Watchlist: next 24–72 hours", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "Watchlist: next 24–72 hours n0n deadline, roughly 18–19 Nov (exact start unknown). Watch for leaks, Mastercard and JPMorgan statements, and the name of Visa's supplier. Optimizely: disclosures by affected customers, especially financial firms. Check your own sites for Optimizely, Kissmetrics, StorifyMe or Minute-ly scripts. Check Point: confirm R81 and R81.10 devices are isolated and upgraded; hunt for signs of compromise. Coles: updates, and any group claiming the attack."}, {"d": "2026-11-17", "t": "Confidence and gaps", "k": "Brief section", "h": "briefs/2026-11-17.html", "x": "Confidence and gaps n0n's theft from Mastercard and JPMorgan is unverified; Mastercard has not commented; victim counts differ. Optimizely: which named organisations had payment pages affected is unconfirmed. Site counts reported as 178, 186 or 188. Left out as unverified: Infoblox, TSMC and Expedia breach reports, and the 16 Nov US bank outages (no agency has linked them to a cyberattack). BleepingComputer and Cybernews blocked retrieval, so their reports are not cited. Check Point details come from a lower-tier outlet summarising advisory sk1000362; check against the advisory."}, {"d": "2026-11-18", "t": "Kokoro AI voice model: publisher's account taken over", "k": "Incident", "h": "briefs/2026-11-18.html#inc-kokoro", "x": "Kokoro AI voice model: publisher's account taken over Kokoro is a free AI model that turns text into natural-sounding speech with millions of downloads a month. Hugging Face is the main public website where AI models are shared and downloaded, a bit like an app store for AI. What happened Security researchers bought a web address the model's publisher had let expire. That let them reset the publisher's password and take over the account. They showed they could alter the model to say different words from the text it was given. They did this as a demonstration and did not release the altered version.  Details rest on one original report. Why it matters Banks increasingly build public AI models into their tools. If an attacker controls a publisher's account, they can quietly swap in a tampered model. Only use models from verified sources, and lock to a specific checked version."}, {"d": "2026-11-18", "t": "Optimizely website attack", "k": "Incident", "h": "briefs/2026-11-18.html#inc-optimizely", "x": "Optimizely website attack Background: Optimizely's tool works by loading a small piece of code from Optimizely onto each customer's web pages. On 16 Nov an attacker used a flaw in Optimizely's sign-up process to change that code for 178 customers. Visitors to those sites unknowingly ran code that tried to copy card details typed into payment forms (\"card skimming\"), swap cryptocurrency payment addresses for the attacker's, and attack iPhones. Report URI, the web-security firm that uncovered it, raised the alarm. What's new Banks and finance were the largest group hit: 32 organisations, plus 6 crypto-trading and 6 insurance firms.  Named firms include: HSBC, a UK-based global bank (sites in 11 countries) ABN AMRO, a major Dutch bank Equifax, one of the three big credit-reporting agencies Hang Seng Investment, the fund arm of a large Hong Kong bank Funding Circle, a UK online lender to small businesses Timeline The card-stealing code was active for several hours on 16 Nov. All affected files were cleaned by late that night (UTC).  Optimizely says The flaw is fixed, the code removed, and affected customers contacted directly.  Action If you or your suppliers use Optimizely, check for unauthorised code, reset access credentials, and assess whether customers who paid on 16 Nov need notifying."}, {"d": "2026-11-18", "t": "n0n's claims against Visa, Mastercard, JPMorgan and Walmart", "k": "Incident", "h": "briefs/2026-11-18.html#inc-n0n-visa-jpmorgan", "x": "n0n's claims against Visa, Mastercard, JPMorgan and Walmart Background: n0n is a criminal group, first seen in September 2026, that steals data and threatens to publish it unless paid (extortion). On 16 Nov it named Visa and Mastercard (the two biggest card payment networks), JPMorgan Chase (the largest US bank) and Walmart (the world's largest retailer) on its website, and gave them 48 hours to pay. Confirmed Visa says one of its suppliers in Asia-Pacific had a security incident, but no card data was affected.  Unconfirmed No data has been published. Mastercard and Walmart have said nothing. n0n claims marketing and booking records, not card numbers or passwords. Researchers suspect a marketing supplier shared by these firms, but this is unproven.  Credibility Security firm Bitdefender found n0n claimed 149 victims in October but had evidence for only about 20. "}, {"d": "2026-11-18", "t": "TSMC employee data leaked", "k": "Incident", "h": "briefs/2026-11-18.html#inc-tsmc", "x": "TSMC employee data leaked TSMC (Taiwan Semiconductor Manufacturing Company) makes most of the world's advanced computer chips for firms such as Apple and NVIDIA. Confirmed TSMC says data on current and former employees appeared on a criminal website. It came from an unnamed cloud-storage supplier, not TSMC's own systems.  Claimed The seller claims 46,000 records. Why it matters Another case of data leaking through a supplier. Low direct risk to banks."}, {"d": "2026-11-18", "t": "CVE-2026-115731 (Puppet Enterprise)", "k": "Vulnerability", "h": "briefs/2026-11-18.html#inc-cve-2026-115731", "x": "CVE-2026-115731 Puppet Enterprise, made by US software firm Perforce. Companies use it to set up and update thousands of servers automatically. A central \"Puppet server\" sends instructions to small helper programs (\"agents\") on every other server. An attacker who gets one agent's digital ID card (certificate) can take over the central Puppet server, and from there potentially every server it manages. Attacks confirmed by CISA on 17 Nov. Upgrade to Puppet Enterprise 2026.0.1 or newer (fixes exist for older supported lines too). US federal deadline: 1 Dec.  "}, {"d": "2026-11-18", "t": "CVE-2026-123039 (Check Point)", "k": "Vulnerability", "h": "briefs/2026-11-18.html#inc-cve-2026-123039", "x": "CVE-2026-123039 Check Point firewalls. Check Point is a major Israeli maker of firewalls, the devices that guard the edge of a company network. Carried over from yesterday: attackers are using it to take full control of firewalls. Upgrade to a supported, patched version."}, {"d": "2026-11-18", "t": "Top line", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "Top line A website-tool hack hit banks hardest. Optimizely sells software that companies add to their websites to test different page designs. On 16 Nov attackers used a flaw in it to slip card-stealing code onto the websites of 178 of its customers. Researchers now say 32 of those are banks and finance firms, including HSBC and Equifax.   Attackers are exploiting a flaw in Puppet Enterprise. This is software many companies use to manage the settings of thousands of servers from one central control server. US cyber agency CISA confirmed active attacks on 17 Nov.   China is building AI hacking tools. Google says Chinese state-backed hacking groups are developing their own versions of ARTEX, a free AI tool that can carry out much of a cyberattack automatically.  Claims against Visa, Mastercard and JPMorgan are still unproven. A criminal group called n0n says it stole their data. No data has been published, and the group has exaggerated before.  Bank relevance: today's theme is trusting suppliers, and the software and data they hand you."}, {"d": "2026-11-18", "t": "New incidents (past 24 hours)", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "New incidents (past 24 hours) No new confirmed cyberattack on a bank or payments firm was found. JPMorgan Chase, the largest US bank, still says its 16 Nov outage was a software fault, not an attack. "}, {"d": "2026-11-18", "t": "Updates to ongoing cases", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "Updates to ongoing cases"}, {"d": "2026-11-18", "t": "Vulnerabilities being exploited", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "Vulnerabilities being exploited Flaw What the product is What to know CVE-2026-115731 Puppet Enterprise, made by US software firm Perforce. Companies use it to set up and update thousands of servers automatically. A central \"Puppet server\" sends instructions to small helper programs (\"agents\") on every other server. An attacker who gets one agent's digital ID card (certificate) can take over the central Puppet server, and from there potentially every server it manages. Attacks confirmed by CISA on 17 Nov. Upgrade to Puppet Enterprise 2026.0.1 or newer (fixes exist for older supported lines too). US federal deadline: 1 Dec.   CVE-2026-123039 Check Point firewalls. Check Point is a major Israeli maker of firewalls, the devices that guard the edge of a company network. Carried over from yesterday: attackers are using it to take full control of firewalls. Upgrade to a supported, patched version."}, {"d": "2026-11-18", "t": "Threat actors", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "Threat actors Chinese state-backed groups (unnamed) Type Government hackers Origin China, according to Google's threat research team. Google did not name the specific groups. Motive Spying (espionage). Activity Building their own versions of ARTEX. ARTEX is a free AI tool, released by a Chinese researcher in July 2026, that the FBI says can automate a hack from scouting a target to stealing data. Similar AI tools have been used against US aerospace firms.  n0n Type Criminal extortion group Origin Unknown. Motive Money. Methods Breaks in using weak or reused passwords on remote-access systems, and old cloud access keys that were never cancelled.  Reliability Has exaggerated its victim numbers before.  Who carried out the Optimizely attack is unknown."}, {"d": "2026-11-18", "t": "Regulators and governments", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "Regulators and governments European Central Bank (ECB), which supervises the eurozone's largest banks. Its vice-president, Boris Vujčić, urged banks to strengthen cyber defences and fix weaknesses faster. He warned of \"greater dependence on a small number of technology providers\" (16 Nov).  CISA, the US government's cybersecurity agency. Its acting director said there was no sign of a cyberattack behind this week's US flight groundings, and urged organisations to plan to keep running through any kind of outage.  Nothing found in the past 24 hours from the UK's FCA, New York's NYDFS, Singapore's MAS or the US SEC."}, {"d": "2026-11-18", "t": "Watchlist: next 1–3 days", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "Watchlist: next 1–3 days n0n: whether any data is published, and whether Mastercard or Walmart comment. Optimizely: banks or finance firms announcing that customer cards were exposed. Puppet Enterprise: confirm it is upgraded. Check Point: confirm firewalls are upgraded."}, {"d": "2026-11-18", "t": "Confidence and gaps", "k": "Brief section", "h": "briefs/2026-11-18.html", "x": "Confidence and gaps It is not known how many card details were actually stolen in the Optimizely attack. n0n's claims remain unproven; no company has confirmed data theft. The Chinese groups building AI hacking tools are not named. The Kokoro story rests on one original report; Hugging Face has not commented."}], "incidents": [{"key": "optimizely", "kind": "Incident", "dates": ["2026-11-17", "2026-11-18"], "name": "Optimizely website supply-chain attack", "sev": "crit", "summary": "Optimizely's tool works by loading a small piece of code from Optimizely onto each customer's web pages. On 16 Nov an attacker used a flaw in Optimizely's sign-up process to change that code for 178 customers. Visitors to those sites unknowingly ran code that tried to copy card d…"}, {"key": "n0n-visa-jpmorgan", "kind": "Incident", "dates": ["2026-11-17", "2026-11-18"], "name": "n0n extortion claims: Visa, Mastercard, JPMorgan Chase", "sev": "high", "summary": "n0n is a criminal group, first seen in September 2026, that steals data and threatens to publish it unless paid (extortion). On 16 Nov it named Visa and Mastercard (the two biggest card payment networks), JPMorgan Chase (the largest US bank) and Walmart (the world's largest retai…"}, {"key": "kokoro", "kind": "Incident", "dates": ["2026-11-18"], "name": "Kokoro AI model account takeover", "sev": "med", "summary": "Kokoro is a free AI model that turns text into natural-sounding speech with millions of downloads a month. Hugging Face is the main public website where AI models are shared and downloaded, a bit like an app store for AI."}, {"key": "tsmc", "kind": "Incident", "dates": ["2026-11-18"], "name": "TSMC employee data leak", "sev": "med", "summary": "TSMC (Taiwan Semiconductor Manufacturing Company) makes most of the world's advanced computer chips for firms such as Apple and NVIDIA."}, {"key": "cve-2026-115731", "kind": "Vulnerability", "dates": ["2026-11-18"], "name": "CVE-2026-115731 · Puppet Enterprise", "sev": "", "summary": "Puppet Enterprise, made by US software firm Perforce. Companies use it to set up and update thousands of servers automatically. A central \"Puppet server\" sends instructions to small helper programs (\"agents\") on every other server. An attacker who gets one agent's digital ID card"}, {"key": "cve-2026-123039", "kind": "Vulnerability", "dates": ["2026-11-17", "2026-11-18"], "name": "CVE-2026-123039 · Check Point", "sev": "", "summary": "Check Point firewalls. Check Point is a major Israeli maker of firewalls, the devices that guard the edge of a company network. Carried over from yesterday: attackers are using it to take full control of firewalls. Upgrade to a supported, patched version."}, {"key": "coles", "kind": "Incident", "dates": ["2026-11-17"], "name": "Coles Group cyber incident", "sev": "low", "summary": "Disclosed a cyber incident to the ASX on 16 Nov; working with the Australian Cyber Security Centre. No evidence so far that customer, staff or supplier data was taken; operations unaffected."}, {"key": "cve-2026-114713", "kind": "Vulnerability", "dates": ["2026-11-17"], "name": "CVE-2026-114713 · UnrealIRCd", "sev": "", "summary": "UnrealIRCd, open-source chat server software Exploited; added to CISA's Known Exploited Vulnerabilities (KEV) list on 13 Nov. Low bank relevance. "}, {"key": "cve-2026-124194", "kind": "Vulnerability", "dates": ["2026-11-17"], "name": "CVE-2026-124194 · Microsoft Outlook; Google Chromium (web browser engine)", "sev": "", "summary": "Microsoft Outlook; Google Chromium (web browser engine) Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched. "}, {"key": "cve-2026-125350", "kind": "Vulnerability", "dates": ["2026-11-17"], "name": "CVE-2026-125350 · Microsoft Outlook; Google Chromium (web browser engine)", "sev": "", "summary": "Microsoft Outlook; Google Chromium (web browser engine) Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched. "}], "glossary": [{"term": "AI model", "dates": ["2026-11-18"], "defn": "The trained \"brain\" file behind an AI tool. Swapping it changes what the tool does without changing the app around it.", "id": "g-ai-model"}, {"term": "Card skimming", "dates": ["2026-11-18"], "defn": "Hidden code on a payment page that copies card details as customers type them.", "id": "g-card-skimming"}, {"term": "Certificate", "dates": ["2026-11-18"], "defn": "A digital ID card that lets computers prove who they are to each other.", "id": "g-certificate"}, {"term": "CISA exploited list (KEV)", "dates": ["2026-11-18"], "defn": "The US cyber agency's list of flaws it has confirmed attackers are actively using. US federal agencies must fix them by a deadline; it is a good priority list for everyone.", "id": "g-cisa-exploited-list-kev"}, {"term": "CVE", "dates": ["2026-11-18"], "defn": "A standard ID number given to each publicly known software flaw, e.g. CVE-2026-115731.", "id": "g-cve"}, {"term": "Extortion group", "dates": ["2026-11-18"], "defn": "Criminals who steal data and demand payment to not publish it.", "id": "g-extortion-group"}, {"term": "Puppet server / agents", "dates": ["2026-11-18"], "defn": "In Puppet Enterprise, the central server that sends configuration instructions, and the helper programs on each managed server that receive them.", "id": "g-puppet-server-agents"}, {"term": "Supply-chain attack", "dates": ["2026-11-18"], "defn": "Attacking a supplier's product so that the damage spreads to all of that supplier's customers.", "id": "g-supply-chain-attack"}]}</script>
+<script>
+(function(){
+  var a=document.getElementById('audio'); if(!a) return;
+  var btns=document.querySelectorAll('.speed button');
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    a.playbackRate=parseFloat(b.dataset.r);
+    btns.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});});});
+  a.addEventListener('loadedmetadata',function(){
+    if(isFinite(a.duration)){var m=Math.floor(a.duration/60),s=Math.round(a.duration%60);
+    document.getElementById('dur').textContent=m+' min '+s+' s · spoken summary';}});
+  if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, 18 Nov 2026',artist:'Daily threat intelligence'});}catch(e){}}
+})();
+</script>
+<script>
+(function(){
+  var DATA=JSON.parse(document.getElementById('search-data').textContent);
+  var form=document.getElementById('sform'), q=document.getElementById('q'), out=document.getElementById('results');
+  var aiBtn=document.getElementById('askai'), stopBtn=document.getElementById('stopai'), aiBox=document.getElementById('aibox'), aiOut=document.getElementById('aiout'), aiNote=document.getElementById('ainote');
+  function esc(s){return s.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]});}
+  function toks(s){return s.toLowerCase().split(/[^a-z0-9\-]+/).filter(function(t){return t.length>1;});}
+  function nice(d){var x=new Date(d+'T00:00:00Z');return x.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});}
+  function snippet(text,ts){
+    var low=text.toLowerCase(), i=-1;
+    for(var k=0;k<ts.length&&i<0;k++) i=low.indexOf(ts[k]);
+    var s=Math.max(0,i-80), e=Math.min(text.length,(i<0?0:i)+180);
+    var sn=(s>0?'… ':'')+text.slice(s,e)+(e<text.length?' …':'');
+    var h=esc(sn);
+    ts.forEach(function(t){h=h.replace(new RegExp('('+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>');});
+    return h;
+  }
+  function score(text,ts){var low=text.toLowerCase(),n=0;for(var i=0;i<ts.length;i++){var c=low.split(ts[i]).length-1;if(!c)return 0;n+=c;}return n;}
+  var last=[];
+  function run(query){
+    var ts=toks(query); last=[];
+    if(!ts.length){out.innerHTML='';aiBox.hidden=true;return;}
+    var docs=DATA.docs.map(function(d){return {d:d,s:score(d.t+' '+d.x,ts)};}).filter(function(r){return r.s>0;}).sort(function(a,b){return b.s-a.s||(b.d.d>a.d.d?1:-1);}).slice(0,8);
+    var inc=DATA.incidents.filter(function(e){return score(e.name+' '+e.summary,ts)>0;});
+    var gl=DATA.glossary.filter(function(g){return score(g.term+' '+g.defn,ts)>0;});
+    last=docs.map(function(r){return r.d;});
+    var h='';
+    if(inc.length){h+='<div><h3>Incidents</h3><ul class="hits">'+inc.map(function(e){return '<li><span class="when">'+esc(e.kind)+' · last covered '+nice(e.dates[e.dates.length-1])+'</span><a href="#i-'+e.key+'"><strong>'+esc(e.name)+'</strong></a><span>'+snippet(e.summary,ts)+'</span></li>';}).join('')+'</ul></div>';}
+    if(gl.length){h+='<div><h3>Glossary</h3><ul class="hits">'+gl.map(function(g){return '<li><a href="#'+g.id+'" data-term="'+g.id+'"><strong>'+esc(g.term)+'</strong></a><span>'+esc(g.defn)+'</span></li>';}).join('')+'</ul></div>';}
+    if(docs.length){h+='<div><h3>In the briefs</h3><ul class="hits">'+docs.map(function(r){return '<li><span class="when">'+nice(r.d.d)+' · '+esc(r.d.k)+'</span><a href="'+r.d.h+'"><strong>'+esc(r.d.t)+'</strong></a><span>'+snippet(r.d.x,ts)+'</span></li>';}).join('')+'</ul></div>';}
+    if(!h) h='<p class="meta">Nothing in the briefs matches "'+esc(query)+'". Try the web searches below.</p>';
+    var qq=encodeURIComponent(query), qc=encodeURIComponent(query+' cyber attack');
+    h+='<div><h3>Search the internet</h3><div class="weblinks">'+
+      '<a href="https://news.google.com/search?q='+qc+'" target="_blank" rel="noopener">Google News</a>'+
+      '<a href="https://www.google.com/search?q='+qc+'" target="_blank" rel="noopener">Google</a>'+
+      '<a href="https://www.bing.com/news/search?q='+qc+'" target="_blank" rel="noopener">Bing News</a>'+
+      '<a href="https://www.google.com/search?q='+qq+'+site%3Ableepingcomputer.com+OR+site%3Atherecord.media+OR+site%3Asecurityweek.com" target="_blank" rel="noopener">Security news sites</a>'+
+      '<a href="https://www.google.com/search?q='+qq+'+site%3Acisa.gov+OR+site%3Ancsc.gov.uk" target="_blank" rel="noopener">CISA &amp; NCSC</a>'+
+      '</div></div>';
+    out.innerHTML=h;
+    if(sample) aiBox.hidden=false;
+  }
+  form.addEventListener('submit',function(e){e.preventDefault();run(q.value.trim());});
+  var tmr; q.addEventListener('input',function(){clearTimeout(tmr);tmr=setTimeout(function(){run(q.value.trim());},250);});
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[data-term]'); if(!a) return;
+    var el=document.getElementById(a.getAttribute('data-term')); if(el){el.open=true;}
+  });
+  function openFromHash(){var id=location.hash.slice(1);var el=id&&document.getElementById(id);if(el&&el.tagName==='DETAILS')el.open=true;}
+  window.addEventListener('hashchange',openFromHash); openFromHash();
+
+  var sample=null, ctl=null;
+  if(window.claude&&claude.use){claude.use('sample').then(function(s){sample=s; if(s&&q.value.trim()) aiBox.hidden=false;}).catch(function(){});}
+  var COPY={not_granted:'Claude is turned off for this page.',sampling_disabled:'Claude is not available on this account.',rate_limited:'Too many requests just now. Try again in a minute.',session_expired:'Please sign in to Claude again.',refused:'Claude declined to answer that. Try rephrasing.'};
+  aiBtn.addEventListener('click',function(){
+    var query=q.value.trim(); if(!sample||!query) return;
+    var ctxt=last.slice(0,6).map(function(d){return '['+d.d+' · '+d.t+'] '+d.x.slice(0,1200);}).join('\n\n');
+    var prompt='You are helping a bank cybersecurity executive who is not a specialist. Explain "'+query+'" in plain English: what it is, who is involved (one sentence on what each company or group does), what happened and why it matters to a bank. Keep it under 200 words, no headings, no markdown symbols. Use the excerpts from our daily briefs below as your main source and say which brief dates you relied on. If something is not in the excerpts, you may add general background you are confident about, but say clearly that you cannot check live news and the reader should verify recent details. Do not invent dates, numbers or events.\n\nExcerpts from our briefs:\n'+(ctxt||'(none matched)');
+    ctl=new AbortController(); aiBtn.disabled=true; stopBtn.hidden=false; aiOut.hidden=false; aiOut.textContent='Thinking…'; aiNote.textContent='';
+    sample(prompt,{signal:ctl.signal,onText:function(u){aiOut.textContent=u.text;}}).then(function(r){
+      aiNote.textContent='Written by Claude from these briefs and its general knowledge. It cannot browse live news, so verify recent details.'+(r.truncated?' (Answer was cut short.)':'');
+    }).catch(function(e){
+      aiOut.textContent=(e&&e.text)||'';
+      if(e&&e.code==='cancelled'){if(!aiOut.textContent)aiOut.hidden=true;return;}
+      if(e&&(e.code==='not_granted'||e.code==='sampling_disabled'||e.code==='not_declared'||e.code==='capability_disabled'||e.code==='capability_removed')){aiBox.hidden=true;sample=null;}
+      aiNote.textContent=(e&&COPY[e.code])||'Claude could not answer just now. Try again.';
+      if(!aiOut.textContent)aiOut.hidden=true;
+    }).finally(function(){aiBtn.disabled=false;stopBtn.hidden=true;});
+  });
+  stopBtn.addEventListener('click',function(){ctl&&ctl.abort();});
+})();
+</script>
+
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyber Brief 17 Nov 2026</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#1d4fb8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cyber Brief">
+<meta name="description" content="Daily cyber threat intelligence brief for banking, with audio.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: single reading column, a sticky audio bar, severity stripes on incident blocks */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --fg:#151a22; --muted:#5a6472; --line:#d9dde3;
+  --accent:#1d4fb8; --accent-soft:#e6edfa;
+  --crit:#b3261e; --high:#b35c00; --med:#7a6a00; --low:#3b6e45;
+  --crit-bg:#fbe9e7; --high-bg:#fdf0e1; --med-bg:#f6f2d8; --low-bg:#e5f1e7;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f131a; --surface:#171c25; --fg:#e6e9ee; --muted:#9aa4b2; --line:#2a313d;
+  --accent:#7ea6ff; --accent-soft:#1c2740;
+  --crit:#ff8a80; --high:#ffb35c; --med:#e3d36a; --low:#8fd19e;
+  --crit-bg:#3a1714; --high-bg:#3a2610; --med-bg:#322d10; --low-bg:#16301d;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f131a; --surface:#171c25; --fg:#e6e9ee; --muted:#9aa4b2; --line:#2a313d;
+  --accent:#7ea6ff; --accent-soft:#1c2740;
+  --crit:#ff8a80; --high:#ffb35c; --med:#e3d36a; --low:#8fd19e;
+  --crit-bg:#3a1714; --high-bg:#3a2610; --med-bg:#322d10; --low-bg:#16301d;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:36px}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{display:flex;flex-direction:column;gap:8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6vw,44px);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:22px;margin:0 0 12px;text-wrap:balance;display:flex;gap:10px;align-items:baseline}
+h2 .n{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:500}
+h3{font-size:17px;margin:0;font-weight:600;text-wrap:balance}
+p{margin:0}
+.meta{color:var(--muted);font-size:14px}
+.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.player .lbl{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.player .lbl strong{color:var(--fg);font-weight:600}
+audio{width:100%;height:40px}
+.speed{display:flex;gap:6px;flex-wrap:wrap}
+.speed button{font:500 12px var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:6px;padding:4px 9px;cursor:pointer}
+.speed button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.relevance{margin-top:14px;padding:12px 14px;background:var(--accent-soft);border-radius:8px;font-size:15px}
+.incident{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--sev);border-radius:8px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.incidents{display:flex;flex-direction:column;gap:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--line);color:var(--fg)}
+.sev{background:var(--sevbg);color:var(--sev)}
+.crit{--sev:var(--crit);--sevbg:var(--crit-bg)}
+.high{--sev:var(--high);--sevbg:var(--high-bg)}
+.med{--sev:var(--med);--sevbg:var(--med-bg)}
+.low{--sev:var(--low);--sevbg:var(--low-bg)}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:15px}
+dt{font-weight:600;color:var(--muted);font-size:13px;padding-top:2px}
+dd{margin:0;min-width:0}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{padding-top:6px}}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.cve{font-family:var(--mono);font-size:13px;white-space:nowrap}
+.actors{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.actor{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;font-size:15px}
+sup a{font-family:var(--mono);font-size:11px;text-decoration:none}
+.sources ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.sources a{word-break:break-all}
+.tag{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-left:4px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+.ctx{font-size:14px;color:var(--muted);border-left:2px solid var(--line);padding-left:10px}
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;font-size:15px}
+.gloss dt{color:var(--fg);font-size:14px}
+@media (max-width:520px){.gloss{grid-template-columns:1fr}}
+
+.archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.archive li{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.archive li:last-child{border-bottom:0}
+.archive .today{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.backlink{font-size:14px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;font-size:14px}
+.toolbar a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--surface)}
+.search form{display:flex;gap:8px;flex-wrap:wrap}
+.search input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg)}
+.btn{font:500 14px var(--body);border:1px solid var(--accent);background:var(--accent);color:var(--surface);border-radius:8px;padding:9px 14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn[disabled]{opacity:.5;cursor:default}
+.results{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.results h3{font-size:13px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 6px}
+.hits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hits li{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.hits .when{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hits mark{background:var(--accent-soft);color:var(--fg);border-radius:3px;padding:0 2px}
+.weblinks{display:flex;gap:8px;flex-wrap:wrap}
+.weblinks a{font-size:14px;border:1px solid var(--line);border-radius:6px;padding:5px 10px;text-decoration:none;background:var(--surface)}
+.ai{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:15px;white-space:pre-wrap;min-width:0}
+.ai-note{font-size:12px;color:var(--muted)}
+.idx{display:flex;flex-direction:column;gap:10px}
+.idx .row{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--sev,var(--line));border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:14px;min-width:0}
+.idx .row h3{font-size:16px}
+.idx .dates{display:flex;gap:6px;flex-wrap:wrap}
+.idx .dates a{font:500 12px var(--mono);border:1px solid var(--line);border-radius:6px;padding:2px 8px;text-decoration:none}
+.terms{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.terms a{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;text-decoration:none;background:var(--surface)}
+details.term{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:15px}
+details.term+details.term{margin-top:8px}
+details.term summary{cursor:pointer;font-weight:600}
+details.term p{margin-top:6px}
+details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="backlink"><a href="/">← Latest brief, search, incident index and archive</a></p>
+<header>
+  <span class="eyebrow">Daily threat intelligence · Global banking</span>
+  <h1>Cyber Brief, 17 November 2026</h1>
+  <p class="meta">Compiled 17 Nov 2026 (UTC); window covers roughly 16–17 Nov. Built from live web search.</p>
+</header>
+<div class="player" role="region" aria-label="Audio briefing">
+  <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
+  <audio id="audio" controls preload="metadata" src="../audio/2026-11-17.mp3"></audio>
+  <div class="speed" role="group" aria-label="Playback speed">
+    <button type="button" id="sp1" data-r="1" aria-pressed="true">1×</button>
+    <button type="button" id="sp125" data-r="1.25" aria-pressed="false">1.25×</button>
+    <button type="button" id="sp15" data-r="1.5" aria-pressed="false">1.5×</button>
+  </div>
+</div>
+
+<section>
+  <h2><span class="n">1</span>Top line</h2>
+  <ul>
+    <li><strong>Supply-chain attack on Optimizely.</strong> Attackers abused this website-testing service to plant code on about 178 organisations' sites, including HSBC and Equifax, skimming payment cards and swapping crypto addresses.<sup><a href="https://www.securityweek.com/optimizely-vulnerability-exploited-to-serve-malware-on-major-websites/" target="_blank" rel="noopener">[1]</a></sup></li>
+    <li><strong>Visa confirms an incident at a supplier.</strong> Extortion group n0n claims data from Visa, Mastercard and JPMorgan Chase. Visa confirmed an incident at an unnamed Asia-Pacific provider and says payment data was not affected.<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[2]</a><a href="https://oodaloop.com/briefs/cyber/visa-confirms-third-party-cyberattack-as-ransomware-gang-n0n-targets-financial-giants/" target="_blank" rel="noopener">[3]</a></sup></li>
+    <li><strong>Check Point firewall flaw exploited.</strong> CVE-2026-123039 gives attackers root control of gateways. CISA's federal deadline passed on 16 Nov.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/13/cisa-adds-two-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[5]</a><a href="https://cipherssecurity.com/check-point-cve-2026-123039-gaia" target="_blank" rel="noopener">[6]</a></sup></li>
+    <li><strong>Extradition.</strong> US DOJ extradited an alleged member of the "8-Digits Team", an extortion crew linked to INC and Lynx ransomware.<sup><a href="https://justice.gov/opa/pr/alleged-member-8-digits-team-ransomware-group-extradited-italy-role-major-data-extortion" target="_blank" rel="noopener">[8]</a></sup></li>
+  </ul>
+  <p class="relevance"><strong>Bank relevance:</strong> today's main risk comes through third parties: website scripts, payment-network suppliers and edge devices such as firewalls.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>New breaches and incidents</h2>
+  <div class="incidents">
+    <article class="incident crit" data-incident="optimizely" data-name="Optimizely website supply-chain attack" id="inc-optimizely">
+      <div class="chips"><span class="chip sev">Critical</span><span class="chip">Confidence: High</span><span class="chip">Supply chain</span></div>
+      <h3>Optimizely Web Experimentation</h3>
+      <dl>
+        <dt>What happened</dt><dd>Malicious code injected from 16 Nov, 04:21 UTC. Optimizely says an attacker exploited a flaw in its Experimentation signup flow; it has fixed the flaw and removed the code.<sup><a href="https://www.securityweek.com/optimizely-vulnerability-exploited-to-serve-malware-on-major-websites/" target="_blank" rel="noopener">[1]</a></sup></dd>
+        <dt>Scope</dt><dd>Report URI found 188 infected scripts across 178 organisations, including HSBC, Equifax, Salesforce and CNN.</dd>
+        <dt>Payloads</dt><dd>Card skimmer, crypto address swapper, and redirects to iPhone/iPad exploit kits. Hudson Rock found no evidence devices were actually compromised. About $7,000 in crypto reached the attacker.</dd>
+        <dt>Actor</dt><dd>Unknown.</dd>
+        <dt>Who they are</dt><dd>Optimizely sells A/B testing and personalisation tools; its code runs directly on customers' web pages.</dd>
+        <dt>Why it matters</dt><dd>Any bank page loading Optimizely, Kissmetrics, StorifyMe or Minute-ly scripts could have exposed customer card details. Blocking the attacker's domain may not be enough: some poisoned scripts carried the full payload.</dd>
+      </dl>
+    </article>
+
+    <article class="incident high" data-incident="n0n-visa-jpmorgan" data-name="n0n extortion claims: Visa, Mastercard, JPMorgan Chase" id="inc-n0n-visa-jpmorgan">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Extortion claim</span></div>
+      <h3>Visa, Mastercard and JPMorgan Chase: n0n claim</h3>
+      <dl>
+        <dt>Visa confirmed</dt><dd>An incident that began at an unnamed third-party provider in Asia-Pacific. Visa says its systems and card data were not affected.<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[2]</a></sup></dd>
+        <dt>n0n claims</dt><dd>Data stolen from all three firms; a 48-hour deadline to negotiate before publishing.<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[2]</a></sup></dd>
+        <dt>JPMorgan said</dt><dd>A concurrent outage was caused by a software bug, with no evidence of a cyberattack.<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[2]</a></sup></dd>
+        <dt>Analysts say</dt><dd>Listings appear to involve marketing or partner data, not core payment data (Unverified).<sup><a href="https://oodaloop.com/briefs/cyber/visa-confirms-third-party-cyberattack-as-ransomware-gang-n0n-targets-financial-giants/" target="_blank" rel="noopener">[3]</a></sup> Mastercard has made no statement found.</dd>
+        <dt>Who they are</dt><dd>Visa and Mastercard run global card payment networks. JPMorgan Chase is the largest US bank.</dd>
+        <dt>Why it matters</dt><dd>Possibly a supplier shared across the card ecosystem. Check whether your APAC payment and marketing vendors overlap with Visa's.</dd>
+      </dl>
+    </article>
+
+    <article class="incident low" data-incident="coles" data-name="Coles Group cyber incident" id="inc-coles">
+      <div class="chips"><span class="chip sev">Low</span><span class="chip">Confidence: High</span><span class="chip">Retail</span></div>
+      <h3>Coles Group (Australia)</h3>
+      <dl>
+        <dt>What happened</dt><dd>Disclosed a cyber incident to the ASX on 16 Nov; working with the Australian Cyber Security Centre. No evidence so far that customer, staff or supplier data was taken; operations unaffected.<sup><a href="https://www.itnews.com.au/news/coles-group-investigating-a-cyber-incident-630361" target="_blank" rel="noopener">[4]</a></sup></dd>
+        <dt>Actor</dt><dd>Unknown.</dd>
+        <dt>Who they are</dt><dd>One of Australia's two largest supermarket chains.</dd>
+        <dt>Why it matters</dt><dd>Low direct exposure. Expect phishing that impersonates Coles.</dd>
+      </dl>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Updates to open cases</h2>
+  <p><strong>Barracuda cloud breach.</strong> An attacker used a cloud access key Barracuda had given an AI vendor and never revoked, moving across about 10 cloud accounts over 44 hours (1–2 Nov). The activity matches ARTEX, an open-source AI-driven penetration-testing tool; Barracuda says that does not identify who ran it. Contacted customers must revoke and reissue XDR integration credentials.<sup><a href="https://blog.barracuda.com/2026/11/11/anatomy-of-a-machine-speed-intrusion" target="_blank" rel="noopener">[7]</a></sup> <em>Lesson: audit and revoke old keys held by suppliers.</em></p>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Emerging threats and vulnerabilities</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>CVE</th><th>Product</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td class="cve" id="inc-cve-2026-123039">CVE-2026-123039</td><td>Check Point Gaia OS, the operating system on Check Point firewalls and management servers</td><td>Exploited, chained with PHP2Shell (CVE-2026-109618/109619), which needs no login. About two dozen systems compromised (30 Oct–4 Nov) with web shells, a backdoor and a wiper. Fixed in Jumbo Hotfix takes for R81.20–R82.20. R81 and R81.10 are end-of-life with no fix: apply the workaround and upgrade. CISA federal deadline: 16 Nov.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/13/cisa-adds-two-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[5]</a><a href="https://cipherssecurity.com/check-point-cve-2026-123039-gaia" target="_blank" rel="noopener">[6]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-114713">CVE-2026-114713</td><td>UnrealIRCd, open-source chat server software</td><td>Exploited; added to CISA's Known Exploited Vulnerabilities (KEV) list on 13 Nov. Low bank relevance.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/13/cisa-adds-two-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[5]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-124194">CVE-2026-124194<br>CVE-2026-125350</td><td>Microsoft Outlook; Google Chromium (web browser engine)</td><td>Added to KEV on 10 Nov alongside Cisco BroadWorks and two Barracuda flaws. Make sure they are patched.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/10/cisa-adds-six-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[9]</a></sup></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="meta" style="margin-top:10px">No KEV additions dated 16 or 17 Nov were found.</p>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Threat actor profiles</h2>
+  <div class="actors">
+    <div class="actor">
+      <h3>n0n</h3>
+      <dl>
+        <dt>Type</dt><dd>Financially motivated extortion group</dd>
+        <dt>Origin</dt><dd>Unknown. A staging server in Sweden does not establish where it is based.</dd>
+        <dt>Motive</dt><dd>Financial gain. SOCRadar (medium confidence): multi-operator, no state backing.</dd>
+        <dt>Activity</dt><dd>First seen mid-Sept 2026. Claims 100+ victims, 23% in financial services (another report says 59).</dd>
+        <dt>Methods</dt><dd>Credential stuffing on FortiGate SSL VPNs (T1110.004), weak RDP/WinRM passwords (T1021), long-lived AWS keys (T1078.004).<sup><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">[2]</a></sup></dd>
+      </dl>
+    </div>
+    <div class="actor">
+      <h3>8-Digits Team</h3>
+      <dl>
+        <dt>Type</dt><dd>Extortion crew affiliated with INC and Lynx ransomware</dd>
+        <dt>Arrest</dt><dd>Roman Khlynovskiy, Kazakh national, extradited from Italy; appeared in court in Tennessee on 16 Nov.</dd>
+        <dt>Targets</dt><dd>US hospitals and schools. Claimed 70M+ health records; ransom demands over $500M.<sup><a href="https://justice.gov/opa/pr/alleged-member-8-digits-team-ransomware-group-extradited-italy-role-major-data-extortion" target="_blank" rel="noopener">[8]</a></sup></dd>
+        <dt>Origin</dt><dd>Wider group's origin not established.</dd>
+      </dl>
+    </div>
+  </div>
+  <p class="meta" style="margin-top:10px">The Optimizely attacker and the Check Point exploiters are unattributed.</p>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Regulatory and geopolitical signals</h2>
+  <p>Nothing significant found from the SEC, FCA, ECB (including DORA), NYDFS or MAS in the past 24 hours.</p>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Watchlist: next 24–72 hours</h2>
+  <ul>
+    <li><strong>n0n deadline</strong>, roughly 18–19 Nov (exact start unknown). Watch for leaks, Mastercard and JPMorgan statements, and the name of Visa's supplier.</li>
+    <li><strong>Optimizely:</strong> disclosures by affected customers, especially financial firms. Check your own sites for Optimizely, Kissmetrics, StorifyMe or Minute-ly scripts.</li>
+    <li><strong>Check Point:</strong> confirm R81 and R81.10 devices are isolated and upgraded; hunt for signs of compromise.</li>
+    <li><strong>Coles:</strong> updates, and any group claiming the attack.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Confidence and gaps</h2>
+  <ul>
+    <li>n0n's theft from Mastercard and JPMorgan is unverified; Mastercard has not commented; victim counts differ.</li>
+    <li>Optimizely: which named organisations had payment pages affected is unconfirmed. Site counts reported as 178, 186 or 188.</li>
+    <li>Left out as unverified: Infoblox, TSMC and Expedia breach reports, and the 16 Nov US bank outages (no agency has linked them to a cyberattack).</li>
+    <li>BleepingComputer and Cybernews blocked retrieval, so their reports are not cited.</li>
+    <li>Check Point details come from a lower-tier outlet summarising advisory sk1000362; check against the advisory.</li>
+  </ul>
+</section>
+
+<section class="sources">
+  <h2>Sources</h2>
+  <ol>
+    <li>SecurityWeek, "Optimizely Vulnerability Exploited to Serve Malware on Major Websites", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/optimizely-vulnerability-exploited-to-serve-malware-on-major-websites/" target="_blank" rel="noopener">securityweek.com/optimizely-vulnerability-exploited-to-serve-malware-on-major-websites/</a></li>
+    <li>SecureBlink, "n0n Ransomware Gang Claims Visa &amp; JPMorgan Chase Data Breach", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/" target="_blank" rel="noopener">secureblink.com/threat-feeds/n0n-ransomware-gang-claims-visa-and-jp-morgan-chase-data-breach/</a></li>
+    <li>OODAloop, "Visa Confirms Third-Party Cyberattack as Ransomware Gang 'n0n' Targets Financial Giants", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://oodaloop.com/briefs/cyber/visa-confirms-third-party-cyberattack-as-ransomware-gang-n0n-targets-financial-giants/" target="_blank" rel="noopener">oodaloop.com/briefs/cyber/visa-confirms-third-party-cyberattack-as-ransomware-gang-n0n-targets-financial-giants/</a></li>
+    <li>iTnews, "Coles Group investigating a cyber incident", 16 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.itnews.com.au/news/coles-group-investigating-a-cyber-incident-630361" target="_blank" rel="noopener">itnews.com.au/news/coles-group-investigating-a-cyber-incident-630361</a></li>
+    <li>CISA, "CISA Adds Two Known Exploited Vulnerabilities to Catalog", 13 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.cisa.gov/news-events/alerts/2026/11/13/cisa-adds-two-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">cisa.gov/news-events/alerts/2026/11/13/cisa-adds-two-known-exploited-vulnerabilities-catalog</a></li>
+    <li>CiphersSecurity, "Check Point CVE-2026-123039: Exploited Gaia Root Flaw", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://cipherssecurity.com/check-point-cve-2026-123039-gaia" target="_blank" rel="noopener">cipherssecurity.com/check-point-cve-2026-123039-gaia</a></li>
+    <li>Barracuda, "Forty-four hours: Anatomy of a machine-speed intrusion", 11 Nov 2026 <span class="tag">Primary</span><br><a href="https://blog.barracuda.com/2026/11/11/anatomy-of-a-machine-speed-intrusion" target="_blank" rel="noopener">blog.barracuda.com/2026/11/11/anatomy-of-a-machine-speed-intrusion</a></li>
+    <li>US DOJ, "Alleged Member of 8-Digits Team Ransomware Group Extradited from Italy…", 16 Nov 2026 <span class="tag">Primary</span><br><a href="https://justice.gov/opa/pr/alleged-member-8-digits-team-ransomware-group-extradited-italy-role-major-data-extortion" target="_blank" rel="noopener">justice.gov/opa/pr/alleged-member-8-digits-team-ransomware-group-extradited-italy-role-major-data-extortion</a></li>
+    <li>CISA, "CISA Adds Six Known Exploited Vulnerabilities to Catalog", 10 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.cisa.gov/news-events/alerts/2026/11/10/cisa-adds-six-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">cisa.gov/news-events/alerts/2026/11/10/cisa-adds-six-known-exploited-vulnerabilities-catalog</a></li>
+  </ol>
+</section>
+
+<footer>Automated open-source intelligence; verify before acting. Audio is a machine-read summary of the page.</footer>
+</div>
+<script>
+(function(){
+  var a=document.getElementById('audio'); if(!a) return;
+  var btns=document.querySelectorAll('.speed button');
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    a.playbackRate=parseFloat(b.dataset.r);
+    btns.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});});});
+  a.addEventListener('loadedmetadata',function(){
+    if(isFinite(a.duration)){var m=Math.floor(a.duration/60),s=Math.round(a.duration%60);
+    document.getElementById('dur').textContent=m+' min '+s+' s · spoken summary';}});
+  if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, 17 Nov 2026',artist:'Daily threat intelligence'});}catch(e){}}
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+</body>
+</html>
