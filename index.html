@@ -141,6 +141,9 @@ header details.more summary::-webkit-details-marker{display:none}
 header details.more summary::after{content:" ▾"}
 header details.more[open] summary::after{content:" ▴"}
 header details.more p{flex-basis:100%;margin-top:4px}
+.viewing{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--warm-soft);color:var(--warm-ink)}
+.viewing a{color:var(--warm-ink);font-weight:600}
+.viewing .btn{padding:4px 10px;font-size:13px;border-color:var(--warm-ink);color:var(--warm-ink)}
 
 .archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
 .archive li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
@@ -234,12 +237,12 @@ ul{gap:7px;padding-left:20px}
 <body>
 
 <div class="wrap">
-<header>
+<div id="brief-head" class="brief-swap"><header>
   <span class="eyebrow">Daily threat intelligence · Global banking</span>
   <h1>Cyber Brief</h1>
   <p class="dateline">Wednesday 18 November 2026</p>
   <div class="meta headmeta">Compiled ~09:00 UTC; covers roughly 17–18 Nov. <details class="more"><summary>More</summary><p>Built from live web search. Technical terms are explained in the glossary at the end. <strong>Updated ~11:30 UTC</strong> to add Java4Shell, which was missed in the first version.</p></details></div>
-</header>
+</header></div>
 
 <div class="player" role="region" aria-label="Audio briefing">
   <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
@@ -270,7 +273,7 @@ ul{gap:7px;padding-left:20px}
   </div>
 </section>
 
-
+<div id="brief-body" class="brief-swap">
 <section>
   <h2><span class="n">1</span>Top line</h2>
   <ul>
@@ -466,7 +469,7 @@ ul{gap:7px;padding-left:20px}
     <li>The Hacker News, "Java4Shell Flaw (CVE-2026-114938) Enables Pre-Auth RCE in Jira, Jenkins, Keycloak and More", 18 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html" target="_blank" rel="noopener">thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html</a></li>
   </ol>
 </section>
-
+</div>
 
 <section id="incidents">
   <h2>Incident index</h2>
@@ -588,6 +591,63 @@ ul{gap:7px;padding-left:20px}
     }).finally(function(){aiBtn.disabled=false;stopBtn.hidden=true;});
   });
   stopBtn.addEventListener('click',function(){ctl&&ctl.abort();});
+})();
+</script>
+<script>
+/* Keeps the audio playing while moving around: archive days open inside this page,
+   other websites open in a new tab, and the listening position survives a refresh. */
+(function(){
+  var LATEST='2026-11-18';
+  var a=document.getElementById('audio'), dur=document.getElementById('dur');
+  var head=document.getElementById('brief-head'), body=document.getElementById('brief-body');
+  if(!a||!head||!body) return;
+  var orig={head:head.innerHTML, body:body.innerHTML}, shown=LATEST, cache={};
+  var KEY='cyberbrief-audio';
+  function nice(d){var x=new Date(d+'T00:00:00Z');return x.toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});}
+  function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+  function dateOf(src){var m=(src||'').match(/(\d{4}-\d{2}-\d{2})\.mp3/);return m?m[1]:LATEST;}
+  var pending='', resumeAt=0;
+  function label(extra){if(extra!==undefined)pending=extra;var d=dateOf(a.getAttribute('src'));var len=isFinite(a.duration)?fmt(a.duration):'';dur.textContent='Brief of '+nice(d)+(pending?' · '+pending:(len?' · '+len:''));
+    if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, '+nice(d),artist:'Daily threat intelligence'});}catch(e){}}}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify({src:a.getAttribute('src'),t:a.currentTime,at:Date.now()}));}catch(e){}}
+  function setSrc(src,t){ if(a.getAttribute('src')!==src){a.setAttribute('src',src);a.load();}
+    if(t){var go=function(){try{a.currentTime=t;}catch(e){} a.removeEventListener('loadedmetadata',go);}; if(a.readyState>=1) go(); else a.addEventListener('loadedmetadata',go);} label(); }
+  // Restore the last position after a refresh (browsers need one tap to start sound again).
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(s&&s.src&&s.t>3&&Date.now()-s.at<7*864e5){resumeAt=s.t;setSrc(s.src,s.t);label('resume at '+fmt(s.t));}else{label();}}catch(e){label();}
+  var last=0;a.addEventListener('timeupdate',function(){var n=Date.now();if(n-last>2000){last=n;save();}});
+  a.addEventListener('pause',save);a.addEventListener('play',function(){if(resumeAt&&a.currentTime<resumeAt-2){try{a.currentTime=resumeAt;}catch(e){}}resumeAt=0;label('');});a.addEventListener('loadedmetadata',function(){label();});
+  a.addEventListener('ended',function(){try{localStorage.removeItem(KEY);}catch(e){}});
+  window.addEventListener('pagehide',save);
+
+  // Open archive days inside this page so the player keeps going.
+  function route(){
+    var m=location.hash.match(/^#d-(\d{4}-\d{2}-\d{2})(?:-(.+))?$/);
+    if(!m){ if(shown!==LATEST&&(location.hash===''||location.hash==='#latest')) show(LATEST); return; }
+    show(m[1],m[2]);
+  }
+  function scrollTo(id){var el=id&&document.getElementById(id);(el||head).scrollIntoView({block:'start'});}
+  function bar(d){return '<p class="viewing"><span>Viewing the brief of '+nice(d)+'</span> <a href="#latest">Back to latest</a> '+
+    (dateOf(a.getAttribute('src'))===d?'':'<button type="button" class="btn ghost playday" data-d="'+d+'">Play this day’s audio</button>')+'</p>';}
+  function show(d,anchor){
+    if(d===LATEST){head.innerHTML=orig.head;body.innerHTML=orig.body;shown=LATEST;scrollTo(anchor);return;}
+    var done=function(html){var doc=new DOMParser().parseFromString(html,'text/html');var w=doc.querySelector('.wrap');if(!w)return;
+      var h=w.querySelector('header');var parts=[].slice.call(w.children).filter(function(el){return el.tagName==='SECTION';});
+      head.innerHTML=bar(d)+(h?h.outerHTML:'');body.innerHTML=parts.map(function(el){return el.outerHTML;}).join('\n');shown=d;scrollTo(anchor);};
+    if(cache[d]) return done(cache[d]);
+    fetch('briefs/'+d+'.html').then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(x){cache[d]=x;done(x);})
+      .catch(function(){location.href='briefs/'+d+'.html';});
+  }
+  window.addEventListener('hashchange',route);
+  document.addEventListener('click',function(e){
+    var el=e.target.closest&&e.target.closest('a,button.playday'); if(!el) return;
+    if(el.classList&&el.classList.contains('playday')){var d=el.getAttribute('data-d');label('');setSrc('audio/'+d+'.mp3');a.play().catch(function(){});el.remove();return;}
+    var href=el.getAttribute('href')||'';
+    var m=href.match(/^(?:\.\.\/|\/)?briefs\/(\d{4}-\d{2}-\d{2})\.html(?:#(.*))?$/);
+    if(m){e.preventDefault();var h='#d-'+m[1]+(m[2]?'-'+m[2]:'');if(location.hash===h)route();else location.hash=h;return;}
+    if(/^https?:/i.test(href)&&el.host!==location.host){el.target='_blank';el.rel='noopener';}
+  },true);
+  if(/^#d-/.test(location.hash)) route();
 })();
 </script>
 
