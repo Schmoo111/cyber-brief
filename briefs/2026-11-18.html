@@ -186,7 +186,7 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 <header>
   <span class="eyebrow">Daily threat intelligence · Global banking</span>
   <h1>Cyber Brief, 18 November 2026</h1>
-  <p class="meta">Compiled 18 Nov 2026, ~09:00 UTC; covers roughly 17–18 Nov. Built from live web search. Technical terms are explained in the glossary at the end.</p>
+  <p class="meta">Compiled 18 Nov 2026, ~09:00 UTC; covers roughly 17–18 Nov. Built from live web search. Technical terms are explained in the glossary at the end. <strong>Updated ~11:30 UTC</strong> to add Java4Shell, which was missed in the first version.</p>
 </header>
 <div class="player" role="region" aria-label="Audio briefing">
   <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
@@ -201,6 +201,7 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 <section>
   <h2><span class="n">1</span>Top line</h2>
   <ul>
+    <li><strong>Java4Shell: a serious new flaw in Java, which most banks run.</strong> Java is the programming platform behind a huge share of business software, including many banking systems. A flaw disclosed on 17 Nov could let an attacker take over some Java-based services without logging in. There are no known attacks yet, and fixes are rolling out.<sup><a href="https://calif.io/java4shell/" target="_blank" rel="noopener">[12]</a><a href="https://www.tenable.com/blog/java4shell-cve-2026-114938-frequently-asked-questions-about-openjdk-rce-vulnerability" target="_blank" rel="noopener">[13]</a></sup></li>
     <li><strong>A website-tool hack hit banks hardest.</strong> Optimizely sells software that companies add to their websites to test different page designs. On 16 Nov attackers used a flaw in it to slip card-stealing code onto the websites of 178 of its customers. Researchers now say 32 of those are banks and finance firms, including HSBC and Equifax.<sup><a href="https://blog.report-uri.com/worlds-largest-brands-infected-with-malware-via-optimizely/" target="_blank" rel="noopener">[1]</a><a href="https://therecord.media/optimizely-malicious-code-customer-sites" target="_blank" rel="noopener">[2]</a></sup></li>
     <li><strong>Attackers are exploiting a flaw in Puppet Enterprise.</strong> This is software many companies use to manage the settings of thousands of servers from one central control server. US cyber agency CISA confirmed active attacks on 17 Nov.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/17/cisa-adds-one-known-exploited-vulnerability-catalog" target="_blank" rel="noopener">[3]</a><a href="https://shattered.io/puppet-enterprise-cve-2026-115731-cisa-kev-cvss-9-4-dec-1-deadline/" target="_blank" rel="noopener">[4]</a></sup></li>
     <li><strong>China is building AI hacking tools.</strong> Google says Chinese state-backed hacking groups are developing their own versions of ARTEX, a free AI tool that can carry out much of a cyberattack automatically.<sup><a href="https://therecord.media/chinese-state-group-developing-automated-attack-tool-espionage" target="_blank" rel="noopener">[5]</a></sup></li>
@@ -212,6 +213,19 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 <section>
   <h2><span class="n">2</span>New incidents (past 24 hours)</h2>
   <div class="incidents">
+    <article class="incident crit" data-incident="java4shell" data-name="Java4Shell: Java flaw (CVE-2026-114938)" id="inc-java4shell">
+      <div class="chips"><span class="chip sev">Critical</span><span class="chip">Confidence: High</span><span class="chip">New vulnerability</span></div>
+      <h3>Java4Shell: a flaw in Java that could allow takeover without a login</h3>
+      <p class="ctx"><b>Background:</b> Java is a programming platform that runs a large share of business software worldwide, from banking back-office systems to everyday workplace tools. OpenJDK is the free, open-source version of Java that most companies' Java comes from, including Oracle's. The name echoes "Log4Shell", a Java-related flaw from 2021 that caused worldwide emergency patching, but the two are different flaws.</p>
+      <dl>
+        <dt>What happened</dt><dd>Researchers at Calif, a security firm, disclosed a flaw in the part of Java that decodes Base64, a very common way of packaging data in web traffic and login tokens. A specially malformed piece of text can make Java write data where it shouldn't. Calif says that can be turned into a full takeover, without needing a password.<sup><a href="https://calif.io/java4shell/" target="_blank" rel="noopener">[12]</a></sup></dd>
+        <dt>Who is exposed</dt><dd>Java 17 and newer, but only on servers with certain recent Intel and AMD processors (those supporting a feature called AVX-512). Servers on ARM chips, and the older Java 8 and 11, are generally not affected.<sup><a href="https://calif.io/java4shell/" target="_blank" rel="noopener">[12]</a><a href="https://www.tenable.com/blog/java4shell-cve-2026-114938-frequently-asked-questions-about-openjdk-rce-vulnerability" target="_blank" rel="noopener">[13]</a></sup></dd>
+        <dt>Products shown at risk</dt><dd>Calif says it took over default installations of Jira and Confluence (Atlassian's widely used project-tracking and team-wiki tools), Jenkins (a tool that builds and releases software), Keycloak and PingFederate (login and single-sign-on systems), and JFrog Artifactory (a store for software components). Others, such as Kafka and Elasticsearch, needed a login first. Calif says the list is not complete.<sup><a href="https://calif.io/java4shell/" target="_blank" rel="noopener">[12]</a><a href="https://thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html" target="_blank" rel="noopener">[14]</a></sup></dd>
+        <dt>Status</dt><dd>No attacks reported so far, and it is not on CISA's exploited list. Calif is holding back its full attack code, but other researchers have reproduced crashes and one says he has a working exploit. Oracle released fixes on 17 Nov; Amazon and Azul have fixed their versions of Java, while Red Hat and some others had not yet.<sup><a href="https://www.tenable.com/blog/java4shell-cve-2026-114938-frequently-asked-questions-about-openjdk-rce-vulnerability" target="_blank" rel="noopener">[13]</a><a href="https://thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html" target="_blank" rel="noopener">[14]</a></sup></dd>
+        <dt>Action</dt><dd>Upgrade Java to the 17 November 2026 release or newer from your Java supplier. Products that ship their own copy of Java (Jira, Jenkins and similar) need their own vendor updates. Until then, a startup setting can switch off the vulnerable feature.<sup><a href="https://calif.io/java4shell/" target="_blank" rel="noopener">[12]</a><a href="https://thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html" target="_blank" rel="noopener">[14]</a></sup></dd>
+        <dt>Why it matters</dt><dd>Banks run a great deal of Java, including the login and developer tools named above. Even without known attacks yet, flaws like this are usually exploited quickly once details spread, so this should be near the top of patching lists.</dd>
+      </dl>
+    </article>
     <article class="incident med" data-incident="kokoro" data-name="Kokoro AI model account takeover" id="inc-kokoro">
       <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: Medium</span><span class="chip">AI supply chain</span></div>
       <h3>Kokoro AI voice model: publisher's account taken over</h3>
@@ -273,11 +287,12 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 </section>
 
 <section>
-  <h2><span class="n">4</span>Vulnerabilities being exploited</h2>
+  <h2><span class="n">4</span>Vulnerabilities to act on</h2>
   <div class="tablewrap">
   <table>
     <thead><tr><th>Flaw</th><th>What the product is</th><th>What to know</th></tr></thead>
     <tbody>
+      <tr><td class="cve" id="inc-cve-2026-114938">CVE-2026-114938</td><td><b>Java (OpenJDK and Oracle Java)</b>, the platform behind much business software. Nicknamed Java4Shell.</td><td>Newly disclosed 17 Nov; no attacks known yet. Affects Java 17 and newer on servers with recent Intel and AMD processors. <b>Upgrade Java to the 17 Nov 2026 release or newer</b>, and update products that bundle their own Java.<sup><a href="https://www.tenable.com/blog/java4shell-cve-2026-114938-frequently-asked-questions-about-openjdk-rce-vulnerability" target="_blank" rel="noopener">[13]</a><a href="https://thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html" target="_blank" rel="noopener">[14]</a></sup></td></tr>
       <tr><td class="cve" id="inc-cve-2026-115731">CVE-2026-115731</td><td><b>Puppet Enterprise</b>, made by US software firm Perforce. Companies use it to set up and update thousands of servers automatically. A central "Puppet server" sends instructions to small helper programs ("agents") on every other server.</td><td>An attacker who gets one agent's digital ID card (certificate) can take over the central Puppet server, and from there potentially every server it manages. Attacks confirmed by CISA on 17 Nov. <b>Upgrade to Puppet Enterprise 2026.0.1 or newer</b> (fixes exist for older supported lines too). US federal deadline: 1 Dec.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/17/cisa-adds-one-known-exploited-vulnerability-catalog" target="_blank" rel="noopener">[3]</a><a href="https://shattered.io/puppet-enterprise-cve-2026-115731-cisa-kev-cvss-9-4-dec-1-deadline/" target="_blank" rel="noopener">[4]</a></sup></td></tr>
       <tr><td class="cve" id="inc-cve-2026-123039">CVE-2026-123039</td><td><b>Check Point</b> firewalls. Check Point is a major Israeli maker of firewalls, the devices that guard the edge of a company network.</td><td>Carried over from yesterday: attackers are using it to take full control of firewalls. <b>Upgrade to a supported, patched version.</b></td></tr>
     </tbody>
@@ -323,6 +338,7 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 <section>
   <h2><span class="n">7</span>Watchlist: next 1–3 days</h2>
   <ul>
+    <li><strong>Java4Shell:</strong> first reports of real attacks, CISA adding it to its exploited list, and fixes from Red Hat, Atlassian, Jenkins and other vendors.</li>
     <li><strong>n0n:</strong> whether any data is published, and whether Mastercard or Walmart comment.</li>
     <li><strong>Optimizely:</strong> banks or finance firms announcing that customer cards were exposed.</li>
     <li><strong>Puppet Enterprise:</strong> confirm it is upgraded.</li>
@@ -333,6 +349,7 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 <section>
   <h2><span class="n">8</span>Confidence and gaps</h2>
   <ul>
+    <li>Java4Shell: patch status differs by Java supplier and is changing quickly; check your own suppliers' advisories.</li>
     <li>It is not known how many card details were actually stolen in the Optimizely attack.</li>
     <li>n0n's claims remain unproven; no company has confirmed data theft.</li>
     <li>The Chinese groups building AI hacking tools are not named.</li>
@@ -343,6 +360,9 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 <section>
   <h2>Glossary</h2>
   <dl class="gloss">
+    <dt>Java / OpenJDK</dt><dd>Java is a programming platform used to build and run a large share of business software. OpenJDK is its free, open-source core, which Oracle, Amazon, Red Hat and others package as their own versions.</dd>
+    <dt>Remote code execution</dt><dd>When an attacker can make someone else's computer run commands of their choosing over a network. Usually the most serious kind of flaw.</dd>
+    <dt>Base64</dt><dd>A common way of turning data into plain text so it can travel safely in web pages, emails and login tokens.</dd>
     <dt>CVE</dt><dd>A standard ID number given to each publicly known software flaw, e.g. CVE-2026-115731.</dd>
     <dt>CISA exploited list (KEV)</dt><dd>The US cyber agency's list of flaws it has confirmed attackers are actively using. US federal agencies must fix them by a deadline; it is a good priority list for everyone.</dd>
     <dt>Supply-chain attack</dt><dd>Attacking a supplier's product so that the damage spreads to all of that supplier's customers.</dd>
@@ -368,6 +388,9 @@ details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
     <li>TechRadar, "TSMC confirms cyberattack and data breach…", 16 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.techradar.com/pro/security/tsmc-confirms-cyberattack-and-data-breach-chip-giant-says-personal-employee-data-has-been-leaked-online" target="_blank" rel="noopener">techradar.com/pro/security/tsmc-confirms-cyberattack-and-data-breach-chip-giant-says-personal-employee-data-has-been-leaked-online</a></li>
     <li>Eunews, "Artificial intelligence: ECB sees 'new vulnerabilities for banks'", 16 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.eunews.it/en/2026/11/16/ecb-warns-artificial-intelligence-creates-new-vulnerabilities-for-the-banking-system/" target="_blank" rel="noopener">eunews.it/en/2026/11/16/ecb-warns-artificial-intelligence-creates-new-vulnerabilities-for-the-banking-system/</a></li>
     <li>CyberScoop, "Cyberattack or no, parade of tech outages highlight need for resilient systems, CISA acting director says", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://cyberscoop.com/cisa-nick-andersen-cyber-resilience-outages/" target="_blank" rel="noopener">cyberscoop.com/cisa-nick-andersen-cyber-resilience-outages/</a></li>
+    <li>Calif, "Java4Shell: Write once, RCE everywhere", 17 Nov 2026 <span class="tag">Primary</span><br><a href="https://calif.io/java4shell/" target="_blank" rel="noopener">calif.io/java4shell/</a></li>
+    <li>Tenable, "Java4Shell (CVE-2026-114938): Frequently Asked Questions About OpenJDK RCE Vulnerability", 17 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.tenable.com/blog/java4shell-cve-2026-114938-frequently-asked-questions-about-openjdk-rce-vulnerability" target="_blank" rel="noopener">tenable.com/blog/java4shell-cve-2026-114938-frequently-asked-questions-about-openjdk-rce-vulnerability</a></li>
+    <li>The Hacker News, "Java4Shell Flaw (CVE-2026-114938) Enables Pre-Auth RCE in Jira, Jenkins, Keycloak and More", 18 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html" target="_blank" rel="noopener">thehackernews.com/2026/11/java4shell-cve-2026-114938-enables-pre.html</a></li>
   </ol>
 </section>
 
