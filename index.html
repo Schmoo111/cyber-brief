@@ -152,6 +152,7 @@ header details.more p{flex-basis:100%;margin-top:4px}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;font-size:14px}
 .toolbar a{border-radius:999px;padding:6px 14px;text-decoration:none;background:var(--accent-soft);color:var(--accent);font-weight:500}
 .toolbar a:hover{background:var(--warm-soft);color:var(--warm-ink)}
+.toolbar a[aria-expanded="true"]{background:var(--warm-soft);color:var(--warm-ink)}
 .search{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
 .search form{display:flex;gap:8px;flex-wrap:wrap}
 .search input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg)}
@@ -251,7 +252,7 @@ ul{gap:7px;padding-left:20px}
 </div>
 <nav class="toolbar" aria-label="Page sections"><a href="#search">Search</a><a href="#incidents">Incident index</a><a href="#glossary">Glossary</a><a href="#archive">Archive</a></nav>
 
-<section class="search" id="search">
+<section class="search" id="search" hidden>
   <h2>Search</h2>
   <p class="meta" style="margin-bottom:10px">Search every brief, the incident index and the glossary. Web links open live searches in a new tab.</p>
   <form id="sform" role="search">
@@ -517,6 +518,10 @@ ul{gap:7px;padding-left:20px}
 (function(){
   var DATA=JSON.parse(document.getElementById('search-data').textContent);
   var form=document.getElementById('sform'), q=document.getElementById('q'), out=document.getElementById('results');
+  var sec=document.getElementById('search'), tl=document.querySelector('.toolbar a[href="#search"]');
+  function showSearch(open,focus){sec.hidden=!open; if(tl) tl.setAttribute('aria-expanded',String(open)); if(open&&focus){q.focus({preventScroll:true}); sec.scrollIntoView({block:'nearest',behavior:'smooth'});}}
+  if(tl){tl.setAttribute('aria-controls','search'); tl.setAttribute('aria-expanded','false'); tl.addEventListener('click',function(e){e.preventDefault(); showSearch(sec.hidden,true);});}
+  if(location.hash==='#search') showSearch(true,false);
   var aiBtn=document.getElementById('askai'), stopBtn=document.getElementById('stopai'), aiBox=document.getElementById('aibox'), aiOut=document.getElementById('aiout'), aiNote=document.getElementById('ainote');
   function esc(s){return s.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]});}
   function toks(s){return s.toLowerCase().split(/[^a-z0-9\-]+/).filter(function(t){return t.length>1;});}
