@@ -260,11 +260,12 @@ section:has(> h2 .n){padding-top:12px}
   <div class="voices" role="group" aria-label="Voice" hidden></div>
 </div>
 <script>
-/* Voice picker: Emma (British female), Fable (British male), Heart (American female).
+/* Voice picker: Emma (British female), Fable (British male), Heart (American female),
+   Spymaster (gruff, cynical intelligence chief) and The Boss (old-school mob boss) -- original characters.
    The choice is remembered on this device; switching keeps your place in the brief. */
 (function(){
   var p=document.querySelector('.player'), a=document.getElementById('audio'); if(!p||!a) return;
-  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Fable',heart:'Heart'};
+  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Fable',heart:'Heart',spymaster:'Spymaster',boss:'The Boss'};
   function get(){try{return localStorage.getItem(KEYV)||'emma';}catch(e){return 'emma';}}
   function srcFor(d,v){return (p.dataset.base||'')+'audio/'+d+(v==='emma'?'':'-'+v)+'.mp3';}
   function list(){return (p.dataset.voices||'emma').split(',');}
