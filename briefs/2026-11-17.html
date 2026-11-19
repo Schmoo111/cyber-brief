@@ -261,11 +261,12 @@ section:has(> h2 .n){padding-top:12px}
 </div>
 <script>
 /* Voice picker: Emma (British female), Louis (British male), Kim (American female),
-   Rob (gruff, cynical spymaster), Tony (old-school mob boss) and MC Patch (rapper over a generated beat) -- original characters.
+   Rob (gruff, cynical spymaster), Tony (old-school mob boss), MC Patch (rapper over a generated beat)
+   and Jodie (chatty Essex girl) -- original characters.
    The choice is remembered on this device; switching keeps your place in the brief. */
 (function(){
   var p=document.querySelector('.player'), a=document.getElementById('audio'); if(!p||!a) return;
-  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Louis',heart:'Kim',spymaster:'Rob',boss:'Tony',rapper:'MC Patch'};
+  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Louis',heart:'Kim',spymaster:'Rob',boss:'Tony',rapper:'MC Patch',essex:'Jodie'};
   function get(){try{return localStorage.getItem(KEYV)||'emma';}catch(e){return 'emma';}}
   function srcFor(d,v){return (p.dataset.base||'')+'audio/'+d+(v==='emma'?'':'-'+v)+'.mp3';}
   function list(){return (p.dataset.voices||'emma').split(',');}

@@ -243,14 +243,14 @@ section:has(> h2 .n){padding-top:12px}
 <body>
 
 <div class="wrap">
-<div id="brief-head" class="brief-swap"><header data-voices="emma,fable,heart,spymaster,boss,rapper">
+<div id="brief-head" class="brief-swap"><header data-voices="emma,fable,heart,spymaster,boss,rapper,essex">
   <span class="eyebrow">Daily threat intelligence · Global banking</span>
   <h1>Cyber Brief</h1>
   <p class="dateline">Thursday 19 November 2026 · Edition 2</p>
   <div class="meta headmeta">Compiled ~06:20 UTC; covers roughly 18–19 Nov. <details class="more"><summary>More</summary><p>Built from live web search. Technical terms are explained in the glossary at the end.</p></details></div>
 </header></div>
 
-<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-19" data-base="" data-voices="emma,fable,heart,spymaster,boss,rapper" data-voice="emma">
+<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-19" data-base="" data-voices="emma,fable,heart,spymaster,boss,rapper,essex" data-voice="emma">
   <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
   <audio id="audio" controls preload="metadata" src="audio/2026-11-19.mp3"></audio>
   <div class="speed" role="group" aria-label="Playback speed">
@@ -557,11 +557,12 @@ section:has(> h2 .n){padding-top:12px}
 </script>
 <script>
 /* Voice picker: Emma (British female), Louis (British male), Kim (American female),
-   Rob (gruff, cynical spymaster), Tony (old-school mob boss) and MC Patch (rapper over a generated beat) -- original characters.
+   Rob (gruff, cynical spymaster), Tony (old-school mob boss), MC Patch (rapper over a generated beat)
+   and Jodie (chatty Essex girl) -- original characters.
    The choice is remembered on this device; switching keeps your place in the brief. */
 (function(){
   var p=document.querySelector('.player'), a=document.getElementById('audio'); if(!p||!a) return;
-  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Louis',heart:'Kim',spymaster:'Rob',boss:'Tony',rapper:'MC Patch'};
+  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Louis',heart:'Kim',spymaster:'Rob',boss:'Tony',rapper:'MC Patch',essex:'Jodie'};
   function get(){try{return localStorage.getItem(KEYV)||'emma';}catch(e){return 'emma';}}
   function srcFor(d,v){return (p.dataset.base||'')+'audio/'+d+(v==='emma'?'':'-'+v)+'.mp3';}
   function list(){return (p.dataset.voices||'emma').split(',');}
