@@ -155,6 +155,10 @@ header details.more p{flex-basis:100%;margin-top:4px}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;font-size:14px}
 .toolbar a{border-radius:999px;padding:6px 14px;text-decoration:none;background:var(--accent-soft);color:var(--accent);font-weight:500}
 .toolbar a:hover{background:var(--warm-soft);color:var(--warm-ink)}
+.player .voices{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted);grid-column:1/-1}
+.player .voices span{margin-right:4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-size:11px}
+.player .voices button{font:500 12px var(--body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:2px 10px;cursor:pointer}
+.player .voices button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .toolbar a[aria-expanded="true"]{background:var(--warm-soft);color:var(--warm-ink)}
 .search{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
 .search form{display:flex;gap:8px;flex-wrap:wrap}
@@ -239,14 +243,14 @@ section:has(> h2 .n){padding-top:12px}
 <body>
 
 <div class="wrap">
-<div id="brief-head" class="brief-swap"><header>
+<div id="brief-head" class="brief-swap"><header data-voices="emma,fable,heart">
   <span class="eyebrow">Daily threat intelligence · Global banking</span>
   <h1>Cyber Brief</h1>
   <p class="dateline">Thursday 19 November 2026 · Edition 2</p>
   <div class="meta headmeta">Compiled ~06:20 UTC; covers roughly 18–19 Nov. <details class="more"><summary>More</summary><p>Built from live web search. Technical terms are explained in the glossary at the end.</p></details></div>
 </header></div>
 
-<div class="player" role="region" aria-label="Audio briefing">
+<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-19" data-base="" data-voices="emma,fable,heart" data-voice="emma">
   <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
   <audio id="audio" controls preload="metadata" src="audio/2026-11-19.mp3"></audio>
   <div class="speed" role="group" aria-label="Playback speed">
@@ -254,6 +258,7 @@ section:has(> h2 .n){padding-top:12px}
     <button type="button" id="sp125" data-r="1.25" aria-pressed="false">1.25×</button>
     <button type="button" id="sp15" data-r="1.5" aria-pressed="false">1.5×</button>
   </div>
+  <div class="voices" role="group" aria-label="Voice" hidden></div>
 </div>
 <nav class="toolbar" aria-label="Page sections"><a href="#search">Search</a><a href="#incidents">Incident index</a><a href="#glossary">Glossary</a><a href="#archive">Archive</a></nav>
 
@@ -551,6 +556,37 @@ section:has(> h2 .n){padding-top:12px}
 })();
 </script>
 <script>
+/* Voice picker: Emma (British female), Fable (British male), Heart (American female).
+   The choice is remembered on this device; switching keeps your place in the brief. */
+(function(){
+  var p=document.querySelector('.player'), a=document.getElementById('audio'); if(!p||!a) return;
+  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Fable',heart:'Heart'};
+  function get(){try{return localStorage.getItem(KEYV)||'emma';}catch(e){return 'emma';}}
+  function srcFor(d,v){return (p.dataset.base||'')+'audio/'+d+(v==='emma'?'':'-'+v)+'.mp3';}
+  function list(){return (p.dataset.voices||'emma').split(',');}
+  function render(){var box=p.querySelector('.voices');if(!box)return;var vs=list(),cur=p.dataset.voice||'emma';box.hidden=vs.length<2;
+    box.innerHTML='<span>Voice</span>'+vs.map(function(v){return '<button type="button" data-v="'+v+'" aria-pressed="'+(v===cur)+'">'+(NAMES[v]||v)+'</button>';}).join('');}
+  function pick(d,vs){var pref=get();return vs.indexOf(pref)>=0?pref:'emma';}
+  window.cbVoice={
+    forDay:function(d,voices){p.dataset.date=d;p.dataset.voices=voices||'emma';p.dataset.voice=pick(d,list());render();return srcFor(d,p.dataset.voice);},
+    sync:function(src){var m=(src||'').match(/(\d{4}-\d{2}-\d{2})(?:-([a-z]+))?\.mp3/);if(!m)return;var v=m[2]||'emma';
+      p.dataset.date=m[1];if(list().indexOf(v)<0)p.dataset.voices=list().concat(v).join(',');p.dataset.voice=v;render();}
+  };
+  var v0=pick(p.dataset.date,list());
+  if(v0!=='emma'){a.setAttribute('src',srcFor(p.dataset.date,v0));}
+  p.dataset.voice=v0; render();
+  p.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.voices button'); if(!b) return;
+    var v=b.getAttribute('data-v'); if(v===p.dataset.voice) return;
+    var playing=!a.paused, ratio=(isFinite(a.duration)&&a.duration)?a.currentTime/a.duration:0, rate=a.playbackRate;
+    p.dataset.voice=v; try{localStorage.setItem(KEYV,v);}catch(err){} render();
+    a.setAttribute('src',srcFor(p.dataset.date,v)); a.load();
+    a.addEventListener('loadedmetadata',function f(){a.removeEventListener('loadedmetadata',f);
+      if(ratio){try{a.currentTime=ratio*a.duration;}catch(err){}} a.playbackRate=rate; if(playing) a.play().catch(function(){});});
+  });
+})();
+</script>
+<script>
 (function(){
   var DATA=JSON.parse(document.getElementById('search-data').textContent);
   var form=document.getElementById('sform'), q=document.getElementById('q'), out=document.getElementById('results');
@@ -634,11 +670,11 @@ section:has(> h2 .n){padding-top:12px}
   var a=document.getElementById('audio'), dur=document.getElementById('dur');
   var head=document.getElementById('brief-head'), body=document.getElementById('brief-body');
   if(!a||!head||!body) return;
-  var orig={head:head.innerHTML, body:body.innerHTML}, shown=LATEST, cache={};
+  var orig={head:head.innerHTML, body:body.innerHTML}, shown=LATEST, cache={}, voicesFor={};
   var KEY='cyberbrief-audio';
   function nice(d){var x=new Date(d+'T00:00:00Z');return x.toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});}
   function fmt(s){s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
-  function dateOf(src){var m=(src||'').match(/(\d{4}-\d{2}-\d{2})\.mp3/);return m?m[1]:LATEST;}
+  function dateOf(src){var m=(src||'').match(/(\d{4}-\d{2}-\d{2})(?:-[a-z]+)?\.mp3/);return m?m[1]:LATEST;}
   var pending='', resumeAt=0;
   function label(extra){if(extra!==undefined)pending=extra;var d=dateOf(a.getAttribute('src'));var len=isFinite(a.duration)?fmt(a.duration):'';dur.textContent='Brief of '+nice(d)+(pending?' · '+pending:(len?' · '+len:''));
     if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, '+nice(d),artist:'Daily threat intelligence'});}catch(e){}}}
@@ -647,7 +683,7 @@ section:has(> h2 .n){padding-top:12px}
     if(t){var go=function(){try{a.currentTime=t;}catch(e){} a.removeEventListener('loadedmetadata',go);}; if(a.readyState>=1) go(); else a.addEventListener('loadedmetadata',go);} label(); }
   // Restore the last position after a refresh (browsers need one tap to start sound again).
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null');
-    if(s&&s.src&&s.t>3&&Date.now()-s.at<7*864e5){resumeAt=s.t;setSrc(s.src,s.t);label('resume at '+fmt(s.t));}else{label();}}catch(e){label();}
+    if(s&&s.src&&s.t>3&&Date.now()-s.at<7*864e5){resumeAt=s.t;setSrc(s.src,s.t);if(window.cbVoice)cbVoice.sync(s.src);label('resume at '+fmt(s.t));}else{label();}}catch(e){label();}
   var last=0;a.addEventListener('timeupdate',function(){var n=Date.now();if(n-last>2000){last=n;save();}});
   a.addEventListener('pause',save);a.addEventListener('play',function(){if(resumeAt&&a.currentTime<resumeAt-2){try{a.currentTime=resumeAt;}catch(e){}}resumeAt=0;label('');});a.addEventListener('loadedmetadata',function(){label();});
   a.addEventListener('ended',function(){try{localStorage.removeItem(KEY);}catch(e){}});
@@ -665,7 +701,7 @@ section:has(> h2 .n){padding-top:12px}
   function show(d,anchor){
     if(d===LATEST){head.innerHTML=orig.head;body.innerHTML=orig.body;shown=LATEST;scrollTo(anchor);return;}
     var done=function(html){var doc=new DOMParser().parseFromString(html,'text/html');var w=doc.querySelector('.wrap');if(!w)return;
-      var h=w.querySelector('header');var parts=[].slice.call(w.children).filter(function(el){return el.tagName==='SECTION';});
+      var h=w.querySelector('header');var pl=w.querySelector('.player');voicesFor[d]=pl?pl.getAttribute('data-voices'):'emma';var parts=[].slice.call(w.children).filter(function(el){return el.tagName==='SECTION';});
       head.innerHTML=bar(d)+(h?h.outerHTML:'');body.innerHTML=parts.map(function(el){return el.outerHTML;}).join('\n');shown=d;scrollTo(anchor);};
     if(cache[d]) return done(cache[d]);
     fetch('briefs/'+d+'.html').then(function(r){if(!r.ok)throw 0;return r.text();}).then(function(x){cache[d]=x;done(x);})
@@ -674,7 +710,7 @@ section:has(> h2 .n){padding-top:12px}
   window.addEventListener('hashchange',route);
   document.addEventListener('click',function(e){
     var el=e.target.closest&&e.target.closest('a,button.playday'); if(!el) return;
-    if(el.classList&&el.classList.contains('playday')){var d=el.getAttribute('data-d');label('');setSrc('audio/'+d+'.mp3');a.play().catch(function(){});el.remove();return;}
+    if(el.classList&&el.classList.contains('playday')){var d=el.getAttribute('data-d');label('');setSrc(window.cbVoice?cbVoice.forDay(d,voicesFor[d]):'audio/'+d+'.mp3');a.play().catch(function(){});el.remove();return;}
     var href=el.getAttribute('href')||'';
     var m=href.match(/^(?:\.\.\/|\/)?briefs\/(\d{4}-\d{2}-\d{2})\.html(?:#(.*))?$/);
     if(m){e.preventDefault();var h='#d-'+m[1]+(m[2]?'-'+m[2]:'');if(location.hash===h)route();else location.hash=h;return;}
