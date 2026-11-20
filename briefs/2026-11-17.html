@@ -195,8 +195,9 @@ details.term summary::marker{color:var(--warm)}
 details.term p{margin-top:6px}
 details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 
-header .sisterpill{position:absolute;top:14px;right:14px;z-index:1;font:600 12.5px var(--body);padding:5px 12px;border-radius:999px;background:#e8761c;color:#fff;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.35)}
-header .sisterpill:hover{filter:brightness(1.1)}
+header .sisterpill{position:absolute;top:12px;right:12px;z-index:1;display:inline-flex;align-items:center;gap:6px;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px 3px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--on-brand);text-decoration:none;border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+header .sisterpill::before{content:"";width:7px;height:7px;border-radius:50%;background:#e8761c;box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
+header .sisterpill:hover{background:rgba(255,255,255,.24)}
 .toolbar a.sister{background:#e8761c;color:#fff;margin-left:auto}
 .toolbar a.sister:hover{background:#e8761c;color:#fff;filter:brightness(1.1)}
 footer a.sister,.backlink a.sister{font-weight:600}
