@@ -208,6 +208,9 @@ h2 .n{width:24px;height:24px;font-size:12px}
 .player .lbl strong{font-size:14px}
 .player audio{grid-column:1/-1;grid-row:2;height:34px}
 .player .speed{grid-column:2;grid-row:1;gap:4px}
+.player .skip{grid-column:1/-1;display:flex;gap:6px}
+.player .skip button{font:600 13px var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:5px 14px;min-width:64px;cursor:pointer;touch-action:manipulation}
+.player .skip button:active{background:var(--warm-soft);border-color:var(--warm)}
 .speed button{padding:2px 8px;font-size:11px}
 .toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px;margin-block:-6px}
 .toolbar::-webkit-scrollbar{display:none}
@@ -253,6 +256,10 @@ section:has(> h2 .n){padding-top:12px}
 <div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-20" data-base="" data-voices="emma,fable,heart,boss,rapper" data-voice="emma">
   <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
   <audio id="audio" controls preload="metadata" src="audio/2026-11-20.mp3"></audio>
+  <div class="skip" role="group" aria-label="Skip">
+    <button type="button" data-s="-10" aria-label="Back 10 seconds">−10 s</button>
+    <button type="button" data-s="10" aria-label="Forward 10 seconds">+10 s</button>
+  </div>
   <div class="speed" role="group" aria-label="Playback speed">
     <button type="button" id="sp1" data-r="1" aria-pressed="true">1×</button>
     <button type="button" id="sp125" data-r="1.25" aria-pressed="false">1.25×</button>
@@ -572,6 +579,12 @@ section:has(> h2 .n){padding-top:12px}
   btns.forEach(function(b){b.addEventListener('click',function(){
     a.playbackRate=parseFloat(b.dataset.r);
     btns.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});});});
+  function skip(s){var d=a.duration,t=(a.currentTime||0)+s;if(isFinite(d)&&d>0)t=Math.min(t,d-0.25);
+    try{a.currentTime=Math.max(0,t);}catch(e){} a.dispatchEvent(new Event('cb-userseek'));}
+  document.querySelectorAll('.skip button').forEach(function(b){b.addEventListener('click',function(){skip(parseFloat(b.dataset.s));});});
+  if('mediaSession' in navigator){try{
+    navigator.mediaSession.setActionHandler('seekbackward',function(e){skip(-((e&&e.seekOffset)||10));});
+    navigator.mediaSession.setActionHandler('seekforward',function(e){skip((e&&e.seekOffset)||10);});}catch(e){}}
   a.addEventListener('loadedmetadata',function(){
     if(isFinite(a.duration)){var m=Math.floor(a.duration/60),s=Math.round(a.duration%60);
     document.getElementById('dur').textContent=m+' min '+s+' s · spoken summary';}});
@@ -707,11 +720,27 @@ section:has(> h2 .n){padding-top:12px}
     if(t){var go=function(){try{a.currentTime=t;}catch(e){} a.removeEventListener('loadedmetadata',go);}; if(a.readyState>=1) go(); else a.addEventListener('loadedmetadata',go);} label(); }
   // Restore the last position after a refresh (browsers need one tap to start sound again).
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null');
+    // Only resume today's brief; a half-heard older brief must not replace today's audio.
+    if(s&&s.src&&dateOf(s.src)!==LATEST){localStorage.removeItem(KEY);s=null;}
     if(s&&s.src&&s.t>3&&Date.now()-s.at<7*864e5){resumeAt=s.t;setSrc(s.src,s.t);if(window.cbVoice)cbVoice.sync(s.src);label('resume at '+fmt(s.t));}else{label();}}catch(e){label();}
   var last=0;a.addEventListener('timeupdate',function(){var n=Date.now();if(n-last>2000){last=n;save();}});
   a.addEventListener('pause',save);a.addEventListener('play',function(){if(resumeAt&&a.currentTime<resumeAt-2){try{a.currentTime=resumeAt;}catch(e){}}resumeAt=0;label('');});a.addEventListener('loadedmetadata',function(){label();});
   a.addEventListener('ended',function(){try{localStorage.removeItem(KEY);}catch(e){}});
+  a.addEventListener('cb-userseek',function(){resumeAt=0;});
   window.addEventListener('pagehide',save);
+
+  // An installed app can sit in memory overnight. When it comes back to the front with the
+  // audio paused, check whether a newer edition is out and, if so, reload to get it.
+  var checkedAt=Date.now();
+  function checkNew(force){
+    if(document.visibilityState!=='visible'||!a.paused) return;
+    if(!force&&Date.now()-checkedAt<5*60e3) return; checkedAt=Date.now();
+    fetch(location.href.split('#')[0],{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(t){
+      var m=t.match(/var LATEST='(\d{4}-\d{2}-\d{2})'/); if(m&&m[1]>LATEST&&a.paused) location.reload();}).catch(function(){});
+  }
+  document.addEventListener('visibilitychange',function(){checkNew(false);});
+  window.addEventListener('pageshow',function(e){if(e.persisted)checkNew(true);});
+  window.addEventListener('focus',function(){checkNew(false);});
 
   // Open archive days inside this page so the player keeps going.
   function route(){
