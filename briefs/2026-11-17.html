@@ -195,6 +195,12 @@ details.term summary::marker{color:var(--warm)}
 details.term p{margin-top:6px}
 details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 
+.quickfix{border:1px solid var(--warm);background:var(--warm-soft);border-radius:14px;padding:12px 15px;font-size:15px;box-shadow:var(--shadow)}
+.quickfix > b:first-child{font-family:var(--display);font-size:17px}
+.quickfix .fixmeta{display:block;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);margin:2px 0 6px}
+.quickfix p{margin:6px 0 0}
+.quickfix ol{margin:8px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.quickfix .fixnote{font-size:13px;color:var(--muted)}
 header .sisterpill{position:absolute;top:12px;right:12px;z-index:1;display:inline-flex;align-items:center;gap:6px;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px 3px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--on-brand);text-decoration:none;border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 header .sisterpill::before{content:"";width:7px;height:7px;border-radius:50%;background:#e8761c;box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
 header .sisterpill:hover{background:rgba(255,255,255,.24)}

@@ -195,6 +195,12 @@ details.term summary::marker{color:var(--warm)}
 details.term p{margin-top:6px}
 details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
 
+.quickfix{border:1px solid var(--warm);background:var(--warm-soft);border-radius:14px;padding:12px 15px;font-size:15px;box-shadow:var(--shadow)}
+.quickfix > b:first-child{font-family:var(--display);font-size:17px}
+.quickfix .fixmeta{display:block;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);margin:2px 0 6px}
+.quickfix p{margin:6px 0 0}
+.quickfix ol{margin:8px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.quickfix .fixnote{font-size:13px;color:var(--muted)}
 header .sisterpill{position:absolute;top:12px;right:12px;z-index:1;display:inline-flex;align-items:center;gap:6px;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px 3px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--on-brand);text-decoration:none;border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 header .sisterpill::before{content:"";width:7px;height:7px;border-radius:50%;background:#e8761c;box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
 header .sisterpill:hover{background:rgba(255,255,255,.24)}
@@ -518,8 +524,24 @@ section:has(> h2 .n){padding-top:12px}
 </section>
 
 <section>
+  <h2><span class="n">9</span>2-minute security fix</h2>
+  <div class="quickfix"><b>Clear out old apps that can read your email</b>
+    <span class="fixmeta">2 minutes · phone or laptop · your personal accounts</span>
+    <p><b>Why now:</b> this week's N-able breach hit a service that filters email for thousands of businesses. Every app you once allowed to "sign in with Google" or read your inbox is another way into your account, and most of us have forgotten half of them.</p>
+    <ol>
+      <li><b>Google:</b> open <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener">myaccount.google.com/connections</a> (Security → Your connections to third-party apps).</li>
+      <li><b>Microsoft:</b> open <a href="https://account.live.com/consent/Manage" target="_blank" rel="noopener">account.live.com/consent/Manage</a>. <b>Apple:</b> Settings → your name → Sign in with Apple.</li>
+      <li>Remove anything you don't recognise or haven't used for months, starting with anything that can see your email, files or contacts.</li>
+    </ol>
+    <p><b>Done when:</b> only apps you actually use are left. Bonus: do the same for a family member's account.</p>
+    <p class="fixnote">For your work account, leave this to your IT team.</p>
+  </div>
+</section>
+
+<section>
   <h2>Glossary</h2>
   <dl class="gloss">
+    <dt>Third-party app access</dt><dd>Permission you give an outside app (often via "Sign in with Google/Microsoft") to read parts of your account, such as email or files; it lasts until you remove it.</dd>
     <dt>Virtual machine</dt><dd>A software copy of a computer that runs alongside many others on one physical server.</dd>
     <dt>Zero-day</dt><dd>A flaw attackers use before the maker has a fix.</dd>
     <dt>Single sign-on (SSO)</dt><dd>One login that opens many systems; its signing keys prove logins are genuine.</dd>
