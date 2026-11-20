@@ -203,15 +203,39 @@ h1{font-size:clamp(26px,5.5vw,38px)}
 header .dateline{font-size:clamp(16px,3.6vw,19px)}
 h2{font-size:20px;margin:0 0 10px}
 h2 .n{width:24px;height:24px;font-size:12px}
-.player{display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 10px;padding:8px 10px;border-radius:12px}
-.player .lbl{gap:8px;font-size:12px}
-.player .lbl strong{font-size:14px}
-.player audio{grid-column:1/-1;grid-row:2;height:34px}
-.player .speed{grid-column:2;grid-row:1;gap:4px}
-.player .skip{grid-column:1/-1;display:flex;gap:6px}
-.player .skip button{font:600 13px var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:5px 14px;min-width:64px;cursor:pointer;touch-action:manipulation}
-.player .skip button:active{background:var(--warm-soft);border-color:var(--warm)}
-.speed button{padding:2px 8px;font-size:11px}
+.player{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:16px}
+.player .lbl{display:flex;align-items:baseline;gap:8px;min-width:0;font-size:12px;flex-wrap:nowrap}
+.player .lbl strong{font-size:14px;white-space:nowrap}
+.player .lbl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.player audio{display:none}
+.player button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:inherit}
+.player button:focus-visible,.player input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.player .rate{grid-column:2;grid-row:1;font:600 12px var(--mono);min-width:50px;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;font-variant-numeric:tabular-nums;transition:background .15s,border-color .15s}
+.player .rate:hover{border-color:var(--accent);color:var(--accent)}
+.player .rate.on{background:var(--warm-soft);border-color:var(--warm);color:var(--warm-ink)}
+.player .transport{grid-column:1/-1;display:flex;align-items:center;gap:4px}
+.player .transport button{flex:none;display:grid;place-items:center;border:0;padding:0;cursor:pointer;transition:transform .12s ease,background .15s,color .15s}
+.player .transport button:active{transform:scale(.9)}
+.player .skip{width:40px;height:40px;border-radius:50%;background:transparent;color:var(--muted)}
+.player .skip:hover{background:var(--accent-soft);color:var(--accent)}
+.player .skip svg{width:26px;height:26px;overflow:visible}
+.player .skip text{font:600 6.6px var(--body);letter-spacing:-.2px;fill:currentColor;stroke:none}
+.player .pp{width:48px;height:48px;border-radius:50%;color:#fff;background:linear-gradient(140deg,var(--brand-2),var(--brand));box-shadow:0 3px 10px rgba(47,26,94,.28)}
+.player .pp svg{width:20px;height:20px}
+.player .pp .i-pause,.player.playing .pp .i-play{display:none}
+.player.playing .pp .i-pause{display:block}
+.player .scrub{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;margin-left:8px}
+.player .times{display:flex;justify-content:space-between;font:500 11px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.player input[type=range]{--p:0%;-webkit-appearance:none;appearance:none;width:100%;height:22px;margin:0;background:transparent;cursor:pointer}
+.player input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(to right,var(--warm) var(--p),var(--line) var(--p))}
+.player input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;margin-top:-5px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .12s}
+.player input[type=range]:active::-webkit-slider-thumb{transform:scale(1.25)}
+.player input[type=range]::-moz-range-track{height:5px;border-radius:5px;background:var(--line)}
+.player input[type=range]::-moz-range-progress{height:5px;border-radius:5px;background:var(--warm)}
+.player input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.player .voices:not([hidden]){padding-top:8px;margin-top:2px;border-top:1px solid var(--line);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.player .voices::-webkit-scrollbar{display:none}
+.player .voices button{flex:none}
 .toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px;margin-block:-6px}
 .toolbar::-webkit-scrollbar{display:none}
 .toolbar a{flex:none;padding:5px 12px;font-size:13px}
@@ -234,7 +258,6 @@ section:has(> h2 .n){padding-top:12px}
   .incident,.idx .row,.actor{padding:11px 12px}
   dl{grid-template-columns:1fr;gap:2px}
   dt{padding-top:6px}
-  .player .lbl span{display:none}
   .search > .meta{display:none}
   .search h2{margin-bottom:8px}
   .tablewrap table{font-size:13px}
@@ -254,15 +277,13 @@ section:has(> h2 .n){padding-top:12px}
 </header>
 <div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-19" data-base="../" data-voices="emma" data-voice="emma">
   <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
-  <audio id="audio" controls preload="metadata" src="../audio/2026-11-19.mp3"></audio>
-  <div class="skip" role="group" aria-label="Skip">
-    <button type="button" data-s="-10" aria-label="Back 10 seconds">−10 s</button>
-    <button type="button" data-s="10" aria-label="Forward 10 seconds">+10 s</button>
-  </div>
-  <div class="speed" role="group" aria-label="Playback speed">
-    <button type="button" id="sp1" data-r="1" aria-pressed="true">1×</button>
-    <button type="button" id="sp125" data-r="1.25" aria-pressed="false">1.25×</button>
-    <button type="button" id="sp15" data-r="1.5" aria-pressed="false">1.5×</button>
+  <button type="button" class="rate" id="rate" aria-label="Playback speed, 1 times">1×</button>
+  <audio id="audio" preload="metadata" src="../audio/2026-11-19.mp3"></audio>
+  <div class="transport">
+    <button type="button" class="skip" data-s="-10" aria-label="Back 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 8.9"/><path d="M4.5 4.4v4.5H9"/><text x="12.3" y="14.9" text-anchor="middle">10</text></svg></button>
+    <button type="button" class="pp" id="pp" aria-label="Play"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6c0 .8.9 1.3 1.6.8l10.2-6.8a1 1 0 0 0 0-1.6L9.6 4.4C8.9 3.9 8 4.4 8 5.2z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/></svg></button>
+    <button type="button" class="skip" data-s="10" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3l2.2 2.2"/><path d="M19.5 4.4v4.5H15"/><text x="11.7" y="14.9" text-anchor="middle">10</text></svg></button>
+    <div class="scrub"><input type="range" id="seek" min="0" max="1000" step="1" value="0" aria-label="Position in the brief"><div class="times"><span id="tcur">0:00</span><span id="tdur">--:--</span></div></div>
   </div>
   <div class="voices" role="group" aria-label="Voice" hidden></div>
 </div>
@@ -521,19 +542,36 @@ section:has(> h2 .n){padding-top:12px}
 <script>
 (function(){
   var a=document.getElementById('audio'); if(!a) return;
-  var btns=document.querySelectorAll('.speed button');
-  btns.forEach(function(b){b.addEventListener('click',function(){
-    a.playbackRate=parseFloat(b.dataset.r);
-    btns.forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});});});
+  var p=a.closest('.player'), pp=document.getElementById('pp'), seek=document.getElementById('seek'),
+      tcur=document.getElementById('tcur'), tdur=document.getElementById('tdur'), rate=document.getElementById('rate');
+  function fmt(t){t=Math.max(0,Math.floor(t||0));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+  // Speed: one button that cycles 1x -> 1.25x -> 1.5x, remembered on this device.
+  var RATES=[1,1.25,1.5], KR='cyberbrief-rate';
+  function setRate(r){a.playbackRate=r;a.defaultPlaybackRate=r;rate.textContent=r+'×';rate.classList.toggle('on',r!==1);
+    rate.setAttribute('aria-label','Playback speed, '+r+' times');try{localStorage.setItem(KR,String(r));}catch(e){}}
+  var r0=1;try{r0=parseFloat(localStorage.getItem(KR))||1;}catch(e){} if(RATES.indexOf(r0)<0)r0=1; setRate(r0);
+  rate.addEventListener('click',function(){setRate(RATES[(RATES.indexOf(a.playbackRate)+1)%RATES.length]||1);});
+  a.addEventListener('loadedmetadata',function(){a.playbackRate=a.defaultPlaybackRate;});
+  // Play / pause
+  pp.addEventListener('click',function(){if(a.paused){a.play().catch(function(){});}else{a.pause();}});
+  function state(){var on=!a.paused&&!a.ended;p.classList.toggle('playing',on);pp.setAttribute('aria-label',on?'Pause':'Play');}
+  ['play','playing','pause','ended','emptied'].forEach(function(ev){a.addEventListener(ev,state);});
+  // Scrubber and times
+  var dragging=false;
+  function paint(t){var d=a.duration;var f=(isFinite(d)&&d>0)?Math.min(1,t/d):0;seek.style.setProperty('--p',(f*100).toFixed(2)+'%');tcur.textContent=fmt(t);}
+  function tick(){if(dragging)return;var d=a.duration;seek.value=(isFinite(d)&&d>0)?Math.round(a.currentTime/d*1000):0;paint(a.currentTime);}
+  function durUp(){tdur.textContent=isFinite(a.duration)&&a.duration>0?fmt(a.duration):'--:--';tick();}
+  ['timeupdate','seeked','loadedmetadata','durationchange','emptied'].forEach(function(ev){a.addEventListener(ev,ev==='timeupdate'||ev==='seeked'?tick:durUp);});
+  durUp(); state();
+  seek.addEventListener('input',function(){dragging=true;var d=a.duration;if(isFinite(d))paint(seek.value/1000*d);});
+  seek.addEventListener('change',function(){var d=a.duration;if(isFinite(d)&&d>0){try{a.currentTime=seek.value/1000*d;}catch(e){} a.dispatchEvent(new Event('cb-userseek'));}dragging=false;tick();});
+  // Skip 10 seconds (buttons, lock screen and headphones)
   function skip(s){var d=a.duration,t=(a.currentTime||0)+s;if(isFinite(d)&&d>0)t=Math.min(t,d-0.25);
-    try{a.currentTime=Math.max(0,t);}catch(e){} a.dispatchEvent(new Event('cb-userseek'));}
-  document.querySelectorAll('.skip button').forEach(function(b){b.addEventListener('click',function(){skip(parseFloat(b.dataset.s));});});
+    try{a.currentTime=Math.max(0,t);}catch(e){} a.dispatchEvent(new Event('cb-userseek'));tick();}
+  document.querySelectorAll('.player .skip').forEach(function(b){b.addEventListener('click',function(){skip(parseFloat(b.dataset.s));});});
   if('mediaSession' in navigator){try{
     navigator.mediaSession.setActionHandler('seekbackward',function(e){skip(-((e&&e.seekOffset)||10));});
     navigator.mediaSession.setActionHandler('seekforward',function(e){skip((e&&e.seekOffset)||10);});}catch(e){}}
-  a.addEventListener('loadedmetadata',function(){
-    if(isFinite(a.duration)){var m=Math.floor(a.duration/60),s=Math.round(a.duration%60);
-    document.getElementById('dur').textContent=m+' min '+s+' s · spoken summary';}});
   if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, 19 Nov 2026',artist:'Daily threat intelligence'});}catch(e){}}
 })();
 </script>
