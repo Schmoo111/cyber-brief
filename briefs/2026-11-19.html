@@ -144,6 +144,13 @@ header details.more p{flex-basis:100%;margin-top:4px}
 .viewing{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--warm-soft);color:var(--warm-ink)}
 .viewing a{color:var(--warm-ink);font-weight:600}
 .viewing .btn{padding:4px 10px;font-size:13px;border-color:var(--warm-ink);color:var(--warm-ink)}
+.quickfix .fixroutes{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.quickfix .fixroutes details{background:var(--surface);border:1px solid var(--warm);border-radius:10px;padding:8px 12px}
+.quickfix .fixroutes summary{cursor:pointer;font-weight:600;font-family:var(--display);list-style:none;display:flex;justify-content:space-between;gap:8px}
+.quickfix .fixroutes summary::-webkit-details-marker{display:none}
+.quickfix .fixroutes summary::after{content:"+";color:var(--warm-ink);font-weight:700}
+.quickfix .fixroutes details[open] summary::after{content:"\2212"}
+.quickfix .fixroutes ol,.quickfix .fixroutes ul{margin:6px 0 2px;padding-left:22px;display:flex;flex-direction:column;gap:4px}
 
 .archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
 .archive li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
@@ -282,7 +289,7 @@ section:has(> h2 .n){padding-top:12px}
 <body>
 <div class="wrap">
 <p class="backlink"><a href="/">← Latest brief, search, incident index and archive</a> · <a class="sister" href="https://ai.availabiliti.com/" target="_blank" rel="noopener">AI Brief ↗</a></p>
-<header data-voices="emma">
+<header data-voices="emma,fable,heart,boss,rapper">
   <span class="eyebrow">Daily threat intelligence · Global banking</span>
   <h1>Cyber Brief</h1>
   <p class="dateline">Thursday 19 November 2026 · Edition 2</p>

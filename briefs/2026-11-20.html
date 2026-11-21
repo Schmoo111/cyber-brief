@@ -144,6 +144,13 @@ header details.more p{flex-basis:100%;margin-top:4px}
 .viewing{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--warm-soft);color:var(--warm-ink)}
 .viewing a{color:var(--warm-ink);font-weight:600}
 .viewing .btn{padding:4px 10px;font-size:13px;border-color:var(--warm-ink);color:var(--warm-ink)}
+.quickfix .fixroutes{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.quickfix .fixroutes details{background:var(--surface);border:1px solid var(--warm);border-radius:10px;padding:8px 12px}
+.quickfix .fixroutes summary{cursor:pointer;font-weight:600;font-family:var(--display);list-style:none;display:flex;justify-content:space-between;gap:8px}
+.quickfix .fixroutes summary::-webkit-details-marker{display:none}
+.quickfix .fixroutes summary::after{content:"+";color:var(--warm-ink);font-weight:700}
+.quickfix .fixroutes details[open] summary::after{content:"\2212"}
+.quickfix .fixroutes ol,.quickfix .fixroutes ul{margin:6px 0 2px;padding-left:22px;display:flex;flex-direction:column;gap:4px}
 
 .archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
 .archive li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
@@ -288,7 +295,7 @@ section:has(> h2 .n){padding-top:12px}
   <p class="dateline">Friday 20 November 2026 · Edition 3</p>
   <div class="meta headmeta">Compiled ~06:00 UTC; covers roughly 19–20 Nov. <details class="more"><summary>More</summary><p>Built from live web search. Technical terms are explained in the glossary at the end.</p></details></div>
 <a class="sisterpill" href="https://ai.availabiliti.com/" target="_blank" rel="noopener" aria-label="Open the AI Brief">AI Brief ↗</a></header>
-<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-20" data-base="../" data-voices="emma,boss" data-voice="emma">
+<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-20" data-base="../" data-voices="emma" data-voice="emma">
   <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
   <button type="button" class="rate" id="rate" aria-label="Playback speed, 1 times">1×</button>
   <audio id="audio" preload="metadata" src="../audio/2026-11-20.mp3"></audio>
@@ -528,11 +535,53 @@ section:has(> h2 .n){padding-top:12px}
   <div class="quickfix"><b>Clear out old apps that can read your email</b>
     <span class="fixmeta">2 minutes · phone or laptop · your personal accounts</span>
     <p><b>Why now:</b> this week's N-able breach hit a service that filters email for thousands of businesses. Every app you once allowed to "sign in with Google" or read your inbox is another way into your account, and most of us have forgotten half of them.</p>
-    <ol>
-      <li><b>Google:</b> open <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener">myaccount.google.com/connections</a> (Security → Your connections to third-party apps).</li>
-      <li><b>Microsoft:</b> open <a href="https://account.live.com/consent/Manage" target="_blank" rel="noopener">account.live.com/consent/Manage</a>. <b>Apple:</b> Settings → your name → Sign in with Apple.</li>
-      <li>Remove anything you don't recognise or haven't used for months, starting with anything that can see your email, files or contacts.</li>
-    </ol>
+    <p class="fixwhere">This setting lives in your <b>Google Account</b>, not in Gmail's own Settings menu. Tap the route that fits your device:</p>
+    <div class="fixroutes">
+    <details><summary>Quickest: open the link</summary>
+      <ol>
+        <li>Open <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener">myaccount.google.com/connections</a> in Safari or Chrome, not inside the Gmail app.</li>
+        <li>If asked, sign in or pick the account you want to check.</li>
+        <li>You land on the list of third-party apps. Google sometimes labels it "Your connections" or "Linked apps".</li>
+      </ol>
+    </details>
+    <details><summary>Gmail app on iPhone or iPad</summary>
+      <ol>
+        <li>Tap your <b>profile photo</b> at the right end of the search bar.</li>
+        <li>Tap <b>Manage your Google Account</b>.</li>
+        <li>Swipe the tabs along the top to <b>Security</b> (may say "Security &amp; sign-in").</li>
+        <li>Scroll to <b>Your connections to third-party apps &amp; services</b> and tap <b>See all connections</b>.</li>
+      </ol>
+    </details>
+    <details><summary>Gmail app on Android</summary>
+      <ol>
+        <li>Tap your <b>profile photo</b> at the right end of the search bar, then <b>Manage your Google Account</b>.</li>
+        <li>Swipe the tabs to <b>Security</b> (may say "Security &amp; sign-in").</li>
+        <li>Scroll to <b>Your connections to third-party apps &amp; services</b>, then <b>See all connections</b>.</li>
+      </ol>
+      <p>Or: phone <b>Settings → Google → Manage your Google Account</b>, then the same steps.</p>
+    </details>
+    <details><summary>On a laptop</summary>
+      <ol>
+        <li>In gmail.com, click your <b>profile photo</b> (top right), then <b>Manage your Google Account</b>.</li>
+        <li>Click <b>Security</b> in the left menu.</li>
+        <li>Find <b>Your connections to third-party apps &amp; services</b> and click <b>See all connections</b>.</li>
+      </ol>
+    </details>
+    <details><summary>Still can't find it?</summary>
+      <ul>
+        <li>In Manage your Google Account, tap the <b>search icon</b> at the top and type <b>third-party</b>.</li>
+        <li>Or run <a href="https://myaccount.google.com/security-checkup" target="_blank" rel="noopener">Security Checkup</a> and open <b>Third-party access</b>.</li>
+        <li>Check you are in the right account: tap your profile photo to switch.</li>
+      </ul>
+    </details>
+    <details><summary>Microsoft and Apple accounts</summary>
+      <ul>
+        <li><b>Microsoft:</b> open <a href="https://account.live.com/consent/Manage" target="_blank" rel="noopener">account.live.com/consent/Manage</a> and sign in.</li>
+        <li><b>Apple (iPhone):</b> Settings → your name → <b>Sign-In &amp; Security</b> → <b>Sign in with Apple</b>. On older iOS, look for "Password &amp; Security" instead.</li>
+      </ul>
+    </details>
+    </div>
+    <p><b>Once you see the list:</b> filter by <b>Access to → Gmail</b> if offered, tap an app you don't recognise or no longer use, then choose <b>Delete all connections</b> or <b>Remove access</b> and confirm. Start with anything that can see your email, files or contacts.</p>
     <p><b>Done when:</b> only apps you actually use are left. Bonus: do the same for a family member's account.</p>
     <p class="fixnote">For your work account, leave this to your IT team.</p>
   </div>

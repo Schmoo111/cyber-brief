@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyber Brief 21 Nov 2026</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192-v3.png" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-v3.png">
+<meta name="theme-color" content="#2f1a5e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cyber Brief">
+<meta name="description" content="Daily cyber threat intelligence brief for banking, with audio.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: one reading column under a plum masthead; sticky audio bar; severity stripes on incident cards.
+   Identity: plum + violet brand (from the sword icon), warm orange for highlights, calm graded severity colours. */
+:root{
+  --bg:#f7f5fb; --surface:#ffffff; --fg:#1f1a2e; --muted:#625a75; --line:#e4dff0;
+  --brand:#2f1a5e; --brand-2:#5b2fb0; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.78);
+  --warm:#ef8a2b; --warm-ink:#9a4d08; --warm-soft:#fff1e2; --warm-on-brand:#ffbf80;
+  --accent:#5530b0; --accent-soft:#efe9fb;
+  --crit:#a8436a; --high:#b5651d; --med:#7d6e18; --low:#3d7a57;
+  --crit-bg:#f8e8ef; --high-bg:#fcefe1; --med-bg:#f5f0d9; --low-bg:#e5f2ea;
+  --shadow:0 1px 2px rgba(47,26,94,.06),0 6px 20px rgba(47,26,94,.06);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141020; --surface:#1d182c; --fg:#ece8f6; --muted:#a69ebd; --line:#312a48;
+  --brand:#2a1754; --brand-2:#4a279a; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.75);
+  --warm:#ffa552; --warm-ink:#ffbf80; --warm-soft:#3a2614; --warm-on-brand:#ffc48c;
+  --accent:#b9a2ff; --accent-soft:#2a2244;
+  --crit:#f09ab8; --high:#f2b072; --med:#ddd07a; --low:#93d2ad;
+  --crit-bg:#3a1a29; --high-bg:#3a2715; --med-bg:#333015; --low-bg:#17301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141020; --surface:#1d182c; --fg:#ece8f6; --muted:#a69ebd; --line:#312a48;
+  --brand:#2a1754; --brand-2:#4a279a; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.75);
+  --warm:#ffa552; --warm-ink:#ffbf80; --warm-soft:#3a2614; --warm-on-brand:#ffc48c;
+  --accent:#b9a2ff; --accent-soft:#2a2244;
+  --crit:#f09ab8; --high:#f2b072; --med:#ddd07a; --low:#93d2ad;
+  --crit-bg:#3a1a29; --high-bg:#3a2715; --med-bg:#333015; --low-bg:#17301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:flex;flex-direction:column;gap:34px}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--warm);outline-offset:2px}
+
+/* Masthead */
+header{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:8px;padding:22px 22px 20px;border-radius:18px;color:var(--on-brand);
+  background:radial-gradient(120% 140% at 100% 0%,var(--brand-2) 0%,var(--brand) 60%);box-shadow:var(--shadow)}
+header::after{content:"";position:absolute;right:-14px;bottom:-18px;width:150px;height:150px;opacity:.16;pointer-events:none;
+  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='rotate(40 50 50)'%3E%3Cpolygon points='50,4 56,14 56,62 44,62 44,14' fill='white'/%3E%3Crect x='28' y='62' width='44' height='7' rx='3.5' fill='%23ef8a2b'/%3E%3Crect x='46' y='69' width='8' height='18' rx='2' fill='white'/%3E%3Ccircle cx='50' cy='91' r='6' fill='%23ef8a2b'/%3E%3C/g%3E%3C/svg%3E")}
+header .eyebrow{color:var(--warm-on-brand)}
+header .meta{color:var(--on-brand-muted)}
+header h1{color:var(--on-brand)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:18px;height:2px;border-radius:2px;background:currentColor}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6.5vw,46px);line-height:1.04;letter-spacing:-.01em;margin:0;text-wrap:balance;max-width:16ch}
+h2{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:-.005em;margin:0 0 14px;text-wrap:balance;display:flex;gap:10px;align-items:center}
+h2 .n{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--warm-soft);color:var(--warm-ink);font:600 13px var(--mono)}
+h2:not(:has(.n))::before{content:"";flex:none;width:6px;height:20px;border-radius:3px;background:var(--warm)}
+h3{font-family:var(--display);font-size:18px;margin:0;font-weight:600;text-wrap:balance;line-height:1.3}
+p{margin:0}
+.meta{color:var(--muted);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+
+/* Audio */
+.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--warm);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.player .lbl{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.player .lbl strong{color:var(--fg);font-weight:600;font-family:var(--display);font-size:15px}
+audio{width:100%;height:40px;accent-color:var(--warm)}
+.speed{display:flex;gap:6px;flex-wrap:wrap}
+.speed button{font:500 12px var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:4px 11px;cursor:pointer}
+.speed button[aria-pressed="true"]{background:var(--warm-soft);border-color:var(--warm);color:var(--warm-ink)}
+
+/* Lists and callouts */
+ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:9px}
+li::marker{color:var(--warm)}
+.relevance{margin-top:16px;padding:13px 16px;background:var(--accent-soft);border-radius:12px;font-size:15px;border-left:4px solid var(--brand-2)}
+
+/* Incident cards */
+.incidents{display:flex;flex-direction:column;gap:14px}
+.incident{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sev);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.ctx{font-size:14.5px;color:var(--muted);background:var(--bg);border-radius:10px;padding:10px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.sev{background:var(--sevbg);color:var(--sev)}
+.crit{--sev:var(--crit);--sevbg:var(--crit-bg)}
+.high{--sev:var(--high);--sevbg:var(--high-bg)}
+.med{--sev:var(--med);--sevbg:var(--med-bg)}
+.low{--sev:var(--low);--sevbg:var(--low-bg)}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:7px 16px;font-size:15px}
+dt{font-weight:600;color:var(--muted);font-size:13px;padding-top:2px}
+dd{margin:0;min-width:0}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{padding-top:6px}}
+
+/* Tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:11px 13px;border-bottom:1px solid var(--line)}
+th{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.cve{font-family:var(--mono);font-size:13px;white-space:nowrap;color:var(--accent)}
+
+/* Actors */
+.actors{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.actor{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--brand-2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;font-size:15px;box-shadow:var(--shadow)}
+
+/* Glossary inside a brief */
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;font-size:15px}
+.gloss dt{color:var(--fg);font-size:14px}
+@media (max-width:520px){.gloss{grid-template-columns:1fr}}
+
+/* Citations and sources */
+sup a{font-family:var(--mono);font-size:11px;text-decoration:none;color:var(--warm-ink);background:var(--warm-soft);border-radius:4px;padding:0 3px;margin-left:1px}
+.sources ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.sources a{word-break:break-all}
+.tag{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-left:4px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:no-preference){a,button,.chip{transition:background-color .15s,color .15s,border-color .15s}}
+header .dateline{font-family:var(--display);font-weight:600;font-size:clamp(18px,4.2vw,22px);line-height:1.2;color:var(--on-brand);opacity:.9;margin-top:-2px}
+header .headmeta{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+header details.more{flex:none}
+header details.more[open]{flex-basis:100%}
+header details.more summary{display:inline-block;cursor:pointer;list-style:none;font:500 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--warm-on-brand);border:1px solid currentColor;border-radius:999px;padding:1px 9px}
+header details.more summary::-webkit-details-marker{display:none}
+header details.more summary::after{content:" ▾"}
+header details.more[open] summary::after{content:" ▴"}
+header details.more p{flex-basis:100%;margin-top:4px}
+.viewing{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--warm-soft);color:var(--warm-ink)}
+.viewing a{color:var(--warm-ink);font-weight:600}
+.viewing .btn{padding:4px 10px;font-size:13px;border-color:var(--warm-ink);color:var(--warm-ink)}
+.quickfix .fixroutes{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.quickfix .fixroutes details{background:var(--surface);border:1px solid var(--warm);border-radius:10px;padding:8px 12px}
+.quickfix .fixroutes summary{cursor:pointer;font-weight:600;font-family:var(--display);list-style:none;display:flex;justify-content:space-between;gap:8px}
+.quickfix .fixroutes summary::-webkit-details-marker{display:none}
+.quickfix .fixroutes summary::after{content:"+";color:var(--warm-ink);font-weight:700}
+.quickfix .fixroutes details[open] summary::after{content:"\2212"}
+.quickfix .fixroutes ol,.quickfix .fixroutes ul{margin:6px 0 2px;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+
+.archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.archive li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.archive li:last-child{border-bottom:0}
+.archive li a{font-weight:500;text-decoration:none}
+.archive li a:hover{text-decoration:underline}
+.archive .today{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);background:var(--warm-soft);border-radius:999px;padding:2px 9px}
+.backlink{font-size:14px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;font-size:14px}
+.toolbar a{border-radius:999px;padding:6px 14px;text-decoration:none;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.toolbar a:hover{background:var(--warm-soft);color:var(--warm-ink)}
+.player .voices{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted);grid-column:1/-1}
+.player .voices span{margin-right:4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-size:11px}
+.player .voices button{font:500 12px var(--body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:2px 10px;cursor:pointer}
+.player .voices button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.toolbar a[aria-expanded="true"]{background:var(--warm-soft);color:var(--warm-ink)}
+.search{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.search form{display:flex;gap:8px;flex-wrap:wrap}
+.search input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg)}
+.search input[type=search]:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn{font:600 14px var(--body);border:1.5px solid var(--brand-2);background:var(--brand-2);color:#fff;border-radius:12px;padding:10px 16px;cursor:pointer}
+.btn:hover{background:var(--brand)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn[disabled]{opacity:.5;cursor:default}
+.results{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.results h3{font:500 12px var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 8px}
+.hits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hits li{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.hits .when{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hits mark{background:var(--warm-soft);color:var(--fg);border-radius:3px;padding:0 2px}
+.weblinks{display:flex;gap:8px;flex-wrap:wrap}
+.weblinks a{font-size:14px;border-radius:999px;padding:6px 13px;text-decoration:none;background:var(--accent-soft);color:var(--accent)}
+.weblinks a::after{content:" ↗"}
+.ai{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--warm);border-radius:12px;padding:12px 14px;font-size:15px;white-space:pre-wrap;min-width:0}
+.ai-note{font-size:12px;color:var(--muted)}
+.idx{display:flex;flex-direction:column;gap:12px}
+.idx .row{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sev,var(--brand-2));border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:7px;font-size:14.5px;min-width:0;box-shadow:var(--shadow)}
+.idx .row h3{font-size:17px}
+.idx .dates{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.idx .dates a{font:500 12px var(--mono);border-radius:999px;padding:3px 10px;text-decoration:none;background:var(--accent-soft);color:var(--accent)}
+.terms{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.terms a{font-size:13px;border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--warm-soft);color:var(--warm-ink);font-weight:500}
+details.term{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-size:15px}
+details.term+details.term{margin-top:8px}
+details.term[open]{border-color:var(--brand-2);box-shadow:var(--shadow)}
+details.term summary{cursor:pointer;font-weight:600;font-family:var(--display)}
+details.term summary::marker{color:var(--warm)}
+details.term p{margin-top:6px}
+details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
+
+.quickfix{border:1px solid var(--warm);background:var(--warm-soft);border-radius:14px;padding:12px 15px;font-size:15px;box-shadow:var(--shadow)}
+.quickfix > b:first-child{font-family:var(--display);font-size:17px}
+.quickfix .fixmeta{display:block;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);margin:2px 0 6px}
+.quickfix p{margin:6px 0 0}
+.quickfix ol{margin:8px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.quickfix .fixnote{font-size:13px;color:var(--muted)}
+header .sisterpill{position:absolute;top:12px;right:12px;z-index:1;display:inline-flex;align-items:center;gap:6px;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px 3px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--on-brand);text-decoration:none;border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+header .sisterpill::before{content:"";width:7px;height:7px;border-radius:50%;background:#e8761c;box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
+header .sisterpill:hover{background:rgba(255,255,255,.24)}
+.toolbar a.sister{background:#e8761c;color:#fff;margin-left:auto}
+.toolbar a.sister:hover{background:#e8761c;color:#fff;filter:brightness(1.1)}
+footer a.sister,.backlink a.sister{font-weight:600}
+
+.wrap{max-width:820px;gap:22px;padding-block:12px 40px}
+body{line-height:1.55}
+header{padding:16px 18px 14px;border-radius:14px;gap:4px}
+header::after{width:110px;height:110px;right:-10px;bottom:-14px}
+h1{font-size:clamp(26px,5.5vw,38px)}
+header .dateline{font-size:clamp(16px,3.6vw,19px)}
+h2{font-size:20px;margin:0 0 10px}
+h2 .n{width:24px;height:24px;font-size:12px}
+.player{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:16px}
+.player .lbl{display:flex;align-items:baseline;gap:8px;min-width:0;font-size:12px;flex-wrap:nowrap}
+.player .lbl strong{font-size:14px;white-space:nowrap}
+.player .lbl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.player audio{display:none}
+.player button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:inherit}
+.player button:focus-visible,.player input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.player .rate{grid-column:2;grid-row:1;font:600 12px var(--mono);min-width:50px;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;font-variant-numeric:tabular-nums;transition:background .15s,border-color .15s}
+.player .rate:hover{border-color:var(--accent);color:var(--accent)}
+.player .rate.on{background:var(--warm-soft);border-color:var(--warm);color:var(--warm-ink)}
+.player .transport{grid-column:1/-1;display:flex;align-items:center;gap:4px}
+.player .transport button{flex:none;display:grid;place-items:center;border:0;padding:0;cursor:pointer;transition:transform .12s ease,background .15s,color .15s}
+.player .transport button:active{transform:scale(.9)}
+.player .skip{width:40px;height:40px;border-radius:50%;background:transparent;color:var(--muted)}
+.player .skip:hover{background:var(--accent-soft);color:var(--accent)}
+.player .skip svg{width:26px;height:26px;overflow:visible}
+.player .skip text{font:600 6.6px var(--body);letter-spacing:-.2px;fill:currentColor;stroke:none}
+.player .pp{width:48px;height:48px;border-radius:50%;color:#fff;background:linear-gradient(140deg,var(--brand-2),var(--brand));box-shadow:0 3px 10px rgba(47,26,94,.28)}
+.player .pp svg{width:20px;height:20px}
+.player .pp .i-pause,.player.playing .pp .i-play{display:none}
+.player.playing .pp .i-pause{display:block}
+.player .scrub{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;margin-left:8px}
+.player .times{display:flex;justify-content:space-between;font:500 11px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.player input[type=range]{--p:0%;-webkit-appearance:none;appearance:none;width:100%;height:22px;margin:0;background:transparent;cursor:pointer}
+.player input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(to right,var(--warm) var(--p),var(--line) var(--p))}
+.player input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;margin-top:-5px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .12s}
+.player input[type=range]:active::-webkit-slider-thumb{transform:scale(1.25)}
+.player input[type=range]::-moz-range-track{height:5px;border-radius:5px;background:var(--line)}
+.player input[type=range]::-moz-range-progress{height:5px;border-radius:5px;background:var(--warm)}
+.player input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.player .voices:not([hidden]){padding-top:8px;margin-top:2px;border-top:1px solid var(--line);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.player .voices::-webkit-scrollbar{display:none}
+.player .voices button{flex:none}
+.toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px;margin-block:-6px}
+.toolbar::-webkit-scrollbar{display:none}
+.toolbar a{flex:none;padding:5px 12px;font-size:13px}
+.search{padding:14px;border-radius:14px}
+.incidents,.idx{gap:10px}
+.incident{padding:12px 14px;gap:8px;border-radius:12px}
+.ctx{padding:8px 10px;font-size:14px}
+dl{gap:4px 14px}
+.relevance{margin-top:12px;padding:10px 12px}
+ul{gap:7px;padding-left:20px}
+.actor{padding:12px 14px}
+.idx .row{padding:12px 14px}
+.archive li{padding:10px 14px}
+.brief-swap{display:flex;flex-direction:column;gap:inherit}
+section:has(> h2 .n){padding-top:12px}
+@media (max-width:600px){
+  .wrap{gap:18px}
+  header .eyebrow{display:none}
+  header{padding:14px 16px 12px}
+  .incident,.idx .row,.actor{padding:11px 12px}
+  dl{grid-template-columns:1fr;gap:2px}
+  dt{padding-top:6px}
+  .search > .meta{display:none}
+  .search h2{margin-bottom:8px}
+  .tablewrap table{font-size:13px}
+  th,td{padding:9px 10px}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="backlink"><a href="/">← Latest brief, search, incident index and archive</a> · <a class="sister" href="https://ai.availabiliti.com/" target="_blank" rel="noopener">AI Brief ↗</a></p>
+<header data-voices="emma,fable,heart,boss,rapper">
+  <span class="eyebrow">Daily threat intelligence · Global banking</span>
+  <h1>Cyber Brief</h1>
+  <p class="dateline">Saturday 21 November 2026 · Edition 4</p>
+  <div class="meta headmeta">Compiled ~06:00 UTC; covers roughly 20–21 Nov. <details class="more"><summary>More</summary><p>Built from live web search. Technical terms are explained in the glossary at the end.</p></details></div>
+<a class="sisterpill" href="https://ai.availabiliti.com/" target="_blank" rel="noopener" aria-label="Open the AI Brief">AI Brief ↗</a></header>
+<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-21" data-base="../" data-voices="emma,fable,heart,boss,rapper" data-voice="emma">
+  <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
+  <button type="button" class="rate" id="rate" aria-label="Playback speed, 1 times">1×</button>
+  <audio id="audio" preload="metadata" src="../audio/2026-11-21.mp3"></audio>
+  <div class="transport">
+    <button type="button" class="skip" data-s="-10" aria-label="Back 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 8.9"/><path d="M4.5 4.4v4.5H9"/><text x="12.3" y="14.9" text-anchor="middle">10</text></svg></button>
+    <button type="button" class="pp" id="pp" aria-label="Play"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6c0 .8.9 1.3 1.6.8l10.2-6.8a1 1 0 0 0 0-1.6L9.6 4.4C8.9 3.9 8 4.4 8 5.2z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/></svg></button>
+    <button type="button" class="skip" data-s="10" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3l2.2 2.2"/><path d="M19.5 4.4v4.5H15"/><text x="11.7" y="14.9" text-anchor="middle">10</text></svg></button>
+    <div class="scrub"><input type="range" id="seek" min="0" max="1000" step="1" value="0" aria-label="Position in the brief"><div class="times"><span id="tcur">0:00</span><span id="tdur">--:--</span></div></div>
+  </div>
+  <div class="voices" role="group" aria-label="Voice" hidden></div>
+</div>
+<script>
+/* Voice picker: Emma (British female), Louis (British male), Kim (American female),
+   Tony (old-school mob boss) and MC Patch (rapper over a generated beat) -- original characters.
+   The choice is remembered on this device; switching keeps your place in the brief. */
+(function(){
+  var p=document.querySelector('.player'), a=document.getElementById('audio'); if(!p||!a) return;
+  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Louis',heart:'Kim',boss:'Tony',rapper:'MC Patch'};
+  function get(){try{return localStorage.getItem(KEYV)||'emma';}catch(e){return 'emma';}}
+  function srcFor(d,v){return (p.dataset.base||'')+'audio/'+d+(v==='emma'?'':'-'+v)+'.mp3';}
+  function list(){return (p.dataset.voices||'emma').split(',');}
+  function render(){var box=p.querySelector('.voices');if(!box)return;var vs=list(),cur=p.dataset.voice||'emma';box.hidden=vs.length<2;
+    box.innerHTML='<span>Voice</span>'+vs.map(function(v){return '<button type="button" data-v="'+v+'" aria-pressed="'+(v===cur)+'">'+(NAMES[v]||v)+'</button>';}).join('');}
+  function pick(d,vs){var pref=get();return vs.indexOf(pref)>=0?pref:'emma';}
+  window.cbVoice={
+    forDay:function(d,voices){p.dataset.date=d;p.dataset.voices=voices||'emma';p.dataset.voice=pick(d,list());render();return srcFor(d,p.dataset.voice);},
+    sync:function(src){var m=(src||'').match(/(\d{4}-\d{2}-\d{2})(?:-([a-z]+))?\.mp3/);if(!m)return;var v=m[2]||'emma';
+      p.dataset.date=m[1];if(list().indexOf(v)<0)p.dataset.voices=list().concat(v).join(',');p.dataset.voice=v;render();}
+  };
+  var v0=pick(p.dataset.date,list());
+  if(v0!=='emma'){a.setAttribute('src',srcFor(p.dataset.date,v0));}
+  p.dataset.voice=v0; render();
+  p.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.voices button'); if(!b) return;
+    var v=b.getAttribute('data-v'); if(v===p.dataset.voice) return;
+    var playing=!a.paused, ratio=(isFinite(a.duration)&&a.duration)?a.currentTime/a.duration:0, rate=a.playbackRate;
+    p.dataset.voice=v; try{localStorage.setItem(KEYV,v);}catch(err){} render();
+    a.setAttribute('src',srcFor(p.dataset.date,v)); a.load();
+    a.addEventListener('loadedmetadata',function f(){a.removeEventListener('loadedmetadata',f);
+      if(ratio){try{a.currentTime=ratio*a.duration;}catch(err){}} a.playbackRate=rate; if(playing) a.play().catch(function(){});});
+  });
+})();
+</script>
+
+<section>
+  <h2><span class="n">1</span>Top line</h2>
+  <ul>
+    <li><strong>JPMorgan Chase, Mastercard and Visa confirm their suppliers were hacked</strong>, after the n0n gang leaked data it says it stole. Card numbers and payment systems were not affected.<sup><a href="https://www.securityweek.com/jpmorgan-visa-mastercard-cite-third-party-incidents-amid-data-leak/" target="_blank" rel="noopener">[1]</a></sup></li>
+    <li><strong>US agency CISA gives a three-day deadline (23 Nov)</strong> to fix four flaws now used in attacks: VMware vCenter, Cisco Expressway, an SAP NetWeaver portal and Apache Roller.<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/20/cisa-adds-four-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[3]</a></sup></li>
+    <li><strong>Rakuten Securities, a big Japanese online broker</strong>: a breach of a test system may have exposed data on up to 15.7 million accounts, including bank details and declared income.<sup><a href="https://ascii.jp/en/elem/000/004/452/4452471/" target="_blank" rel="noopener">[5]</a></sup></li>
+    <li><strong>Irish and UK credit unions</strong> hit through their app supplier, Wellington IT, which took six weeks to tell them.<sup><a href="https://therecord.media/dozens-of-credit-unions-hit-by-supplier-breach" target="_blank" rel="noopener">[6]</a></sup></li>
+    <li><strong>Palo Alto Networks firewalls</strong> are affected by this week's critical NGINX flaws if a web setting called HTTP/2 is switched on; some fixes arrive 23 Nov.<sup><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">[8]</a></sup></li>
+  </ul>
+  <p class="relevance"><strong>Bank relevance:</strong> today is about suppliers and test systems, not banks' own front doors. Check which vendors hold your customer data, and plan weekend patching for vCenter, Cisco and Palo Alto.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>New incidents (past 24 hours)</h2>
+  <div class="incidents">
+    <article class="incident high" data-incident="rakuten-securities" data-name="Rakuten Securities test-system breach" id="inc-rakuten-securities">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Data breach</span></div>
+      <h3>Rakuten Securities: real customer data left in a test system</h3>
+      <p class="ctx"><b>Background:</b> Rakuten Securities is one of Japan's largest online stockbrokers, part of the Rakuten e-commerce and banking group. A test environment is a copy of a system used to try out changes; it normally holds fake data.</p>
+      <dl>
+        <dt>Confirmed</dt><dd>Disclosed 17 Nov; data may have leaked on 11 Nov. Real data had been copied into the test system for an upgrade. Up to 11.25 million accounts had login IDs exposed; up to 4.47 million more also had names, employers, withdrawal bank accounts, income and assets. Rakuten says passwords and PINs were not leaked and it has seen no unauthorised trading.<sup><a href="https://ascii.jp/en/elem/000/004/452/4452471/" target="_blank" rel="noopener">[5]</a></sup></dd>
+        <dt>Status</dt><dd>Figures are upper limits; entry route and attacker unknown.</dd>
+        <dt>Why it matters</dt><dd>Live data in less-protected test systems is a common shortcut at banks too.</dd>
+      </dl>
+    </article>
+
+    <article class="incident high" data-incident="wellington-it-credit-unions" data-name="Wellington IT credit union supplier breach" id="inc-wellington-it-credit-unions">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Supplier breach</span></div>
+      <h3>Credit unions: app supplier missed a breach for six weeks</h3>
+      <p class="ctx"><b>Background:</b> Wellington IT is a Belfast software firm that runs mobile banking apps for credit unions, member-owned savings and loan co-operatives, mainly in Ireland.</p>
+      <dl>
+        <dt>Confirmed</dt><dd>Attacked early October; its first investigation missed the data breach, and credit unions were told only on 16 Nov. Ireland's data regulator has over 40 breach reports; UK credit unions are also reporting. Only saved payee details were affected; no sign of stolen funds.<sup><a href="https://therecord.media/dozens-of-credit-unions-hit-by-supplier-breach" target="_blank" rel="noopener">[6]</a></sup></dd>
+        <dt>Why it matters</dt><dd>One small supplier serving many lenders is a single point of failure.</dd>
+      </dl>
+    </article>
+
+    <article class="incident high" data-incident="sap-netweaver-portal" data-name="SAP NetWeaver portal flaw exploited (CVE-2025-42884)" id="inc-sap-netweaver-portal">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Exploited vulnerability</span></div>
+      <h3>SAP NetWeaver portal: year-old flaw now used in attacks</h3>
+      <p class="ctx"><b>Background:</b> SAP's NetWeaver Enterprise Portal is the web front door to SAP business systems, used by many banks for finance and HR. The flaw lets an attacker with no login steer a lookup (JNDI) to their own server, exposing or changing server information.</p>
+      <dl>
+        <dt>What happened</dt><dd>CISA added it to its exploited list on 20 Nov, deadline 23 Nov. SAP fixed it in November 2025 (SAP Note 3660969). It is rated medium (6.5).<sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/20/cisa-adds-four-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[3]</a></sup><sup><a href="https://www.tenable.com/cve/CVE-2025-42884" target="_blank" rel="noopener">[15]</a></sup></dd>
+        <dt>Status</dt><dd>No public details of attackers. <b>Confirm the fix is installed.</b></dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="ruby2shell" data-name="Ruby2Shell: Ruby flaw (CVE-2026-132825)" id="inc-ruby2shell">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: High</span><span class="chip">New flaw</span></div>
+      <h3>Ruby2Shell: a text bug in a popular web language</h3>
+      <p class="ctx"><b>Background:</b> Ruby is a programming language behind many websites (often via the Rails framework) and tools such as GitLab. Converting "ß" to capitals gives "SS": Ruby makes room for one letter but writes two, a buffer overflow, like stuffing more cash into an envelope than it can hold.</p>
+      <dl>
+        <dt>What happened</dt><dd>Fixed with six other flaws. Web apps could be hit without a login, but a takeover is hard; crashes are likelier. No attacks or public exploit yet.<sup><a href="https://www.securityweek.com/ruby-patches-ruby2shell-vulnerability-that-could-lead-to-rce/" target="_blank" rel="noopener">[10]</a></sup></dd>
+        <dt>Action</dt><dd>Upgrade Ruby (4.0.10, 3.4.13, 3.3.14 or newer) and patch GitHub Enterprise Server and GitLab.</dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="linux-kvm-amd" data-name="Linux KVM flaw on AMD hosts (CVE-2026-99312)" id="inc-linux-kvm-amd">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: High</span><span class="chip">New flaw</span></div>
+      <h3>Linux KVM: a virtual machine could read its host's memory</h3>
+      <p class="ctx"><b>Background:</b> KVM is the part of Linux that runs virtual machines, used by many clouds and private data centres.</p>
+      <dl>
+        <dt>What happened</dt><dd>A Terra Security researcher read a host's memory from inside a guest machine. Only AMD hosts with "nested" virtualisation (on by default) are affected, and the attacker must already control a guest. No attacks seen; some Linux distributions lack a fix.<sup><a href="https://thehackernews.com/2026/11/new-linux-kvm-flaw-cve-2026-99312-lets.html" target="_blank" rel="noopener">[11]</a></sup></dd>
+        <dt>Action</dt><dd>Patch host kernels when available, or turn off nested virtualisation.</dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="sonicwall-gen6" data-name="SonicWall Gen 6 firewalls end of patches" id="inc-sonicwall-gen6">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: High</span><span class="chip">End of life</span></div>
+      <h3>SonicWall: older firewalls get no more fixes</h3>
+      <p class="ctx"><b>Background:</b> SonicWall makes firewalls, often used by branches and smaller suppliers.</p>
+      <dl>
+        <dt>What happened</dt><dd>Generation 6 models get no patches, even for critical flaws, and SonicWall expects AI-assisted attackers to target them. Replace them; meanwhile block internet access to their management pages and VPN.<sup><a href="https://thehackernews.com/2026/11/sonicwall-warns-gen-6-firewalls-wont.html" target="_blank" rel="noopener">[12]</a></sup></dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="bazuka" data-name="Bazuka Android banking malware" id="inc-bazuka">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: Medium</span><span class="chip">Mobile malware</span></div>
+      <h3>Bazuka: Android malware that hides behind a fake screen</h3>
+      <p class="ctx"><b>Background:</b> ThreatFabric, a Dutch mobile-security firm, found this "malware kit" for stealing banking and crypto details.</p>
+      <dl>
+        <dt>What happened</dt><dd>Spread via social-media ads and fake apps such as a "premium" TikTok. It abuses accessibility features to grant itself permissions, intercepts text-message codes, logs keystrokes and shows a screenshot of your home screen while it works. Its control panel uses AI to rank victims. Actor unknown.<sup><a href="https://thehackernews.com/2026/11/bazuka-android-malware-uses-fake-screen.html" target="_blank" rel="noopener">[16]</a></sup></dd>
+        <dt>Why it matters</dt><dd>Text-message codes alone no longer protect mobile banking customers.</dd>
+      </dl>
+    </article>
+
+    <article class="incident low" data-incident="container-store-n0n" data-name="Container Store cyberattack" id="inc-container-store-n0n">
+      <div class="chips"><span class="chip sev">Low</span><span class="chip">Confidence: Medium</span><span class="chip">Retail</span></div>
+      <h3>Container Store restores systems</h3>
+      <dl>
+        <dt>Confirmed vs claimed</dt><dd>The US storage retailer's systems are back after an attack last weekend; no sign of stolen customer financial data. n0n listed the firm; the company has not responded to that claim.<sup><a href="https://therecord.media/container-store-restores-systems-cyberattack" target="_blank" rel="noopener">[20]</a></sup></dd>
+      </dl>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Updates to ongoing cases</h2>
+  <div class="incidents">
+    <article class="incident high" data-incident="n0n-visa-jpmorgan" data-name="n0n extortion claims: Visa, Mastercard, JPMorgan Chase" id="inc-n0n-visa-jpmorgan">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>JPMorgan, Mastercard and Visa confirm supplier breaches</h3>
+      <p class="ctx"><b>Background:</b> n0n is a data-extortion gang, active since September, that steals data and demands payment. On 16 Nov it claimed data from all three firms.</p>
+      <dl>
+        <dt>Confirmed</dt><dd><b>JPMorgan Chase</b> (the largest US bank): vendors' marketing data, possibly names and emails, was accessed; free credit monitoring offered; unrelated to last week's outage. <b>Mastercard</b>: limited emails from one benefit programme. <b>Visa</b>: a provider in Asia-Pacific; no card numbers. No vendors named, no totals.<sup><a href="https://www.securityweek.com/jpmorgan-visa-mastercard-cite-third-party-incidents-amid-data-leak/" target="_blank" rel="noopener">[1]</a></sup><sup><a href="https://abcnews.com/US/jpmorgan-chase-reports-cyberattack-party-service-providers/story?id=138287705" target="_blank" rel="noopener">[2]</a></sup></dd>
+        <dt>Media reported</dt><dd>Reuters' review of the leak found over 16,000 Chase customer emails and about 124 staff emails.<sup><a href="https://www.securityweek.com/jpmorgan-visa-mastercard-cite-third-party-incidents-amid-data-leak/" target="_blank" rel="noopener">[1]</a></sup></dd>
+        <dt>Why it matters</dt><dd>Leaked emails tied to a real bank make convincing phishing.</dd>
+      </dl>
+    </article>
+
+    <article class="incident crit" data-incident="vcenter-armory-castle" data-name="VMware vCenter zero-day (CVE-2026-123890)" id="inc-vcenter-armory-castle">
+      <div class="chips"><span class="chip sev">Critical</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>vCenter flaw on CISA's exploited list, fix by 23 Nov</h3>
+      <p class="ctx"><b>Background:</b> vCenter is VMware's console for running a data centre's virtual servers; suspected Chinese spies used this login-bypass flaw for two months.</p>
+      <dl><dt>What's new</dt><dd>Added to CISA's exploited list on 20 Nov with a three-day deadline.<sup><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[4]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident high" data-incident="cisco-expressway" data-name="Cisco Expressway flaw exploited (CVE-2026-76466)" id="inc-cisco-expressway">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>Cisco Expressway: four devices breached, now on CISA list</h3>
+      <p class="ctx"><b>Background:</b> Expressway connects outside callers to a firm's video and phone system.</p>
+      <dl><dt>What's new</dt><dd>Attackers took two internet-facing devices, then two internal ones, and used AI-written scripts to hunt for passwords and code. CISA now confirms exploitation; deadline 23 Nov. Upgrade to X15.5.20 or newer.<sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-cisco.html" target="_blank" rel="noopener">[13]</a></sup><sup><a href="https://www.cisa.gov/news-events/alerts/2026/11/20/cisa-adds-four-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[3]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident high" data-incident="nginx2root" data-name="nginx2root: NGINX HTTP/2 flaw (CVE-2026-123007)" id="inc-nginx2root">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>nginx2root reaches Palo Alto firewalls</h3>
+      <p class="ctx"><b>Background:</b> NGINX is web-server software inside many products. Two critical flaws in how it handles HTTP/2 (a faster web protocol) could let an attacker with no login crash it or run code.</p>
+      <dl><dt>What's new</dt><dd>Palo Alto Networks says its firewall software (PAN-OS) and Panorama management are affected only if HTTP/2 is enabled. Several fixes are due 23 Nov; the stopgap is to switch HTTP/2 off. No attacks known.<sup><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">[8]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident high" data-incident="java4shell" data-name="Java4Shell: Java flaw (CVE-2026-114938)" id="inc-java4shell">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Update</span></div>
+      <h3>Java4Shell: more vendors affected</h3>
+      <p class="ctx"><b>Background:</b> a flaw in how Java decodes text that can let an attacker take over some Java services on servers with certain Intel and AMD chips.</p>
+      <dl><dt>What's new</dt><dd>Palo Alto lists several of its Idira privileged-access products as affected. No confirmed successful attack found.<sup><a href="https://security.paloaltonetworks.com/" target="_blank" rel="noopener">[9]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident med" data-incident="infoblox" data-name="Infoblox vendor breach" id="inc-infoblox">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: Medium</span><span class="chip">Supplier breach</span></div>
+      <h3>Infoblox: customers' network settings stolen via a vendor</h3>
+      <p class="ctx"><b>Background:</b> Infoblox sells DNS and network-management systems used by many large firms, including banks.</p>
+      <dl><dt>What's new</dt><dd>Attackers used a data-migration vendor's access to Infoblox's SharePoint file store. Media report the files include some customers' configuration snapshots (network layouts, no passwords) and staff data. Infoblox says its products were not involved.<sup><a href="https://securityaffairs.com/203309/data-breach/infoblox-confirms-supply-chain-breach-after-attackers-access-sensitive-data.html" target="_blank" rel="noopener">[7]</a></sup></dd>
+      <dt>Action</dt><dd>Infoblox customers should ask whether their snapshots were taken.</dd></dl>
+    </article>
+  </div>
+  <p class="meta" style="margin-top:10px">N-able Mail Assure, European Commission, FastUnlock and Optimizely: no material new information found.</p>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Vulnerabilities to act on</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Flaw</th><th>What the product is</th><th>What to know</th></tr></thead>
+    <tbody>
+      <tr><td class="cve" id="inc-cve-2026-123890">CVE-2026-123890</td><td><b>VMware vCenter</b>, virtual-server console</td><td>Exploited. CISA deadline 23 Nov. <b>Upgrade to the fixed 8.0 / 9.x releases.</b><sup><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">[4]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-76466">CVE-2026-76466</td><td><b>Cisco Expressway</b>, video-call gateway</td><td>Exploited. Deadline 23 Nov. <b>Upgrade to X15.5.20 or newer.</b><sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-cisco.html" target="_blank" rel="noopener">[13]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2025-42884">CVE-2025-42884</td><td><b>SAP NetWeaver Enterprise Portal</b></td><td>Exploited. Deadline 23 Nov. <b>Apply SAP Note 3660969.</b><sup><a href="https://www.tenable.com/cve/CVE-2025-42884" target="_blank" rel="noopener">[15]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-129448">CVE-2026-129448</td><td><b>Apache Roller</b>, Java blogging software</td><td>Exploited; no login needed. Deadline 23 Nov. <b>Upgrade to 6.1.6 or newer.</b><sup><a href="https://www.securityweek.com/critical-apache-roller-axis-vulnerabilities-exploited-in-attacks/" target="_blank" rel="noopener">[14]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-90436">CVE-2026-90436</td><td><b>Apache Axis 1.x</b>, old web-services code inside other products</td><td>Exploited, including against Atlassian Confluence (a team wiki). Deadline today. <b>Upgrade Confluence to 9.2.28 or newer; replace Axis.</b><sup><a href="https://www.securityweek.com/critical-apache-roller-axis-vulnerabilities-exploited-in-attacks/" target="_blank" rel="noopener">[14]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-123633">CVE-2026-123633, -123007</td><td><b>NGINX</b> in Palo Alto PAN-OS and Panorama</td><td>Not exploited. <b>Upgrade when fixes land (some 23 Nov) or disable HTTP/2.</b><sup><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">[8]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-114938">CVE-2026-114938</td><td><b>Java</b> (Java4Shell)</td><td>Probing seen. <b>Patch Java and bundled copies.</b><sup><a href="https://security.paloaltonetworks.com/" target="_blank" rel="noopener">[9]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-132825">CVE-2026-132825</td><td><b>Ruby</b> (Ruby2Shell)</td><td>Not exploited. <b>Upgrade Ruby.</b><sup><a href="https://www.securityweek.com/ruby-patches-ruby2shell-vulnerability-that-could-lead-to-rce/" target="_blank" rel="noopener">[10]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-99312">CVE-2026-99312</td><td><b>Linux KVM</b> on AMD servers</td><td>Not exploited. <b>Patch hosts or disable nested virtualisation.</b><sup><a href="https://thehackernews.com/2026/11/new-linux-kvm-flaw-cve-2026-99312-lets.html" target="_blank" rel="noopener">[11]</a></sup></td></tr>
+      <tr><td class="cve">No CVE</td><td><b>SonicWall Gen 6</b> firewalls</td><td>No more patches. <b>Replace.</b><sup><a href="https://thehackernews.com/2026/11/sonicwall-warns-gen-6-firewalls-wont.html" target="_blank" rel="noopener">[12]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-23871">CVE-2026-23871</td><td><b>WhatsApp</b> for Android</td><td>Low risk: could reveal a phone's internet address; may have helped scammers. <b>Update the app.</b><sup><a href="https://www.securityweek.com/whatsapp-fixes-flaw-uncovered-while-disrupting-scam-campaign/" target="_blank" rel="noopener">[17]</a></sup></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Threat actors</h2>
+  <div class="actors">
+    <div class="actor">
+      <h3>n0n</h3>
+      <dl>
+        <dt>Type</dt><dd>Ransomware and data-extortion group, active since Sept 2026; origin unknown</dd>
+        <dt>Methods</dt><dd>Recruits affiliates to hit firms earning over $10M, avoids ex-Soviet states, and reportedly uses AI to write attack scripts.<sup><a href="https://therecord.media/container-store-restores-systems-cyberattack" target="_blank" rel="noopener">[20]</a></sup></dd>
+        <dt>Latest</dt><dd>JPMorgan, Visa and Mastercard leaks; Container Store listing.<sup><a href="https://www.securityweek.com/jpmorgan-visa-mastercard-cite-third-party-incidents-amid-data-leak/" target="_blank" rel="noopener">[1]</a></sup></dd>
+      </dl>
+    </div>
+    <div class="actor">
+      <h3>Bank-impersonation fraud ring (Florida arrests)</h3>
+      <dl>
+        <dt>Type</dt><dd>Criminal account-takeover fraud</dd>
+        <dt>Latest</dt><dd>Five people arrested in Florida; callers posing as bank staff took online-banking logins and sent wires. Linked losses of about $54M at over 65 US financial institutions. Charges are allegations.<sup><a href="https://www.securityweek.com/in-other-news-norwegian-energy-firm-cyberattacks-supercomputer-hack-new-nightmare-eclipse-exploit/" target="_blank" rel="noopener">[21]</a></sup></dd>
+      </dl>
+    </div>
+    <div class="actor">
+      <h3>NoName057(16)</h3>
+      <dl>
+        <dt>Type</dt><dd>Pro-Russian "hacktivist" group that floods websites with traffic (DDoS)</dd>
+        <dt>Latest</dt><dd>Placed under EU cyber sanctions on 16 Nov in a package of 30 people and two entities.<sup><a href="https://www.securityweek.com/in-other-news-norwegian-energy-firm-cyberattacks-supercomputer-hack-new-nightmare-eclipse-exploit/" target="_blank" rel="noopener">[21]</a></sup></dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Regulators and governments</h2>
+  <ul>
+    <li><strong>UK:</strong> the Bank of England, PRA and FCA proposed cyber-resilience guidance for financial firms (no new rules), plus good practice on AI-enabled attackers and quantum computing. Comments by 26 Feb 2027.<sup><a href="https://www.bankofengland.co.uk/news/2026/november/cyber-resilience-guidance-consultation-and-ai-and-quantum-effective-practices" target="_blank" rel="noopener">[18]</a></sup></li>
+    <li><strong>US:</strong> National Cyber Director Sean Cairncross is out; Pentagon CIO Kirsten Davies is acting. Two senators will hold up the CISA director nominee.<sup><a href="https://therecord.media/sean-cairncross-out-as-national-cyber-director" target="_blank" rel="noopener">[19]</a></sup></li>
+    <li><strong>EU:</strong> sanctions on NoName057(16), adopted alongside the UK.<sup><a href="https://www.securityweek.com/in-other-news-norwegian-energy-firm-cyberattacks-supercomputer-hack-new-nightmare-eclipse-exploit/" target="_blank" rel="noopener">[21]</a></sup></li>
+    <li>Nothing new found from the SEC, ECB/DORA, NYDFS or MAS. Not known whether Rakuten has reported to Japan's regulators.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Watchlist: next 1–3 days</h2>
+  <ul>
+    <li><strong>23 Nov:</strong> CISA deadline for vCenter, Cisco, SAP and Roller; Palo Alto fixes due.</li>
+    <li><strong>n0n:</strong> vendor names, customer counts, and phishing using the leaked emails.</li>
+    <li><strong>Rakuten:</strong> cause of the breach and regulator response.</li>
+    <li><strong>Java4Shell and NGINX:</strong> first confirmed break-ins.</li>
+    <li><strong>Ruby2Shell:</strong> public exploit release.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Confidence and gaps</h2>
+  <ul>
+    <li>Chase data counts come from Reuters' review, reported by SecurityWeek; vendors are unnamed.</li>
+    <li>Rakuten details rest on one English-language report of the firm's notice; numbers are maximums.</li>
+    <li>Florida arrests and EU sanctions are from a SecurityWeek round-up; the US Justice Department page could not be retrieved.</li>
+    <li>One site claimed an Apache web server flaw (CVE-2026-119618) is exploited; not confirmed, so left out.</li>
+    <li>BleepingComputer seen via search results only; no bank-specific story missed.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">9</span>2-minute security fix</h2>
+  <div class="quickfix"><b>Turn on instant alerts for every payment from your bank account</b>
+    <span class="fixmeta">2 minutes · phone · your personal bank and card apps</span>
+    <p><b>Why now:</b> this week's fraud arrests involved callers posing as bank staff who took over accounts and sent money out, and leaked customer emails from the JPMorgan, Visa and Mastercard suppliers make such calls more convincing. An instant alert lets you spot a payment you did not make within seconds.</p>
+    <ol>
+      <li>Open your bank's own app (not a link from a text or email) and tap <b>Settings</b>, <b>Profile</b> or <b>More</b>.</li>
+      <li>Find <b>Notifications</b> or <b>Alerts</b>. Switch on push alerts for <b>all card payments</b>, <b>money leaving your account</b>, <b>new payees</b> and <b>sign-ins from a new device</b>.</li>
+      <li>Allow notifications for the app on your phone: on iPhone, <b>Settings → Notifications → your bank app → Allow Notifications</b>; on Android, <b>Settings → Notifications → App notifications</b> and turn the bank app on.</li>
+    </ol>
+    <p><b>Done when:</b> a small test purchase pings your phone. Bonus: do the same for each credit card app, and help a parent set it up.</p>
+    <p class="fixnote">For your work devices and accounts, leave this to your IT team.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Glossary</h2>
+  <dl class="gloss">
+    <dt>Push alert</dt><dd>A message an app pops up on your phone's screen straight away.</dd>
+    <dt>Third-party (supplier) risk</dt><dd>The danger that a company you share data or access with is breached instead of you.</dd>
+    <dt>Data extortion</dt><dd>Stealing data and threatening to publish it unless paid.</dd>
+    <dt>Test environment</dt><dd>A copy of a system used to try changes; it should hold fake data.</dd>
+    <dt>Credit monitoring</dt><dd>A service that warns you if someone applies for credit in your name.</dd>
+    <dt>CISA exploited list (KEV)</dt><dd>The US cyber agency's list of flaws confirmed as used in real attacks, with fix deadlines for US agencies.</dd>
+    <dt>JNDI</dt><dd>A Java feature that looks up resources by name; if an attacker controls the lookup, the server can be tricked into talking to them.</dd>
+    <dt>Deserialisation flaw</dt><dd>A bug where a program unpacks data from outside without checking it, letting attackers slip in commands.</dd>
+    <dt>Buffer overflow</dt><dd>Writing more data into a memory space than it can hold, which can crash a program or let an attacker run code.</dd>
+    <dt>Remote code execution</dt><dd>Running your own commands on someone else's computer over the network.</dd>
+    <dt>Virtual machine / nested virtualisation</dt><dd>A software copy of a computer; nested means running virtual machines inside a virtual machine.</dd>
+    <dt>Kernel</dt><dd>The core of an operating system, which controls memory and hardware.</dd>
+    <dt>End of life</dt><dd>A product the maker no longer fixes.</dd>
+    <dt>HTTP/2</dt><dd>A faster version of the protocol browsers and servers use to talk.</dd>
+    <dt>DNS</dt><dd>The internet's address book, turning names into network addresses.</dd>
+    <dt>Accessibility services</dt><dd>Phone features that let apps read and control the screen for disabled users; malware abuses them.</dd>
+    <dt>Account takeover</dt><dd>A criminal gaining control of someone's online account, often by tricking them into handing over login details.</dd>
+    <dt>DDoS</dt><dd>Flooding a website with traffic so real users can't reach it.</dd>
+  </dl>
+</section>
+
+<section class="sources">
+  <h2>Sources</h2>
+  <ol>
+    <li>SecurityWeek, "JPMorgan, Visa, Mastercard Cite Third-Party Incidents Amid Data Leak", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/jpmorgan-visa-mastercard-cite-third-party-incidents-amid-data-leak/" target="_blank" rel="noopener">securityweek.com/jpmorgan-visa-mastercard-cite-third-party-incidents-amid-data-leak/</a></li>
+    <li>ABC News, "JPMorganChase, Mastercard, Visa report cyberattack on third-party service providers", 19 Nov 2026 <span class="tag">Secondary</span><br><a href="https://abcnews.com/US/jpmorgan-chase-reports-cyberattack-party-service-providers/story?id=138287705" target="_blank" rel="noopener">abcnews.com/US/jpmorgan-chase-reports-cyberattack-party-service-providers/story?id=138287705</a></li>
+    <li>CISA, "CISA Adds Four Known Exploited Vulnerabilities to Catalog", 20 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.cisa.gov/news-events/alerts/2026/11/20/cisa-adds-four-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">cisa.gov/news-events/alerts/2026/11/20/cisa-adds-four-known-exploited-vulnerabilities-catalog</a></li>
+    <li>CISA, "Known Exploited Vulnerabilities Catalog", accessed 21 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">cisa.gov/known-exploited-vulnerabilities-catalog</a></li>
+    <li>ASCII.jp, "Rakuten Securities: Up to 15.72 Million Accounts Potentially Leaked, Real Customer Data Found in Test Environment", Nov 2026 <span class="tag">Secondary</span><br><a href="https://ascii.jp/en/elem/000/004/452/4452471/" target="_blank" rel="noopener">ascii.jp/en/elem/000/004/452/4452471/</a></li>
+    <li>The Record, "Dozens of credit unions hit by supplier breach that went unnoticed for six weeks", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://therecord.media/dozens-of-credit-unions-hit-by-supplier-breach" target="_blank" rel="noopener">therecord.media/dozens-of-credit-unions-hit-by-supplier-breach</a></li>
+    <li>Security Affairs, "Infoblox Confirms Supply Chain Breach After Attackers Access Sensitive Data", Nov 2026 <span class="tag">Secondary</span><br><a href="https://securityaffairs.com/203309/data-breach/infoblox-confirms-supply-chain-breach-after-attackers-access-sensitive-data.html" target="_blank" rel="noopener">securityaffairs.com/203309/data-breach/infoblox-confirms-supply-chain-breach-after-attackers-access-sensitive-data.html</a></li>
+    <li>Palo Alto Networks, "CVE-2026-123633 Portfolio Status: Impact of NGINX Vulnerabilities on Palo Alto Networks Products", 21 Nov 2026 <span class="tag">Primary</span><br><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">security.paloaltonetworks.com/CVE-2026-123633</a></li>
+    <li>Palo Alto Networks, "Security Advisories" (Java4Shell portfolio status, 20 Nov 2026) <span class="tag">Primary</span><br><a href="https://security.paloaltonetworks.com/" target="_blank" rel="noopener">security.paloaltonetworks.com</a></li>
+    <li>SecurityWeek, "Ruby Patches Ruby2Shell Vulnerability That Could Lead to RCE", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/ruby-patches-ruby2shell-vulnerability-that-could-lead-to-rce/" target="_blank" rel="noopener">securityweek.com/ruby-patches-ruby2shell-vulnerability-that-could-lead-to-rce/</a></li>
+    <li>The Hacker News, "Linux KVM Flaw CVE-2026-99312 Lets Guest VMs Access Host Memory on AMD Hosts", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/new-linux-kvm-flaw-cve-2026-99312-lets.html" target="_blank" rel="noopener">thehackernews.com/2026/11/new-linux-kvm-flaw-cve-2026-99312-lets.html</a></li>
+    <li>The Hacker News, "SonicWall Warns Gen 6 Firewalls Won't Get Security Patches, Even for Critical Flaws", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/sonicwall-warns-gen-6-firewalls-wont.html" target="_blank" rel="noopener">thehackernews.com/2026/11/sonicwall-warns-gen-6-firewalls-wont.html</a></li>
+    <li>The Hacker News, "Hackers Exploit Critical Cisco Expressway Flaw, Breach Four Devices and Reach Internal Network", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-cisco.html" target="_blank" rel="noopener">thehackernews.com/2026/11/hackers-exploit-critical-cisco.html</a></li>
+    <li>SecurityWeek, "Critical Apache Roller, Axis Vulnerabilities Exploited in Attacks", 19 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/critical-apache-roller-axis-vulnerabilities-exploited-in-attacks/" target="_blank" rel="noopener">securityweek.com/critical-apache-roller-axis-vulnerabilities-exploited-in-attacks/</a></li>
+    <li>Tenable, "CVE-2025-42884", accessed 21 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.tenable.com/cve/CVE-2025-42884" target="_blank" rel="noopener">tenable.com/cve/CVE-2025-42884</a></li>
+    <li>The Hacker News, "Bazuka Android Malware Uses Fake Screen Overlays to Hide Credential Theft and Device Control", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/bazuka-android-malware-uses-fake-screen.html" target="_blank" rel="noopener">thehackernews.com/2026/11/bazuka-android-malware-uses-fake-screen.html</a></li>
+    <li>SecurityWeek, "WhatsApp Fixes Flaw Uncovered While Disrupting Scam Campaign", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/whatsapp-fixes-flaw-uncovered-while-disrupting-scam-campaign/" target="_blank" rel="noopener">securityweek.com/whatsapp-fixes-flaw-uncovered-while-disrupting-scam-campaign/</a></li>
+    <li>Bank of England, "Cyber resilience guidance consultation and AI and quantum effective practices", 19 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.bankofengland.co.uk/news/2026/november/cyber-resilience-guidance-consultation-and-ai-and-quantum-effective-practices" target="_blank" rel="noopener">bankofengland.co.uk/news/2026/november/cyber-resilience-guidance-consultation-and-ai-and-quantum-effective-practices</a></li>
+    <li>The Record, "Cyber Director Cairncross out as White House resets cyber leadership", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://therecord.media/sean-cairncross-out-as-national-cyber-director" target="_blank" rel="noopener">therecord.media/sean-cairncross-out-as-national-cyber-director</a></li>
+    <li>The Record, "Container Store restores systems after cyberattack", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://therecord.media/container-store-restores-systems-cyberattack" target="_blank" rel="noopener">therecord.media/container-store-restores-systems-cyberattack</a></li>
+    <li>SecurityWeek, "In Other News: Norwegian Energy Firm Cyberattacks, Supercomputer Hack, New Nightmare Eclipse Exploit", 20 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/in-other-news-norwegian-energy-firm-cyberattacks-supercomputer-hack-new-nightmare-eclipse-exploit/" target="_blank" rel="noopener">securityweek.com/in-other-news-norwegian-energy-firm-cyberattacks-supercomputer-hack-new-nightmare-eclipse-exploit/</a></li>
+  </ol>
+</section>
+
+<footer>Automated open-source intelligence; verify before acting. Audio is a machine-read summary of the page. <span class="sisterline">Also read the <a class="sister" href="https://ai.availabiliti.com/" target="_blank" rel="noopener">AI Brief ↗</a></span></footer>
+</div>
+<script>
+(function(){
+  var a=document.getElementById('audio'); if(!a) return;
+  var p=a.closest('.player'), pp=document.getElementById('pp'), seek=document.getElementById('seek'),
+      tcur=document.getElementById('tcur'), tdur=document.getElementById('tdur'), rate=document.getElementById('rate');
+  function fmt(t){t=Math.max(0,Math.floor(t||0));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+  // Speed: one button that cycles 1x -> 1.25x -> 1.5x, remembered on this device.
+  var RATES=[1,1.25,1.5], KR='cyberbrief-rate';
+  function setRate(r){a.playbackRate=r;a.defaultPlaybackRate=r;rate.textContent=r+'×';rate.classList.toggle('on',r!==1);
+    rate.setAttribute('aria-label','Playback speed, '+r+' times');try{localStorage.setItem(KR,String(r));}catch(e){}}
+  var r0=1;try{r0=parseFloat(localStorage.getItem(KR))||1;}catch(e){} if(RATES.indexOf(r0)<0)r0=1; setRate(r0);
+  rate.addEventListener('click',function(){setRate(RATES[(RATES.indexOf(a.playbackRate)+1)%RATES.length]||1);});
+  a.addEventListener('loadedmetadata',function(){a.playbackRate=a.defaultPlaybackRate;});
+  // Play / pause
+  pp.addEventListener('click',function(){if(a.paused){a.play().catch(function(){});}else{a.pause();}});
+  function state(){var on=!a.paused&&!a.ended;p.classList.toggle('playing',on);pp.setAttribute('aria-label',on?'Pause':'Play');}
+  ['play','playing','pause','ended','emptied'].forEach(function(ev){a.addEventListener(ev,state);});
+  // Scrubber and times
+  var dragging=false;
+  function paint(t){var d=a.duration;var f=(isFinite(d)&&d>0)?Math.min(1,t/d):0;seek.style.setProperty('--p',(f*100).toFixed(2)+'%');tcur.textContent=fmt(t);}
+  function tick(){if(dragging)return;var d=a.duration;seek.value=(isFinite(d)&&d>0)?Math.round(a.currentTime/d*1000):0;paint(a.currentTime);}
+  function durUp(){tdur.textContent=isFinite(a.duration)&&a.duration>0?fmt(a.duration):'--:--';tick();}
+  ['timeupdate','seeked','loadedmetadata','durationchange','emptied'].forEach(function(ev){a.addEventListener(ev,ev==='timeupdate'||ev==='seeked'?tick:durUp);});
+  durUp(); state();
+  seek.addEventListener('input',function(){dragging=true;var d=a.duration;if(isFinite(d))paint(seek.value/1000*d);});
+  seek.addEventListener('change',function(){var d=a.duration;if(isFinite(d)&&d>0){try{a.currentTime=seek.value/1000*d;}catch(e){} a.dispatchEvent(new Event('cb-userseek'));}dragging=false;tick();});
+  // Skip 10 seconds (buttons, lock screen and headphones)
+  function skip(s){var d=a.duration,t=(a.currentTime||0)+s;if(isFinite(d)&&d>0)t=Math.min(t,d-0.25);
+    try{a.currentTime=Math.max(0,t);}catch(e){} a.dispatchEvent(new Event('cb-userseek'));tick();}
+  document.querySelectorAll('.player .skip').forEach(function(b){b.addEventListener('click',function(){skip(parseFloat(b.dataset.s));});});
+  if('mediaSession' in navigator){try{
+    navigator.mediaSession.setActionHandler('seekbackward',function(e){skip(-((e&&e.seekOffset)||10));});
+    navigator.mediaSession.setActionHandler('seekforward',function(e){skip((e&&e.seekOffset)||10);});}catch(e){}}
+  if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, 21 Nov 2026',artist:'Daily threat intelligence'});}catch(e){}}
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+</body>
+</html>
