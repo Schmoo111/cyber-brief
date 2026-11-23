@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyber Brief 23 Nov 2026</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192-v3.png" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-v3.png">
+<meta name="theme-color" content="#2f1a5e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cyber Brief">
+<meta name="description" content="Daily cyber threat intelligence brief for banking, with audio.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: one reading column under a plum masthead; sticky audio bar; severity stripes on incident cards.
+   Identity: plum + violet brand (from the sword icon), warm orange for highlights, calm graded severity colours. */
+:root{
+  --bg:#f7f5fb; --surface:#ffffff; --fg:#1f1a2e; --muted:#625a75; --line:#e4dff0;
+  --brand:#2f1a5e; --brand-2:#5b2fb0; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.78);
+  --warm:#ef8a2b; --warm-ink:#9a4d08; --warm-soft:#fff1e2; --warm-on-brand:#ffbf80;
+  --accent:#5530b0; --accent-soft:#efe9fb;
+  --crit:#a8436a; --high:#b5651d; --med:#7d6e18; --low:#3d7a57;
+  --crit-bg:#f8e8ef; --high-bg:#fcefe1; --med-bg:#f5f0d9; --low-bg:#e5f2ea;
+  --shadow:0 1px 2px rgba(47,26,94,.06),0 6px 20px rgba(47,26,94,.06);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141020; --surface:#1d182c; --fg:#ece8f6; --muted:#a69ebd; --line:#312a48;
+  --brand:#2a1754; --brand-2:#4a279a; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.75);
+  --warm:#ffa552; --warm-ink:#ffbf80; --warm-soft:#3a2614; --warm-on-brand:#ffc48c;
+  --accent:#b9a2ff; --accent-soft:#2a2244;
+  --crit:#f09ab8; --high:#f2b072; --med:#ddd07a; --low:#93d2ad;
+  --crit-bg:#3a1a29; --high-bg:#3a2715; --med-bg:#333015; --low-bg:#17301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141020; --surface:#1d182c; --fg:#ece8f6; --muted:#a69ebd; --line:#312a48;
+  --brand:#2a1754; --brand-2:#4a279a; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.75);
+  --warm:#ffa552; --warm-ink:#ffbf80; --warm-soft:#3a2614; --warm-on-brand:#ffc48c;
+  --accent:#b9a2ff; --accent-soft:#2a2244;
+  --crit:#f09ab8; --high:#f2b072; --med:#ddd07a; --low:#93d2ad;
+  --crit-bg:#3a1a29; --high-bg:#3a2715; --med-bg:#333015; --low-bg:#17301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:flex;flex-direction:column;gap:34px}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--warm);outline-offset:2px}
+
+/* Masthead */
+header{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:8px;padding:22px 22px 20px;border-radius:18px;color:var(--on-brand);
+  background:radial-gradient(120% 140% at 100% 0%,var(--brand-2) 0%,var(--brand) 60%);box-shadow:var(--shadow)}
+header::after{content:"";position:absolute;right:-14px;bottom:-18px;width:150px;height:150px;opacity:.16;pointer-events:none;
+  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='rotate(40 50 50)'%3E%3Cpolygon points='50,4 56,14 56,62 44,62 44,14' fill='white'/%3E%3Crect x='28' y='62' width='44' height='7' rx='3.5' fill='%23ef8a2b'/%3E%3Crect x='46' y='69' width='8' height='18' rx='2' fill='white'/%3E%3Ccircle cx='50' cy='91' r='6' fill='%23ef8a2b'/%3E%3C/g%3E%3C/svg%3E")}
+header .eyebrow{color:var(--warm-on-brand)}
+header .meta{color:var(--on-brand-muted)}
+header h1{color:var(--on-brand)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:18px;height:2px;border-radius:2px;background:currentColor}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6.5vw,46px);line-height:1.04;letter-spacing:-.01em;margin:0;text-wrap:balance;max-width:16ch}
+h2{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:-.005em;margin:0 0 14px;text-wrap:balance;display:flex;gap:10px;align-items:center}
+h2 .n{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--warm-soft);color:var(--warm-ink);font:600 13px var(--mono)}
+h2:not(:has(.n))::before{content:"";flex:none;width:6px;height:20px;border-radius:3px;background:var(--warm)}
+h3{font-family:var(--display);font-size:18px;margin:0;font-weight:600;text-wrap:balance;line-height:1.3}
+p{margin:0}
+.meta{color:var(--muted);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+
+/* Audio */
+.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--warm);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.player .lbl{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.player .lbl strong{color:var(--fg);font-weight:600;font-family:var(--display);font-size:15px}
+audio{width:100%;height:40px;accent-color:var(--warm)}
+.speed{display:flex;gap:6px;flex-wrap:wrap}
+.speed button{font:500 12px var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:4px 11px;cursor:pointer}
+.speed button[aria-pressed="true"]{background:var(--warm-soft);border-color:var(--warm);color:var(--warm-ink)}
+
+/* Lists and callouts */
+ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:9px}
+li::marker{color:var(--warm)}
+.relevance{margin-top:16px;padding:13px 16px;background:var(--accent-soft);border-radius:12px;font-size:15px;border-left:4px solid var(--brand-2)}
+
+/* Incident cards */
+.incidents{display:flex;flex-direction:column;gap:14px}
+.incident{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sev);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.ctx{font-size:14.5px;color:var(--muted);background:var(--bg);border-radius:10px;padding:10px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.sev{background:var(--sevbg);color:var(--sev)}
+.crit{--sev:var(--crit);--sevbg:var(--crit-bg)}
+.high{--sev:var(--high);--sevbg:var(--high-bg)}
+.med{--sev:var(--med);--sevbg:var(--med-bg)}
+.low{--sev:var(--low);--sevbg:var(--low-bg)}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:7px 16px;font-size:15px}
+dt{font-weight:600;color:var(--muted);font-size:13px;padding-top:2px}
+dd{margin:0;min-width:0}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{padding-top:6px}}
+
+/* Tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:11px 13px;border-bottom:1px solid var(--line)}
+th{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.cve{font-family:var(--mono);font-size:13px;white-space:nowrap;color:var(--accent)}
+
+/* Actors */
+.actors{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.actor{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--brand-2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;font-size:15px;box-shadow:var(--shadow)}
+
+/* Glossary inside a brief */
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;font-size:15px}
+.gloss dt{color:var(--fg);font-size:14px}
+@media (max-width:520px){.gloss{grid-template-columns:1fr}}
+
+/* Citations and sources */
+sup a{font-family:var(--mono);font-size:11px;text-decoration:none;color:var(--warm-ink);background:var(--warm-soft);border-radius:4px;padding:0 3px;margin-left:1px}
+.sources ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.sources a{word-break:break-all}
+.tag{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-left:4px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:no-preference){a,button,.chip{transition:background-color .15s,color .15s,border-color .15s}}
+header .dateline{font-family:var(--display);font-weight:600;font-size:clamp(18px,4.2vw,22px);line-height:1.2;color:var(--on-brand);opacity:.9;margin-top:-2px}
+header .headmeta{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+header details.more{flex:none}
+header details.more[open]{flex-basis:100%}
+header details.more summary{display:inline-block;cursor:pointer;list-style:none;font:500 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--warm-on-brand);border:1px solid currentColor;border-radius:999px;padding:1px 9px}
+header details.more summary::-webkit-details-marker{display:none}
+header details.more summary::after{content:" ▾"}
+header details.more[open] summary::after{content:" ▴"}
+header details.more p{flex-basis:100%;margin-top:4px}
+.viewing{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--warm-soft);color:var(--warm-ink)}
+.viewing a{color:var(--warm-ink);font-weight:600}
+.viewing .btn{padding:4px 10px;font-size:13px;border-color:var(--warm-ink);color:var(--warm-ink)}
+.quickfix .fixroutes{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.quickfix .fixroutes details{background:var(--surface);border:1px solid var(--warm);border-radius:10px;padding:8px 12px}
+.quickfix .fixroutes summary{cursor:pointer;font-weight:600;font-family:var(--display);list-style:none;display:flex;justify-content:space-between;gap:8px}
+.quickfix .fixroutes summary::-webkit-details-marker{display:none}
+.quickfix .fixroutes summary::after{content:"+";color:var(--warm-ink);font-weight:700}
+.quickfix .fixroutes details[open] summary::after{content:"\2212"}
+.quickfix .fixroutes ol,.quickfix .fixroutes ul{margin:6px 0 2px;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+
+.archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.archive li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.archive li:last-child{border-bottom:0}
+.archive li a{font-weight:500;text-decoration:none}
+.archive li a:hover{text-decoration:underline}
+.archive .today{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);background:var(--warm-soft);border-radius:999px;padding:2px 9px}
+.backlink{font-size:14px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;font-size:14px}
+.toolbar a{border-radius:999px;padding:6px 14px;text-decoration:none;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.toolbar a:hover{background:var(--warm-soft);color:var(--warm-ink)}
+.player .voices{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted);grid-column:1/-1}
+.player .voices span{margin-right:4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-size:11px}
+.player .voices button{font:500 12px var(--body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:2px 10px;cursor:pointer}
+.player .voices button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.toolbar a[aria-expanded="true"]{background:var(--warm-soft);color:var(--warm-ink)}
+.search{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.search form{display:flex;gap:8px;flex-wrap:wrap}
+.search input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg)}
+.search input[type=search]:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn{font:600 14px var(--body);border:1.5px solid var(--brand-2);background:var(--brand-2);color:#fff;border-radius:12px;padding:10px 16px;cursor:pointer}
+.btn:hover{background:var(--brand)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn[disabled]{opacity:.5;cursor:default}
+.results{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.results h3{font:500 12px var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 8px}
+.hits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hits li{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.hits .when{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hits mark{background:var(--warm-soft);color:var(--fg);border-radius:3px;padding:0 2px}
+.weblinks{display:flex;gap:8px;flex-wrap:wrap}
+.weblinks a{font-size:14px;border-radius:999px;padding:6px 13px;text-decoration:none;background:var(--accent-soft);color:var(--accent)}
+.weblinks a::after{content:" ↗"}
+.ai{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--warm);border-radius:12px;padding:12px 14px;font-size:15px;white-space:pre-wrap;min-width:0}
+.ai-note{font-size:12px;color:var(--muted)}
+.idx{display:flex;flex-direction:column;gap:12px}
+.idx .row{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sev,var(--brand-2));border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:7px;font-size:14.5px;min-width:0;box-shadow:var(--shadow)}
+.idx .row h3{font-size:17px}
+.idx .dates{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.idx .dates a{font:500 12px var(--mono);border-radius:999px;padding:3px 10px;text-decoration:none;background:var(--accent-soft);color:var(--accent)}
+.terms{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.terms a{font-size:13px;border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--warm-soft);color:var(--warm-ink);font-weight:500}
+details.term{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-size:15px}
+details.term+details.term{margin-top:8px}
+details.term[open]{border-color:var(--brand-2);box-shadow:var(--shadow)}
+details.term summary{cursor:pointer;font-weight:600;font-family:var(--display)}
+details.term summary::marker{color:var(--warm)}
+details.term p{margin-top:6px}
+details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
+
+.quickfix{border:1px solid var(--warm);background:var(--warm-soft);border-radius:14px;padding:12px 15px;font-size:15px;box-shadow:var(--shadow)}
+.quickfix > b:first-child{font-family:var(--display);font-size:17px}
+.quickfix .fixmeta{display:block;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);margin:2px 0 6px}
+.quickfix p{margin:6px 0 0}
+.quickfix ol{margin:8px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.quickfix .fixnote{font-size:13px;color:var(--muted)}
+header .sisterpill{position:absolute;top:12px;right:12px;z-index:1;display:inline-flex;align-items:center;gap:6px;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px 3px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--on-brand);text-decoration:none;border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+header .sisterpill::before{content:"";width:7px;height:7px;border-radius:50%;background:#e8761c;box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
+header .sisterpill:hover{background:rgba(255,255,255,.24)}
+.toolbar a.sister{background:#e8761c;color:#fff;margin-left:auto}
+.toolbar a.sister:hover{background:#e8761c;color:#fff;filter:brightness(1.1)}
+footer a.sister,.backlink a.sister{font-weight:600}
+
+.wrap{max-width:820px;gap:22px;padding-block:12px 40px}
+body{line-height:1.55}
+header{padding:16px 18px 14px;border-radius:14px;gap:4px}
+header::after{width:110px;height:110px;right:-10px;bottom:-14px}
+h1{font-size:clamp(26px,5.5vw,38px)}
+header .dateline{font-size:clamp(16px,3.6vw,19px)}
+h2{font-size:20px;margin:0 0 10px}
+h2 .n{width:24px;height:24px;font-size:12px}
+.player{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:16px}
+.player .lbl{display:flex;align-items:baseline;gap:8px;min-width:0;font-size:12px;flex-wrap:nowrap}
+.player .lbl strong{font-size:14px;white-space:nowrap}
+.player .lbl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.player audio{display:none}
+.player button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:inherit}
+.player button:focus-visible,.player input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.player .rate{grid-column:2;grid-row:1;font:600 12px var(--mono);min-width:50px;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;font-variant-numeric:tabular-nums;transition:background .15s,border-color .15s}
+.player .rate:hover{border-color:var(--accent);color:var(--accent)}
+.player .rate.on{background:var(--warm-soft);border-color:var(--warm);color:var(--warm-ink)}
+.player .transport{grid-column:1/-1;display:flex;align-items:center;gap:4px}
+.player .transport button{flex:none;display:grid;place-items:center;border:0;padding:0;cursor:pointer;transition:transform .12s ease,background .15s,color .15s}
+.player .transport button:active{transform:scale(.9)}
+.player .skip{width:40px;height:40px;border-radius:50%;background:transparent;color:var(--muted)}
+.player .skip:hover{background:var(--accent-soft);color:var(--accent)}
+.player .skip svg{width:26px;height:26px;overflow:visible}
+.player .skip text{font:600 6.6px var(--body);letter-spacing:-.2px;fill:currentColor;stroke:none}
+.player .pp{width:48px;height:48px;border-radius:50%;color:#fff;background:linear-gradient(140deg,var(--brand-2),var(--brand));box-shadow:0 3px 10px rgba(47,26,94,.28)}
+.player .pp svg{width:20px;height:20px}
+.player .pp .i-pause,.player.playing .pp .i-play{display:none}
+.player.playing .pp .i-pause{display:block}
+.player .scrub{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;margin-left:8px}
+.player .times{display:flex;justify-content:space-between;font:500 11px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.player input[type=range]{--p:0%;-webkit-appearance:none;appearance:none;width:100%;height:22px;margin:0;background:transparent;cursor:pointer}
+.player input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(to right,var(--warm) var(--p),var(--line) var(--p))}
+.player input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;margin-top:-5px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .12s}
+.player input[type=range]:active::-webkit-slider-thumb{transform:scale(1.25)}
+.player input[type=range]::-moz-range-track{height:5px;border-radius:5px;background:var(--line)}
+.player input[type=range]::-moz-range-progress{height:5px;border-radius:5px;background:var(--warm)}
+.player input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.player .voices:not([hidden]){padding-top:8px;margin-top:2px;border-top:1px solid var(--line);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.player .voices::-webkit-scrollbar{display:none}
+.player .voices button{flex:none}
+.toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px;margin-block:-6px}
+.toolbar::-webkit-scrollbar{display:none}
+.toolbar a{flex:none;padding:5px 12px;font-size:13px}
+.search{padding:14px;border-radius:14px}
+.incidents,.idx{gap:10px}
+.incident{padding:12px 14px;gap:8px;border-radius:12px}
+.ctx{padding:8px 10px;font-size:14px}
+dl{gap:4px 14px}
+.relevance{margin-top:12px;padding:10px 12px}
+ul{gap:7px;padding-left:20px}
+.actor{padding:12px 14px}
+.idx .row{padding:12px 14px}
+.archive li{padding:10px 14px}
+.brief-swap{display:flex;flex-direction:column;gap:inherit}
+section:has(> h2 .n){padding-top:12px}
+@media (max-width:600px){
+  .wrap{gap:18px}
+  header .eyebrow{display:none}
+  header{padding:14px 16px 12px}
+  .incident,.idx .row,.actor{padding:11px 12px}
+  dl{grid-template-columns:1fr;gap:2px}
+  dt{padding-top:6px}
+  .search > .meta{display:none}
+  .search h2{margin-bottom:8px}
+  .tablewrap table{font-size:13px}
+  th,td{padding:9px 10px}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="backlink"><a href="/">← Latest brief, search, incident index and archive</a> · <a class="sister" href="https://ai.availabiliti.com/" target="_blank" rel="noopener">AI Brief ↗</a></p>
+<header data-voices="emma,fable,heart,boss,rapper">
+  <span class="eyebrow">Daily threat intelligence · Global banking</span>
+  <h1>Cyber Brief</h1>
+  <p class="dateline">Monday 23 November 2026 · Edition 6</p>
+  <div class="meta headmeta">Compiled ~06:00 UTC; covers roughly 22–23 Nov (a weekend). <details class="more"><summary>More</summary><p>Built from live web search. Technical terms are explained in the glossary at the end.</p></details></div>
+<a class="sisterpill" href="https://ai.availabiliti.com/" target="_blank" rel="noopener" aria-label="Open the AI Brief">AI Brief ↗</a></header>
+<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-23" data-base="../" data-voices="emma,fable,heart,boss,rapper" data-voice="emma">
+  <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
+  <button type="button" class="rate" id="rate" aria-label="Playback speed, 1 times">1×</button>
+  <audio id="audio" preload="metadata" src="../audio/2026-11-23.mp3"></audio>
+  <div class="transport">
+    <button type="button" class="skip" data-s="-10" aria-label="Back 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 8.9"/><path d="M4.5 4.4v4.5H9"/><text x="12.3" y="14.9" text-anchor="middle">10</text></svg></button>
+    <button type="button" class="pp" id="pp" aria-label="Play"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6c0 .8.9 1.3 1.6.8l10.2-6.8a1 1 0 0 0 0-1.6L9.6 4.4C8.9 3.9 8 4.4 8 5.2z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/></svg></button>
+    <button type="button" class="skip" data-s="10" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3l2.2 2.2"/><path d="M19.5 4.4v4.5H15"/><text x="11.7" y="14.9" text-anchor="middle">10</text></svg></button>
+    <div class="scrub"><input type="range" id="seek" min="0" max="1000" step="1" value="0" aria-label="Position in the brief"><div class="times"><span id="tcur">0:00</span><span id="tdur">--:--</span></div></div>
+  </div>
+  <div class="voices" role="group" aria-label="Voice" hidden></div>
+</div>
+<script>
+/* Voice picker: Emma (British female), Louis (British male), Kim (American female),
+   Tony (old-school mob boss) and MC Patch (rapper over a generated beat) -- original characters.
+   The choice is remembered on this device; switching keeps your place in the brief. */
+(function(){
+  var p=document.querySelector('.player'), a=document.getElementById('audio'); if(!p||!a) return;
+  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Louis',heart:'Kim',boss:'Tony',rapper:'MC Patch'};
+  function get(){try{return localStorage.getItem(KEYV)||'emma';}catch(e){return 'emma';}}
+  function srcFor(d,v){return (p.dataset.base||'')+'audio/'+d+(v==='emma'?'':'-'+v)+'.mp3';}
+  function list(){return (p.dataset.voices||'emma').split(',');}
+  function render(){var box=p.querySelector('.voices');if(!box)return;var vs=list(),cur=p.dataset.voice||'emma';box.hidden=vs.length<2;
+    box.innerHTML='<span>Voice</span>'+vs.map(function(v){return '<button type="button" data-v="'+v+'" aria-pressed="'+(v===cur)+'">'+(NAMES[v]||v)+'</button>';}).join('');}
+  function pick(d,vs){var pref=get();return vs.indexOf(pref)>=0?pref:'emma';}
+  window.cbVoice={
+    forDay:function(d,voices){p.dataset.date=d;p.dataset.voices=voices||'emma';p.dataset.voice=pick(d,list());render();return srcFor(d,p.dataset.voice);},
+    sync:function(src){var m=(src||'').match(/(\d{4}-\d{2}-\d{2})(?:-([a-z]+))?\.mp3/);if(!m)return;var v=m[2]||'emma';
+      p.dataset.date=m[1];if(list().indexOf(v)<0)p.dataset.voices=list().concat(v).join(',');p.dataset.voice=v;render();}
+  };
+  var v0=pick(p.dataset.date,list());
+  if(v0!=='emma'){a.setAttribute('src',srcFor(p.dataset.date,v0));}
+  p.dataset.voice=v0; render();
+  p.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.voices button'); if(!b) return;
+    var v=b.getAttribute('data-v'); if(v===p.dataset.voice) return;
+    var playing=!a.paused, ratio=(isFinite(a.duration)&&a.duration)?a.currentTime/a.duration:0, rate=a.playbackRate;
+    p.dataset.voice=v; try{localStorage.setItem(KEYV,v);}catch(err){} render();
+    a.setAttribute('src',srcFor(p.dataset.date,v)); a.load();
+    a.addEventListener('loadedmetadata',function f(){a.removeEventListener('loadedmetadata',f);
+      if(ratio){try{a.currentTime=ratio*a.duration;}catch(err){}} a.playbackRate=rate; if(playing) a.play().catch(function(){});});
+  });
+})();
+</script>
+
+<section>
+  <h2><span class="n">1</span>Top line</h2>
+  <ul>
+    <li><strong>Payment firm Cleverbridge says hackers copied stored card numbers, expiry dates and security codes (CVVs)</strong> used to buy software from firms such as Red Hat and Veeam. Card networks have been told; expect reissues and fraud on affected cards.<sup><a href="https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/" target="_blank" rel="noopener">[1]</a></sup></li>
+    <li><strong>Today (23 Nov) is CISA's deadline</strong> for four exploited flaws in VMware vCenter, Cisco Expressway, SAP NetWeaver and Apache Roller; Palo Alto's last NGINX fixes are also due today.<sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup><sup><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">[3]</a></sup></li>
+    <li><strong>Router maker GL.iNet's cloud service was abused to plant malware on customers' routers and remote-control (KVM) devices.</strong> The hole is closed, but infected devices stay infected.<sup><a href="https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/" target="_blank" rel="noopener">[4]</a></sup></li>
+    <li><strong>Rackspace Spot, a cloud hosting service, was entered with leaked passwords</strong>, letting attackers read customers' stored secrets.<sup><a href="https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/" target="_blank" rel="noopener">[5]</a></sup></li>
+  </ul>
+  <p class="relevance"><strong>Bank relevance:</strong> fraud teams should watch for card-not-present fraud linked to Cleverbridge; technology teams should confirm today's patches are done and check for GL.iNet kit and Rackspace Spot use.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>New incidents (past 24 hours)</h2>
+  <div class="incidents">
+    <article class="incident high" data-incident="cleverbridge" data-name="Cleverbridge payment card breach" id="inc-cleverbridge">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Payment data breach</span></div>
+      <h3>Cleverbridge: card numbers and security codes stolen</h3>
+      <p class="ctx"><b>Background:</b> Cleverbridge runs online shops and subscription billing for software companies; its listed clients include Red Hat, SUSE, Tenable, Veeam, Jamf and Sony. Card rules say the three-digit security code (CVV) should not be kept after a payment is approved, so finding it in stolen data is unusual.</p>
+      <dl>
+        <dt>Confirmed (Cleverbridge)</dt><dd>It spotted intruders on 4 Nov and briefly took systems offline. Its investigation found someone copied stored card numbers, expiry dates and CVVs; it says names and addresses were not taken and it was not ransomware. Notices went out from 20 Nov; regulators, police and card networks were told; free credit monitoring is offered.<sup><a href="https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/" target="_blank" rel="noopener">[1]</a></sup></dd>
+        <dt>Unknown</dt><dd>How many cards, how attackers got in, why CVVs were stored, and who did it. No group has claimed it.</dd>
+        <dt>Why it matters</dt><dd>Number, expiry and CVV together are enough for online fraud. Card issuers, banks included, may need to reissue cards and tune fraud rules for these merchants.</dd>
+      </dl>
+    </article>
+
+    <article class="incident high" data-incident="glinet-goodcloud" data-name="GL.iNet cloud flaw used to infect routers and KVMs" id="inc-glinet-goodcloud">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Supply-chain / device malware</span></div>
+      <h3>GL.iNet: cloud tool used to infect routers and KVM devices</h3>
+      <p class="ctx"><b>Background:</b> GL.iNet makes small home and travel routers and "KVM" boxes, which let someone control a computer remotely as if sitting at it. Its GoodCloud service manages those devices over the internet, so a weakness there reaches every connected device at once.</p>
+      <dl>
+        <dt>Confirmed (GL.iNet)</dt><dd>An unauthorised party exploited its cloud management service to install malware. GL.iNet says the hole is fixed, but this does not clean devices already infected; new firmware was due 22 Nov.<sup><a href="https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/" target="_blank" rel="noopener">[4]</a></sup></dd>
+        <dt>Researchers found</dt><dd>One consultancy found suspicious activity on 152 of 183 routers it checked, some with hidden backdoors. The malware hides itself and survives restarts. Its code has Chinese-language comments; that is not an attribution.<sup><a href="https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/" target="_blank" rel="noopener">[4]</a></sup></dd>
+        <dt>Action</dt><dd>Install the latest firmware, reinstall without restoring old settings if infection is suspected, and change any passwords the device held.</dd>
+        <dt>Why it matters</dt><dd>Staff use travel routers on the road; KVMs sit next to servers. An infected one is a foothold.</dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="rackspace-spot" data-name="Rackspace Spot breach" id="inc-rackspace-spot">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: Medium</span><span class="chip">Cloud provider breach</span></div>
+      <h3>Rackspace Spot: leaked logins exposed customers' secrets</h3>
+      <p class="ctx"><b>Background:</b> Rackspace is a US cloud hosting firm. Spot, built with partner Platform9, runs customers' software in "containers" managed by Kubernetes, a popular system for running many small apps; "Kubernetes Secrets" are where those apps keep their passwords and keys.</p>
+      <dl>
+        <dt>Confirmed (Rackspace)</dt><dd>On 17 Nov someone used leaked credentials to act as real users in some customer accounts, start their own software and read stored secrets. Found 18 Nov after a customer report; service fully restored 21 Nov.<sup><a href="https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/" target="_blank" rel="noopener">[5]</a></sup></dd>
+        <dt>Action</dt><dd>Customers should reissue access tokens, change every password stored in their secrets and check logs back to 17 Nov.</dd>
+      </dl>
+    </article>
+
+    <article class="incident low" data-incident="badbox" data-name="BADBOX Android TV-box botnet" id="inc-badbox">
+      <div class="chips"><span class="chip sev">Low</span><span class="chip">Confidence: Medium</span><span class="chip">Botnet / ad fraud</span></div>
+      <h3>BADBOX 3.0: cheap TV boxes back in a record fraud network</h3>
+      <p class="ctx"><b>Background:</b> BADBOX is malware pre-installed on cheap, uncertified Android TV boxes, tablets and phones. Infected devices join a "botnet" used for advertising fraud and to route criminals' internet traffic through people's homes.</p>
+      <dl>
+        <dt>Researchers found</dt><dd>HUMAN, an anti-fraud firm, says the new version peaked at about 40 billion fake ad requests a day, a record. It links the malware to a Chinese electronics maker; Google has sued earlier operators.<sup><a href="https://www.bleepingcomputer.com/news/security/badbox-30-botnet-returns-with-record-breaking-40-billion-daily-ad-requests/" target="_blank" rel="noopener">[6]</a></sup></dd>
+        <dt>Why it matters</dt><dd>Fraudsters use such home connections to disguise logins to online banking.</dd>
+      </dl>
+    </article>
+
+    <article class="incident low" data-incident="signal-ai-block" data-name="Signal blocks AI agents from reading chats" id="inc-signal-ai-block">
+      <div class="chips"><span class="chip sev">Low</span><span class="chip">Confidence: High</span><span class="chip">Privacy</span></div>
+      <h3>Signal blocks phone AI assistants from reading chats</h3>
+      <dl>
+        <dt>Confirmed (Signal)</dt><dd>The encrypted messaging app now blocks screenshots by default, so built-in AI agents on iPhone and Android cannot read conversations off the screen. Signal admits the protection is incomplete.<sup><a href="https://thehackernews.com/2026/11/signal-blocks-ai-agents-from-reading.html" target="_blank" rel="noopener">[7]</a></sup></dd>
+        <dt>Why it matters</dt><dd>Phone AI assistants can see whatever is on screen, including work chats.</dd>
+      </dl>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Updates to ongoing cases</h2>
+  <div class="incidents">
+    <article class="incident crit" data-incident="vcenter-armory-castle" data-name="VMware vCenter zero-day (CVE-2026-123890)" id="inc-vcenter-armory-castle">
+      <div class="chips"><span class="chip sev">Critical</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>vCenter: patch deadline is today</h3>
+      <p class="ctx"><b>Background:</b> vCenter is VMware's console for running a data centre's virtual servers. The flaw lets an attacker on the network skip the login entirely.</p>
+      <dl><dt>What's new</dt><dd>CISA's deadline for US agencies is today. Reporting links attacks to Armory Castle, a suspected China-linked spy group, which chained it with a BeyondTrust remote-support flaw.<sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident high" data-incident="cisco-expressway" data-name="Cisco Expressway flaw exploited (CVE-2026-76466)" id="inc-cisco-expressway">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>Cisco Expressway: deadline today</h3>
+      <p class="ctx"><b>Background:</b> Expressway connects outside callers to a firm's video and phone system. The flaw is a password built into the product that customers cannot change.</p>
+      <dl><dt>What's new</dt><dd>Deadline today; it has already been used to breach a Russian organisation.<sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident med" data-incident="sap-netweaver-portal" data-name="SAP NetWeaver portal flaw exploited (CVE-2025-42884)" id="inc-sap-netweaver-portal">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: Medium</span><span class="chip">Update</span></div>
+      <h3>SAP NetWeaver portal and Apache Roller: deadline today</h3>
+      <p class="ctx"><b>Background:</b> SAP NetWeaver Enterprise Portal is the web front door to SAP business systems; Apache Roller is open-source blogging software whose flaw lets anyone run commands without logging in.</p>
+      <dl><dt>What's new</dt><dd>Both are due today. CISA lists the SAP flaw as exploited, though no public attack reports were found.<sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident high" data-incident="nginx2root" data-name="nginx2root: NGINX HTTP/2 flaw (CVE-2026-123007)" id="inc-nginx2root">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>nginx2root: Palo Alto's final fixes due today</h3>
+      <p class="ctx"><b>Background:</b> NGINX is web-server software built into many products; flaws in how it handles HTTP/2 could let an attacker crash it or run code.</p>
+      <dl><dt>What's new</dt><dd>Three remaining firewall software fixes are due 23 Nov. Only devices with HTTP/2 switched on are affected; Palo Alto knows of no attacks.<sup><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">[3]</a></sup></dd></dl>
+    </article>
+  </div>
+  <p class="meta" style="margin-top:10px">FBI NCIC, Microsoft Entra Connect Health, n0n (JPMorgan, Visa, Mastercard), GPGME, Ghostscript and the AI-provider prompt theft: no material new information found.</p>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Vulnerabilities to act on</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Flaw</th><th>What the product is</th><th>What to know</th></tr></thead>
+    <tbody>
+      <tr><td class="cve" id="inc-cve-2026-123890">CVE-2026-123890</td><td><b>VMware vCenter</b>, virtual-server console</td><td>Exploited (espionage). Deadline today. <b>Upgrade to the fixed release.</b><sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-76466">CVE-2026-76466</td><td><b>Cisco Expressway</b>, video-call gateway</td><td>Exploited. Deadline today. <b>Upgrade.</b><sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2025-42884">CVE-2025-42884</td><td><b>SAP NetWeaver Enterprise Portal</b></td><td>Exploited per CISA. Deadline today. <b>Apply SAP's fix.</b><sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-129448">CVE-2026-129448</td><td><b>Apache Roller</b>, blogging software</td><td>Exploited; no login needed. Deadline today. <b>Upgrade.</b><sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-123633">CVE-2026-123633, -123007</td><td><b>NGINX</b> in Palo Alto firewalls (PAN-OS, Panorama)</td><td>Not exploited. Last fixes due today. <b>Upgrade or switch off HTTP/2.</b><sup><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">[3]</a></sup></td></tr>
+      <tr><td class="cve">No CVE</td><td><b>GL.iNet</b> routers and KVMs (GoodCloud)</td><td>Exploited; cloud side fixed. <b>Install latest firmware; reinstall clean if infected.</b><sup><a href="https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/" target="_blank" rel="noopener">[4]</a></sup></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="meta" style="margin-top:10px">No new critical flaws in major bank software were disclosed over the weekend; GPGME and Ghostscript (22 Nov brief) still need upgrading.</p>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Threat actors</h2>
+  <div class="actors">
+    <div class="actor">
+      <h3>Armory Castle (formerly UNC5221)</h3>
+      <dl>
+        <dt>Type</dt><dd>Cyber-espionage group; suspected China-linked (medium confidence)</dd>
+        <dt>Methods</dt><dd>Breaks into network and IT-management systems, plants backdoors, steals data.</dd>
+        <dt>Latest</dt><dd>vCenter zero-day chained with a BeyondTrust flaw.<sup><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">[2]</a></sup></dd>
+      </dl>
+    </div>
+    <div class="actor">
+      <h3>BADBOX operators</h3>
+      <dl>
+        <dt>Type</dt><dd>Fraud crime network; HUMAN links it to a Chinese electronics maker (medium confidence)</dd>
+        <dt>Methods</dt><dd>Malware pre-installed on cheap Android devices; ad fraud and home-proxy services.</dd>
+        <dt>Lineage</dt><dd>Seen since 2023; disrupted in 2025 and early Nov 2026, and keeps returning.<sup><a href="https://www.bleepingcomputer.com/news/security/badbox-30-botnet-returns-with-record-breaking-40-billion-daily-ad-requests/" target="_blank" rel="noopener">[6]</a></sup></dd>
+      </dl>
+    </div>
+    <div class="actor">
+      <h3>Unknown attackers</h3>
+      <dl>
+        <dt>Type</dt><dd>Unidentified; origin unknown</dd>
+        <dt>Latest</dt><dd>Behind Cleverbridge, GL.iNet and Rackspace Spot. Nobody has claimed them.<sup><a href="https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/" target="_blank" rel="noopener">[1]</a></sup><sup><a href="https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/" target="_blank" rel="noopener">[4]</a></sup><sup><a href="https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/" target="_blank" rel="noopener">[5]</a></sup></dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Regulators and governments</h2>
+  <ul>
+    <li><strong>CISA:</strong> no new exploited-flaw additions since 20 Nov.<sup><a href="https://www.cisa.gov/news-events/cybersecurity-advisories" target="_blank" rel="noopener">[8]</a></sup></li>
+    <li><strong>Cleverbridge</strong> says it has told data protection authorities and law enforcement.<sup><a href="https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/" target="_blank" rel="noopener">[1]</a></sup></li>
+    <li>Nothing new found from the SEC, FCA, ECB/DORA, NYDFS or MAS over the weekend.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Watchlist: next 1–3 days</h2>
+  <ul>
+    <li><strong>Today:</strong> CISA deadline for vCenter, Cisco, SAP and Roller; Palo Alto's last fixes.</li>
+    <li><strong>Cleverbridge:</strong> number of cards affected and which software brands' buyers were hit.</li>
+    <li><strong>GL.iNet:</strong> firmware release and any wider count of infected devices.</li>
+    <li><strong>FBI NCIC:</strong> official confirmation and scope.</li>
+    <li><strong>Monday news:</strong> weekend incidents are often disclosed at the start of the week.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Confidence and gaps</h2>
+  <ul>
+    <li>Cleverbridge, GL.iNet and Rackspace details come from BleepingComputer's reading of company notices; the notices themselves were not retrieved.</li>
+    <li>The BADBOX findings are one research firm's work.</li>
+    <li>It was a quiet weekend with few vendor advisories, and search indexes lag; Asia-Pacific Monday news may not yet be indexed.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">9</span>2-minute security fix</h2>
+  <div class="quickfix"><b>Lock the bank cards you rarely use</b>
+    <span class="fixmeta">2 minutes · phone · your personal banking apps</span>
+    <p><b>Why now:</b> the Cleverbridge breach shows card numbers and security codes can be stolen from a shop you used once, years ago. A locked card can't be charged, and you can unlock it in seconds when you need it.</p>
+    <ol>
+      <li>Open your bank or card provider's app and tap the card you seldom use (a backup credit card, an old store card).</li>
+      <li>Look for <b>Freeze card</b>, <b>Lock card</b> or <b>Card controls</b> and switch it on. Most UK, US and EU banks offer this.</li>
+      <li>While there, check for an option to block <b>online</b> or <b>overseas</b> payments on cards you only use in person.</li>
+    </ol>
+    <p><b>Done when:</b> every card you don't use weekly shows as frozen or locked. If your bank has no freeze option, call the number on the card and ask about a temporary block. Bonus: show a parent or teenager where the button is.</p>
+    <p class="fixnote">For your work devices and accounts, leave this to your IT team.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Glossary</h2>
+  <dl class="gloss">
+    <dt>CVV</dt><dd>The three- or four-digit security code on a payment card, used to prove you hold it when buying online.</dd>
+    <dt>Card-not-present fraud</dt><dd>Fraud using stolen card details online or by phone, without the physical card.</dd>
+    <dt>Card freeze / lock</dt><dd>A banking-app switch that temporarily blocks new payments on a card.</dd>
+    <dt>KVM device</dt><dd>A box that lets someone control a computer's keyboard, screen and mouse remotely.</dd>
+    <dt>Firmware</dt><dd>The built-in software that runs a device such as a router.</dd>
+    <dt>Backdoor</dt><dd>A hidden way back into a system that an attacker leaves behind.</dd>
+    <dt>Credentials</dt><dd>Login details such as usernames, passwords and access keys.</dd>
+    <dt>Container / Kubernetes</dt><dd>A container is a packaged app; Kubernetes is a popular system for running many of them.</dd>
+    <dt>Kubernetes Secrets</dt><dd>Where apps running on Kubernetes keep their passwords and keys.</dd>
+    <dt>Access token</dt><dd>A digital pass that lets software act as a user without retyping a password.</dd>
+    <dt>Botnet</dt><dd>A network of infected devices controlled together by criminals.</dd>
+    <dt>Residential proxy</dt><dd>A service that routes someone's internet traffic through a home connection to disguise where it comes from.</dd>
+    <dt>AI agent</dt><dd>An AI that carries out tasks on its own, such as reading the screen or sending messages.</dd>
+    <dt>Zero-day</dt><dd>A flaw attackers use before the maker has a fix.</dd>
+    <dt>Hard-coded password</dt><dd>A password built into a product that customers can't change.</dd>
+    <dt>CISA exploited list (KEV)</dt><dd>The US cyber agency's list of flaws confirmed as used in attacks, with fix deadlines for US agencies.</dd>
+    <dt>HTTP/2</dt><dd>A faster version of the protocol browsers and servers use to talk.</dd>
+    <dt>Ransomware</dt><dd>Malicious software that locks a victim's files until a ransom is paid.</dd>
+  </dl>
+</section>
+
+<section class="sources">
+  <h2>Sources</h2>
+  <ol>
+    <li>BleepingComputer, "Cleverbridge warns hackers stole credit card numbers, CVVs in data breach", 22 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/" target="_blank" rel="noopener">bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/</a></li>
+    <li>The Hacker News, "Hackers Exploit Critical VMware, Cisco, and Apache Flaws as Espionage Attacks Emerge", 21 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html" target="_blank" rel="noopener">thehackernews.com/2026/11/hackers-exploit-critical-vmware-cisco.html</a></li>
+    <li>Palo Alto Networks, "CVE-2026-123633 Portfolio Status: Impact of NGINX Vulnerabilities on Palo Alto Networks Products", updated 20–21 Nov 2026 <span class="tag">Primary</span><br><a href="https://security.paloaltonetworks.com/CVE-2026-123633" target="_blank" rel="noopener">security.paloaltonetworks.com/CVE-2026-123633</a></li>
+    <li>BleepingComputer, "Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices", 22 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/" target="_blank" rel="noopener">bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/</a></li>
+    <li>BleepingComputer, "Rackspace Spot breach let hackers access customer Kubernetes secrets", 21 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/" target="_blank" rel="noopener">bleepingcomputer.com/news/security/rackspace-spot-breach-let-hackers-access-customer-kubernetes-secrets/</a></li>
+    <li>BleepingComputer, "BADBOX botnet returns with record-breaking 40 billion daily ad requests", 21 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.bleepingcomputer.com/news/security/badbox-30-botnet-returns-with-record-breaking-40-billion-daily-ad-requests/" target="_blank" rel="noopener">bleepingcomputer.com/news/security/badbox-30-botnet-returns-with-record-breaking-40-billion-daily-ad-requests/</a></li>
+    <li>The Hacker News, "Signal Blocks AI Agents From Reading Private Chats via Screenshots on Android and iOS", 21 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/signal-blocks-ai-agents-from-reading.html" target="_blank" rel="noopener">thehackernews.com/2026/11/signal-blocks-ai-agents-from-reading.html</a></li>
+    <li>CISA, "Cybersecurity Alerts &amp; Advisories", accessed 23 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.cisa.gov/news-events/cybersecurity-advisories" target="_blank" rel="noopener">cisa.gov/news-events/cybersecurity-advisories</a></li>
+  </ol>
+</section>
+
+<footer>Automated open-source intelligence; verify before acting. Audio is a machine-read summary of the page. <span class="sisterline">Also read the <a class="sister" href="https://ai.availabiliti.com/" target="_blank" rel="noopener">AI Brief ↗</a></span></footer>
+</div>
+<script>
+(function(){
+  var a=document.getElementById('audio'); if(!a) return;
+  var p=a.closest('.player'), pp=document.getElementById('pp'), seek=document.getElementById('seek'),
+      tcur=document.getElementById('tcur'), tdur=document.getElementById('tdur'), rate=document.getElementById('rate');
+  function fmt(t){t=Math.max(0,Math.floor(t||0));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+  // Speed: one button that cycles 1x -> 1.25x -> 1.5x, remembered on this device.
+  var RATES=[1,1.25,1.5], KR='cyberbrief-rate';
+  function setRate(r){a.playbackRate=r;a.defaultPlaybackRate=r;rate.textContent=r+'×';rate.classList.toggle('on',r!==1);
+    rate.setAttribute('aria-label','Playback speed, '+r+' times');try{localStorage.setItem(KR,String(r));}catch(e){}}
+  var r0=1;try{r0=parseFloat(localStorage.getItem(KR))||1;}catch(e){} if(RATES.indexOf(r0)<0)r0=1; setRate(r0);
+  rate.addEventListener('click',function(){setRate(RATES[(RATES.indexOf(a.playbackRate)+1)%RATES.length]||1);});
+  a.addEventListener('loadedmetadata',function(){a.playbackRate=a.defaultPlaybackRate;});
+  // Play / pause
+  pp.addEventListener('click',function(){if(a.paused){a.play().catch(function(){});}else{a.pause();}});
+  function state(){var on=!a.paused&&!a.ended;p.classList.toggle('playing',on);pp.setAttribute('aria-label',on?'Pause':'Play');}
+  ['play','playing','pause','ended','emptied'].forEach(function(ev){a.addEventListener(ev,state);});
+  // Scrubber and times
+  var dragging=false;
+  function paint(t){var d=a.duration;var f=(isFinite(d)&&d>0)?Math.min(1,t/d):0;seek.style.setProperty('--p',(f*100).toFixed(2)+'%');tcur.textContent=fmt(t);}
+  function tick(){if(dragging)return;var d=a.duration;seek.value=(isFinite(d)&&d>0)?Math.round(a.currentTime/d*1000):0;paint(a.currentTime);}
+  function durUp(){tdur.textContent=isFinite(a.duration)&&a.duration>0?fmt(a.duration):'--:--';tick();}
+  ['timeupdate','seeked','loadedmetadata','durationchange','emptied'].forEach(function(ev){a.addEventListener(ev,ev==='timeupdate'||ev==='seeked'?tick:durUp);});
+  durUp(); state();
+  seek.addEventListener('input',function(){dragging=true;var d=a.duration;if(isFinite(d))paint(seek.value/1000*d);});
+  seek.addEventListener('change',function(){var d=a.duration;if(isFinite(d)&&d>0){try{a.currentTime=seek.value/1000*d;}catch(e){} a.dispatchEvent(new Event('cb-userseek'));}dragging=false;tick();});
+  // Skip 10 seconds (buttons, lock screen and headphones)
+  function skip(s){var d=a.duration,t=(a.currentTime||0)+s;if(isFinite(d)&&d>0)t=Math.min(t,d-0.25);
+    try{a.currentTime=Math.max(0,t);}catch(e){} a.dispatchEvent(new Event('cb-userseek'));tick();}
+  document.querySelectorAll('.player .skip').forEach(function(b){b.addEventListener('click',function(){skip(parseFloat(b.dataset.s));});});
+  if('mediaSession' in navigator){try{
+    navigator.mediaSession.setActionHandler('seekbackward',function(e){skip(-((e&&e.seekOffset)||10));});
+    navigator.mediaSession.setActionHandler('seekforward',function(e){skip((e&&e.seekOffset)||10);});}catch(e){}}
+  if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, 23 Nov 2026',artist:'Daily threat intelligence'});}catch(e){}}
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+</body>
+</html>
