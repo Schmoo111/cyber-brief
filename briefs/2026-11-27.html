@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyber Brief 27 Nov 2026</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192-v3.png" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon-v3.png">
+<meta name="theme-color" content="#2f1a5e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cyber Brief">
+<meta name="description" content="Daily cyber threat intelligence brief for banking, with audio.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: one reading column under a plum masthead; sticky audio bar; severity stripes on incident cards.
+   Identity: plum + violet brand (from the sword icon), warm orange for highlights, calm graded severity colours. */
+:root{
+  --bg:#f7f5fb; --surface:#ffffff; --fg:#1f1a2e; --muted:#625a75; --line:#e4dff0;
+  --brand:#2f1a5e; --brand-2:#5b2fb0; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.78);
+  --warm:#ef8a2b; --warm-ink:#9a4d08; --warm-soft:#fff1e2; --warm-on-brand:#ffbf80;
+  --accent:#5530b0; --accent-soft:#efe9fb;
+  --crit:#a8436a; --high:#b5651d; --med:#7d6e18; --low:#3d7a57;
+  --crit-bg:#f8e8ef; --high-bg:#fcefe1; --med-bg:#f5f0d9; --low-bg:#e5f2ea;
+  --shadow:0 1px 2px rgba(47,26,94,.06),0 6px 20px rgba(47,26,94,.06);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141020; --surface:#1d182c; --fg:#ece8f6; --muted:#a69ebd; --line:#312a48;
+  --brand:#2a1754; --brand-2:#4a279a; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.75);
+  --warm:#ffa552; --warm-ink:#ffbf80; --warm-soft:#3a2614; --warm-on-brand:#ffc48c;
+  --accent:#b9a2ff; --accent-soft:#2a2244;
+  --crit:#f09ab8; --high:#f2b072; --med:#ddd07a; --low:#93d2ad;
+  --crit-bg:#3a1a29; --high-bg:#3a2715; --med-bg:#333015; --low-bg:#17301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141020; --surface:#1d182c; --fg:#ece8f6; --muted:#a69ebd; --line:#312a48;
+  --brand:#2a1754; --brand-2:#4a279a; --on-brand:#ffffff; --on-brand-muted:rgba(255,255,255,.75);
+  --warm:#ffa552; --warm-ink:#ffbf80; --warm-soft:#3a2614; --warm-on-brand:#ffc48c;
+  --accent:#b9a2ff; --accent-soft:#2a2244;
+  --crit:#f09ab8; --high:#f2b072; --med:#ddd07a; --low:#93d2ad;
+  --crit-bg:#3a1a29; --high-bg:#3a2715; --med-bg:#333015; --low-bg:#17301f;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:flex;flex-direction:column;gap:34px}
+a{color:var(--accent);text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--warm);outline-offset:2px}
+
+/* Masthead */
+header{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:8px;padding:22px 22px 20px;border-radius:18px;color:var(--on-brand);
+  background:radial-gradient(120% 140% at 100% 0%,var(--brand-2) 0%,var(--brand) 60%);box-shadow:var(--shadow)}
+header::after{content:"";position:absolute;right:-14px;bottom:-18px;width:150px;height:150px;opacity:.16;pointer-events:none;
+  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg transform='rotate(40 50 50)'%3E%3Cpolygon points='50,4 56,14 56,62 44,62 44,14' fill='white'/%3E%3Crect x='28' y='62' width='44' height='7' rx='3.5' fill='%23ef8a2b'/%3E%3Crect x='46' y='69' width='8' height='18' rx='2' fill='white'/%3E%3Ccircle cx='50' cy='91' r='6' fill='%23ef8a2b'/%3E%3C/g%3E%3C/svg%3E")}
+header .eyebrow{color:var(--warm-on-brand)}
+header .meta{color:var(--on-brand-muted)}
+header h1{color:var(--on-brand)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:"";width:18px;height:2px;border-radius:2px;background:currentColor}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,6.5vw,46px);line-height:1.04;letter-spacing:-.01em;margin:0;text-wrap:balance;max-width:16ch}
+h2{font-family:var(--display);font-weight:700;font-size:23px;letter-spacing:-.005em;margin:0 0 14px;text-wrap:balance;display:flex;gap:10px;align-items:center}
+h2 .n{flex:none;display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--warm-soft);color:var(--warm-ink);font:600 13px var(--mono)}
+h2:not(:has(.n))::before{content:"";flex:none;width:6px;height:20px;border-radius:3px;background:var(--warm)}
+h3{font-family:var(--display);font-size:18px;margin:0;font-weight:600;text-wrap:balance;line-height:1.3}
+p{margin:0}
+.meta{color:var(--muted);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+
+/* Audio */
+.player{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--warm);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.player .lbl{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.player .lbl strong{color:var(--fg);font-weight:600;font-family:var(--display);font-size:15px}
+audio{width:100%;height:40px;accent-color:var(--warm)}
+.speed{display:flex;gap:6px;flex-wrap:wrap}
+.speed button{font:500 12px var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:4px 11px;cursor:pointer}
+.speed button[aria-pressed="true"]{background:var(--warm-soft);border-color:var(--warm);color:var(--warm-ink)}
+
+/* Lists and callouts */
+ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:9px}
+li::marker{color:var(--warm)}
+.relevance{margin-top:16px;padding:13px 16px;background:var(--accent-soft);border-radius:12px;font-size:15px;border-left:4px solid var(--brand-2)}
+
+/* Incident cards */
+.incidents{display:flex;flex-direction:column;gap:14px}
+.incident{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sev);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.ctx{font-size:14.5px;color:var(--muted);background:var(--bg);border-radius:10px;padding:10px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.sev{background:var(--sevbg);color:var(--sev)}
+.crit{--sev:var(--crit);--sevbg:var(--crit-bg)}
+.high{--sev:var(--high);--sevbg:var(--high-bg)}
+.med{--sev:var(--med);--sevbg:var(--med-bg)}
+.low{--sev:var(--low);--sevbg:var(--low-bg)}
+dl{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:7px 16px;font-size:15px}
+dt{font-weight:600;color:var(--muted);font-size:13px;padding-top:2px}
+dd{margin:0;min-width:0}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{padding-top:6px}}
+
+/* Tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:11px 13px;border-bottom:1px solid var(--line)}
+th{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.cve{font-family:var(--mono);font-size:13px;white-space:nowrap;color:var(--accent)}
+
+/* Actors */
+.actors{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.actor{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--brand-2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;font-size:15px;box-shadow:var(--shadow)}
+
+/* Glossary inside a brief */
+.gloss{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;font-size:15px}
+.gloss dt{color:var(--fg);font-size:14px}
+@media (max-width:520px){.gloss{grid-template-columns:1fr}}
+
+/* Citations and sources */
+sup a{font-family:var(--mono);font-size:11px;text-decoration:none;color:var(--warm-ink);background:var(--warm-soft);border-radius:4px;padding:0 3px;margin-left:1px}
+.sources ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.sources a{word-break:break-all}
+.tag{font:500 10px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-left:4px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:no-preference){a,button,.chip{transition:background-color .15s,color .15s,border-color .15s}}
+header .dateline{font-family:var(--display);font-weight:600;font-size:clamp(18px,4.2vw,22px);line-height:1.2;color:var(--on-brand);opacity:.9;margin-top:-2px}
+header .headmeta{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+header details.more{flex:none}
+header details.more[open]{flex-basis:100%}
+header details.more summary{display:inline-block;cursor:pointer;list-style:none;font:500 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--warm-on-brand);border:1px solid currentColor;border-radius:999px;padding:1px 9px}
+header details.more summary::-webkit-details-marker{display:none}
+header details.more summary::after{content:" ▾"}
+header details.more[open] summary::after{content:" ▴"}
+header details.more p{flex-basis:100%;margin-top:4px}
+.viewing{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:14px;margin:0 0 10px;padding:8px 12px;border-radius:12px;background:var(--warm-soft);color:var(--warm-ink)}
+.viewing a{color:var(--warm-ink);font-weight:600}
+.viewing .btn{padding:4px 10px;font-size:13px;border-color:var(--warm-ink);color:var(--warm-ink)}
+.quickfix .fixroutes{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.quickfix .fixroutes details{background:var(--surface);border:1px solid var(--warm);border-radius:10px;padding:8px 12px}
+.quickfix .fixroutes summary{cursor:pointer;font-weight:600;font-family:var(--display);list-style:none;display:flex;justify-content:space-between;gap:8px}
+.quickfix .fixroutes summary::-webkit-details-marker{display:none}
+.quickfix .fixroutes summary::after{content:"+";color:var(--warm-ink);font-weight:700}
+.quickfix .fixroutes details[open] summary::after{content:"\2212"}
+.quickfix .fixroutes ol,.quickfix .fixroutes ul{margin:6px 0 2px;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+
+.archive ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+.archive li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.archive li:last-child{border-bottom:0}
+.archive li a{font-weight:500;text-decoration:none}
+.archive li a:hover{text-decoration:underline}
+.archive .today{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);background:var(--warm-soft);border-radius:999px;padding:2px 9px}
+.backlink{font-size:14px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;font-size:14px}
+.toolbar a{border-radius:999px;padding:6px 14px;text-decoration:none;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.toolbar a:hover{background:var(--warm-soft);color:var(--warm-ink)}
+.player .voices{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12px;color:var(--muted);grid-column:1/-1}
+.player .voices span{margin-right:4px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-size:11px}
+.player .voices button{font:500 12px var(--body);border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:999px;padding:2px 10px;cursor:pointer}
+.player .voices button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.toolbar a[aria-expanded="true"]{background:var(--warm-soft);color:var(--warm-ink)}
+.search{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.search form{display:flex;gap:8px;flex-wrap:wrap}
+.search input[type=search]{flex:1 1 240px;min-width:0;font:inherit;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg)}
+.search input[type=search]:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn{font:600 14px var(--body);border:1.5px solid var(--brand-2);background:var(--brand-2);color:#fff;border-radius:12px;padding:10px 16px;cursor:pointer}
+.btn:hover{background:var(--brand)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn[disabled]{opacity:.5;cursor:default}
+.results{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.results h3{font:500 12px var(--mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0 0 8px}
+.hits{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.hits li{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.hits .when{font:500 11px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.hits mark{background:var(--warm-soft);color:var(--fg);border-radius:3px;padding:0 2px}
+.weblinks{display:flex;gap:8px;flex-wrap:wrap}
+.weblinks a{font-size:14px;border-radius:999px;padding:6px 13px;text-decoration:none;background:var(--accent-soft);color:var(--accent)}
+.weblinks a::after{content:" ↗"}
+.ai{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--warm);border-radius:12px;padding:12px 14px;font-size:15px;white-space:pre-wrap;min-width:0}
+.ai-note{font-size:12px;color:var(--muted)}
+.idx{display:flex;flex-direction:column;gap:12px}
+.idx .row{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--sev,var(--brand-2));border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:7px;font-size:14.5px;min-width:0;box-shadow:var(--shadow)}
+.idx .row h3{font-size:17px}
+.idx .dates{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.idx .dates a{font:500 12px var(--mono);border-radius:999px;padding:3px 10px;text-decoration:none;background:var(--accent-soft);color:var(--accent)}
+.terms{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.terms a{font-size:13px;border-radius:999px;padding:4px 12px;text-decoration:none;background:var(--warm-soft);color:var(--warm-ink);font-weight:500}
+details.term{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-size:15px}
+details.term+details.term{margin-top:8px}
+details.term[open]{border-color:var(--brand-2);box-shadow:var(--shadow)}
+details.term summary{cursor:pointer;font-weight:600;font-family:var(--display)}
+details.term summary::marker{color:var(--warm)}
+details.term p{margin-top:6px}
+details.term .seen{font-size:13px;color:var(--muted);margin-top:6px}
+
+.quickfix{border:1px solid var(--warm);background:var(--warm-soft);border-radius:14px;padding:12px 15px;font-size:15px;box-shadow:var(--shadow)}
+.quickfix > b:first-child{font-family:var(--display);font-size:17px}
+.quickfix .fixmeta{display:block;font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--warm-ink);margin:2px 0 6px}
+.quickfix p{margin:6px 0 0}
+.quickfix ol{margin:8px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.quickfix .fixnote{font-size:13px;color:var(--muted)}
+header .sisterpill{position:absolute;top:12px;right:12px;z-index:1;display:inline-flex;align-items:center;gap:6px;font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 9px 3px 8px;border-radius:999px;background:rgba(255,255,255,.14);color:var(--on-brand);text-decoration:none;border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+header .sisterpill::before{content:"";width:7px;height:7px;border-radius:50%;background:#e8761c;box-shadow:0 0 0 1.5px rgba(255,255,255,.7)}
+header .sisterpill:hover{background:rgba(255,255,255,.24)}
+.toolbar a.sister{background:#e8761c;color:#fff;margin-left:auto}
+.toolbar a.sister:hover{background:#e8761c;color:#fff;filter:brightness(1.1)}
+footer a.sister,.backlink a.sister{font-weight:600}
+
+.wrap{max-width:820px;gap:22px;padding-block:12px 40px}
+body{line-height:1.55}
+header{padding:16px 18px 14px;border-radius:14px;gap:4px}
+header::after{width:110px;height:110px;right:-10px;bottom:-14px}
+h1{font-size:clamp(26px,5.5vw,38px)}
+header .dateline{font-size:clamp(16px,3.6vw,19px)}
+h2{font-size:20px;margin:0 0 10px}
+h2 .n{width:24px;height:24px;font-size:12px}
+.player{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 10px;padding:10px 12px;border-radius:16px}
+.player .lbl{display:flex;align-items:baseline;gap:8px;min-width:0;font-size:12px;flex-wrap:nowrap}
+.player .lbl strong{font-size:14px;white-space:nowrap}
+.player .lbl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.player audio{display:none}
+.player button{-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:inherit}
+.player button:focus-visible,.player input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.player .rate{grid-column:2;grid-row:1;font:600 12px var(--mono);min-width:50px;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;font-variant-numeric:tabular-nums;transition:background .15s,border-color .15s}
+.player .rate:hover{border-color:var(--accent);color:var(--accent)}
+.player .rate.on{background:var(--warm-soft);border-color:var(--warm);color:var(--warm-ink)}
+.player .transport{grid-column:1/-1;display:flex;align-items:center;gap:4px}
+.player .transport button{flex:none;display:grid;place-items:center;border:0;padding:0;cursor:pointer;transition:transform .12s ease,background .15s,color .15s}
+.player .transport button:active{transform:scale(.9)}
+.player .skip{width:40px;height:40px;border-radius:50%;background:transparent;color:var(--muted)}
+.player .skip:hover{background:var(--accent-soft);color:var(--accent)}
+.player .skip svg{width:26px;height:26px;overflow:visible}
+.player .skip text{font:600 6.6px var(--body);letter-spacing:-.2px;fill:currentColor;stroke:none}
+.player .pp{width:48px;height:48px;border-radius:50%;color:#fff;background:linear-gradient(140deg,var(--brand-2),var(--brand));box-shadow:0 3px 10px rgba(47,26,94,.28)}
+.player .pp svg{width:20px;height:20px}
+.player .pp .i-pause,.player.playing .pp .i-play{display:none}
+.player.playing .pp .i-pause{display:block}
+.player .scrub{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;margin-left:8px}
+.player .times{display:flex;justify-content:space-between;font:500 11px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.player input[type=range]{--p:0%;-webkit-appearance:none;appearance:none;width:100%;height:22px;margin:0;background:transparent;cursor:pointer}
+.player input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(to right,var(--warm) var(--p),var(--line) var(--p))}
+.player input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;margin-top:-5px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .12s}
+.player input[type=range]:active::-webkit-slider-thumb{transform:scale(1.25)}
+.player input[type=range]::-moz-range-track{height:5px;border-radius:5px;background:var(--line)}
+.player input[type=range]::-moz-range-progress{height:5px;border-radius:5px;background:var(--warm)}
+.player input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--warm);border:2.5px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+.player .voices:not([hidden]){padding-top:8px;margin-top:2px;border-top:1px solid var(--line);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.player .voices::-webkit-scrollbar{display:none}
+.player .voices button{flex:none}
+.toolbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px;margin-block:-6px}
+.toolbar::-webkit-scrollbar{display:none}
+.toolbar a{flex:none;padding:5px 12px;font-size:13px}
+.search{padding:14px;border-radius:14px}
+.incidents,.idx{gap:10px}
+.incident{padding:12px 14px;gap:8px;border-radius:12px}
+.ctx{padding:8px 10px;font-size:14px}
+dl{gap:4px 14px}
+.relevance{margin-top:12px;padding:10px 12px}
+ul{gap:7px;padding-left:20px}
+.actor{padding:12px 14px}
+.idx .row{padding:12px 14px}
+.archive li{padding:10px 14px}
+.brief-swap{display:flex;flex-direction:column;gap:inherit}
+section:has(> h2 .n){padding-top:12px}
+@media (max-width:600px){
+  .wrap{gap:18px}
+  header .eyebrow{display:none}
+  header{padding:14px 16px 12px}
+  .incident,.idx .row,.actor{padding:11px 12px}
+  dl{grid-template-columns:1fr;gap:2px}
+  dt{padding-top:6px}
+  .search > .meta{display:none}
+  .search h2{margin-bottom:8px}
+  .tablewrap table{font-size:13px}
+  th,td{padding:9px 10px}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="backlink"><a href="/">← Latest brief, search, incident index and archive</a> · <a class="sister" href="https://ai.availabiliti.com/" target="_blank" rel="noopener">AI Brief ↗</a></p>
+<header data-voices="emma,boss">
+  <span class="eyebrow">Daily threat intelligence · Global banking</span>
+  <h1>Cyber Brief</h1>
+  <p class="dateline">Friday 27 November 2026 · Edition 10</p>
+  <div class="meta headmeta">Compiled ~06:00 UTC; covers roughly 26–27 Nov (US Thanksgiving, a quiet news day). <details class="more"><summary>More</summary><p>Built from live web search. Technical terms are explained in the glossary at the end.</p></details></div>
+<a class="sisterpill" href="https://ai.availabiliti.com/" target="_blank" rel="noopener" aria-label="Open the AI Brief">AI Brief ↗</a></header>
+<div class="player" role="region" aria-label="Audio briefing" data-date="2026-11-27" data-base="../" data-voices="emma,boss" data-voice="emma">
+  <div class="lbl"><strong>Listen to the brief</strong><span id="dur">Spoken summary</span></div>
+  <button type="button" class="rate" id="rate" aria-label="Playback speed, 1 times">1×</button>
+  <audio id="audio" preload="metadata" src="../audio/2026-11-27.mp3"></audio>
+  <div class="transport">
+    <button type="button" class="skip" data-s="-10" aria-label="Back 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3L4.5 8.9"/><path d="M4.5 4.4v4.5H9"/><text x="12.3" y="14.9" text-anchor="middle">10</text></svg></button>
+    <button type="button" class="pp" id="pp" aria-label="Play"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6c0 .8.9 1.3 1.6.8l10.2-6.8a1 1 0 0 0 0-1.6L9.6 4.4C8.9 3.9 8 4.4 8 5.2z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.3" fill="currentColor"/></svg></button>
+    <button type="button" class="skip" data-s="10" aria-label="Forward 10 seconds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3l2.2 2.2"/><path d="M19.5 4.4v4.5H15"/><text x="11.7" y="14.9" text-anchor="middle">10</text></svg></button>
+    <div class="scrub"><input type="range" id="seek" min="0" max="1000" step="1" value="0" aria-label="Position in the brief"><div class="times"><span id="tcur">0:00</span><span id="tdur">--:--</span></div></div>
+  </div>
+  <div class="voices" role="group" aria-label="Voice" hidden></div>
+</div>
+<script>
+/* Voice picker: Emma (British female), Louis (British male), Kim (American female),
+   Tony (old-school mob boss) and MC Patch (rapper over a generated beat) -- original characters.
+   The choice is remembered on this device; switching keeps your place in the brief. */
+(function(){
+  var p=document.querySelector('.player'), a=document.getElementById('audio'); if(!p||!a) return;
+  var KEYV='cyberbrief-voice', NAMES={emma:'Emma',fable:'Louis',heart:'Kim',boss:'Tony',rapper:'MC Patch'};
+  function get(){try{return localStorage.getItem(KEYV)||'emma';}catch(e){return 'emma';}}
+  function srcFor(d,v){return (p.dataset.base||'')+'audio/'+d+(v==='emma'?'':'-'+v)+'.mp3';}
+  function list(){return (p.dataset.voices||'emma').split(',');}
+  function render(){var box=p.querySelector('.voices');if(!box)return;var vs=list(),cur=p.dataset.voice||'emma';box.hidden=vs.length<2;
+    box.innerHTML='<span>Voice</span>'+vs.map(function(v){return '<button type="button" data-v="'+v+'" aria-pressed="'+(v===cur)+'">'+(NAMES[v]||v)+'</button>';}).join('');}
+  function pick(d,vs){var pref=get();return vs.indexOf(pref)>=0?pref:'emma';}
+  window.cbVoice={
+    forDay:function(d,voices){p.dataset.date=d;p.dataset.voices=voices||'emma';p.dataset.voice=pick(d,list());render();return srcFor(d,p.dataset.voice);},
+    sync:function(src){var m=(src||'').match(/(\d{4}-\d{2}-\d{2})(?:-([a-z]+))?\.mp3/);if(!m)return;var v=m[2]||'emma';
+      p.dataset.date=m[1];if(list().indexOf(v)<0)p.dataset.voices=list().concat(v).join(',');p.dataset.voice=v;render();}
+  };
+  var v0=pick(p.dataset.date,list());
+  if(v0!=='emma'){a.setAttribute('src',srcFor(p.dataset.date,v0));}
+  p.dataset.voice=v0; render();
+  p.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.voices button'); if(!b) return;
+    var v=b.getAttribute('data-v'); if(v===p.dataset.voice) return;
+    var playing=!a.paused, ratio=(isFinite(a.duration)&&a.duration)?a.currentTime/a.duration:0, rate=a.playbackRate;
+    p.dataset.voice=v; try{localStorage.setItem(KEYV,v);}catch(err){} render();
+    a.setAttribute('src',srcFor(p.dataset.date,v)); a.load();
+    a.addEventListener('loadedmetadata',function f(){a.removeEventListener('loadedmetadata',f);
+      if(ratio){try{a.currentTime=ratio*a.duration;}catch(err){}} a.playbackRate=rate; if(playing) a.play().catch(function(){});});
+  });
+})();
+</script>
+
+<section>
+  <h2><span class="n">1</span>Top line</h2>
+  <ul>
+    <li><strong>Attackers broke into a financial institution through Temenos Quantum Fabric, software that links banks' mobile and web apps to their core systems</strong>; Forescout says six more banks share the same risky setup.<sup><a href="https://www.forescout.com/?p=116223" target="_blank" rel="noopener">[3]</a></sup></li>
+    <li><strong>Drupal disclosed a second, related website-takeover flaw that is already being exploited</strong>; sites patched last week may still be open.<sup><a href="https://thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html" target="_blank" rel="noopener">[1]</a></sup></li>
+    <li><strong>Mitel MiCollab flaws were used as zero-days to steal data</strong>, possibly with AI help; US agencies must patch four of them by 28 Nov.<sup><a href="https://www.securityweek.com/mitel-micollab-zero-days-exploited-in-suspected-ai-assisted-attacks/" target="_blank" rel="noopener">[6]</a></sup></li>
+    <li><strong>A North Korea-linked campaign, PolinRider, has poisoned at least 7,609 GitHub code projects</strong> to infect developers.<sup><a href="https://thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html" target="_blank" rel="noopener">[5]</a></sup></li>
+  </ul>
+  <p class="relevance"><strong>Bank relevance:</strong> Quantum Fabric sits in the digital-banking stack of many banks worldwide; developer accounts and collaboration servers are proven ways into bank networks.</p>
+</section>
+
+<section>
+  <h2><span class="n">2</span>New incidents (past 24 hours)</h2>
+  <div class="incidents">
+    <article class="incident crit" data-incident="bankweaver-temenos" data-name="BankWeaver: Temenos Quantum Fabric abused at banks" id="inc-bankweaver-temenos">
+      <div class="chips"><span class="chip sev">Critical</span><span class="chip">Confidence: Medium</span><span class="chip">Bank intrusion</span></div>
+      <h3>BankWeaver: digital-banking middleware abused</h3>
+      <p class="ctx"><b>Background:</b> Temenos is a Swiss banking-software maker serving banks in over 150 countries. Its Quantum Fabric is middleware: it sits between customers' banking apps and a bank's identity systems, databases and payment services. Forescout is a US security firm.</p>
+      <dl>
+        <dt>Reported (Forescout, 19 Nov; widely picked up 26 Nov)</dt><dd>At one financial institution in early September, an internet-facing login service accepted "anonymous" access. Attackers swapped an anonymous token for an administrator token without a password, uploaded a malicious service and ran commands. They installed FabricShell, a web shell that also runs database queries, and FabricShadow, a spy tool.<sup><a href="https://www.forescout.com/?p=116223" target="_blank" rel="noopener">[3]</a></sup><sup><a href="https://thehackernews.com/2026/11/threatsday-250-rogue-extensions-10m.html" target="_blank" rel="noopener">[4]</a></sup></dd>
+        <dt>Scope</dt><dd>One confirmed victim (region not given). Six more banks in Asia, the Middle East, Europe and the Americas have the same exposure; no compromise confirmed there. Attack traffic came through hacked UK home routers and storage boxes.<sup><a href="https://www.forescout.com/?p=116223" target="_blank" rel="noopener">[3]</a></sup></dd>
+        <dt>Vendor</dt><dd>Temenos says it was a configuration issue (service set to anonymous, not private); it issued updates and guidance. No CVE.<sup><a href="https://www.forescout.com/?p=116223" target="_blank" rel="noopener">[3]</a></sup></dd>
+        <dt>Actor</dt><dd>Unknown.</dd>
+        <dt>Why it matters</dt><dd>Direct path to customer data and payment back-ends. Ask whether you run Quantum Fabric or Infinity Spotlight; make its admin and login services private, apply Temenos updates and rotate credentials.</dd>
+      </dl>
+    </article>
+
+    <article class="incident high" data-incident="mitel-micollab" data-name="Mitel MiCollab zero-days exploited" id="inc-mitel-micollab">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: High</span><span class="chip">Exploited flaws</span></div>
+      <h3>Mitel MiCollab: zero-days used for data theft</h3>
+      <p class="ctx"><b>Background:</b> Mitel is a Canadian business-phone company; MiCollab is its calling, messaging and conferencing server. A zero-day is a flaw attacked before a fix exists.</p>
+      <dl>
+        <dt>Reported (Accenture)</dt><dd>Accenture's Apex Labs saw attackers plant a web shell, gain full control within about 30 minutes, steal passwords, move into identity systems and reach backup and database servers within 20 hours. Two organisations hit; possibly extortion; no known group linked.<sup><a href="https://www.securityweek.com/mitel-micollab-zero-days-exploited-in-suspected-ai-assisted-attacks/" target="_blank" rel="noopener">[6]</a></sup></dd>
+        <dt>AI angle</dt><dd>Attacker servers talked to two commercial AI services during the attack. Suspected, not confirmed.<sup><a href="https://www.securityweek.com/mitel-micollab-zero-days-exploited-in-suspected-ai-assisted-attacks/" target="_blank" rel="noopener">[6]</a></sup></dd>
+        <dt>Action</dt><dd>Upgrade MiCollab (patched 16 Nov) and check for signs of earlier compromise.</dd>
+      </dl>
+    </article>
+
+    <article class="incident high" data-incident="polinrider" data-name="PolinRider GitHub repository poisoning" id="inc-polinrider">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: Medium</span><span class="chip">Software supply chain</span></div>
+      <h3>PolinRider: thousands of code projects booby-trapped</h3>
+      <p class="ctx"><b>Background:</b> GitHub is where developers store code. PolinRider steals developers' GitHub keys, then quietly rewrites their projects to add a hidden loader that fetches malware, using a cryptocurrency wallet as a hard-to-block noticeboard for its instructions.</p>
+      <dl>
+        <dt>Reported</dt><dd>Apiiro, a security firm, counts at least 7,609 repositories from 2,330 accounts; 2,040 were hit between 27 Oct and 6 Nov. Earlier waves stole passwords, cookies and crypto wallets.<sup><a href="https://thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html" target="_blank" rel="noopener">[5]</a></sup></dd>
+        <dt>Attribution</dt><dd>Assessed, not confirmed, as North Korean, alongside its "Contagious Interview" fake-job campaign.<sup><a href="https://thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html" target="_blank" rel="noopener">[5]</a></sup></dd>
+        <dt>Why it matters</dt><dd>Bank developers who pull open-source code or do "take-home tests" are targets. Pin trusted versions; protect GitHub tokens.</dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="nuget-fake-job-tests" data-name="Malicious NuGet packages in fake .NET job tests" id="inc-nuget-fake-job-tests">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: High</span><span class="chip">Software supply chain</span></div>
+      <h3>NuGet: fake job tests deliver malware</h3>
+      <p class="ctx"><b>Background:</b> NuGet is Microsoft's public store of code libraries for .NET, a common programming platform in banks.</p>
+      <dl><dt>Reported (Socket)</dt><dd>13 malicious packages, posing as screen-button components, were used in a fake job assessment; building the project installed a Chrome data stealer. All removed. No named actor; similar to North Korean and Iranian lures.<sup><a href="https://thehackernews.com/2026/11/13-malicious-nuget-packages-turn-fake.html" target="_blank" rel="noopener">[8]</a></sup></dd></dl>
+    </article>
+
+    <article class="incident low" data-incident="guadeloupe-hospital" data-name="Guadeloupe hospital ransomware attack" id="inc-guadeloupe-hospital">
+      <div class="chips"><span class="chip sev">Low</span><span class="chip">Confidence: High</span><span class="chip">Ransomware</span></div>
+      <h3>Guadeloupe hospital: suspected ransomware</h3>
+      <p class="ctx"><b>Background:</b> CHU de Guadeloupe is the main hospital on the French Caribbean island. Ransomware scrambles files and demands payment.</p>
+      <dl><dt>Confirmed</dt><dd>Databases encrypted; cancer treatment and surgeries disrupted. ANSSI, France's cyber agency, is examining entry via an IT supplier. No ransom demand; hospital will not pay.<sup><a href="https://therecord.media/guadeloupe-ransomware-hospital-cyber" target="_blank" rel="noopener">[9]</a></sup></dd></dl>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Updates to ongoing cases</h2>
+  <div class="incidents">
+    <article class="incident high" data-incident="drupal-installer" data-name="Drupal installer flaw exploited (CVE-2026-132165)" id="inc-drupal-installer">
+      <div class="chips"><span class="chip sev">High</span><span class="chip">Confidence: High</span><span class="chip">Update</span></div>
+      <h3>Drupal: patch left a gap, now exploited</h3>
+      <p class="ctx"><b>Background:</b> Drupal is free, widely used website software. Last week's flaw let anyone use the built-in installer page to take over a site.</p>
+      <dl>
+        <dt>What's new</dt><dd>New flaw CVE-2026-136716: sites in "unusual or incomplete install states" stayed vulnerable after the 18 Nov fix, and this is invisible in the admin screens. Drupal confirms exploitation.<sup><a href="https://www.securityweek.com/drupal-installer-patch-left-a-gap-attackers-are-already-exploiting/" target="_blank" rel="noopener">[2]</a></sup></dd>
+        <dt>Action</dt><dd>Upgrade to the latest Drupal 11.4, 11.3 or 10.6 release, run the update step, and check the main admin account ("user 1") was not changed. Older branches get no fix.<sup><a href="https://thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html" target="_blank" rel="noopener">[1]</a></sup></dd>
+      </dl>
+    </article>
+
+    <article class="incident med" data-incident="nginx2root" data-name="nginx2root: NGINX HTTP/2 flaw (CVE-2026-123007)" id="inc-nginx2root">
+      <div class="chips"><span class="chip sev">Medium</span><span class="chip">Confidence: Medium</span><span class="chip">Update</span></div>
+      <h3>nginx2root: over 10 million services exposed</h3>
+      <p class="ctx"><b>Background:</b> NGINX is the web server behind a large share of websites. The flaw lets an attacker corrupt memory over HTTP/2, the modern web protocol, and possibly run code.</p>
+      <dl><dt>What's new</dt><dd>Censys, an internet-scanning firm, counts over 10 million exposed NGINX services on affected versions. No exploitation reported.<sup><a href="https://thehackernews.com/2026/11/threatsday-250-rogue-extensions-10m.html" target="_blank" rel="noopener">[4]</a></sup></dd></dl>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Vulnerabilities to act on</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Flaw</th><th>What the product is</th><th>What to know</th></tr></thead>
+    <tbody>
+      <tr><td class="cve" id="inc-cve-2026-136716">CVE-2026-136716</td><td><b>Drupal core</b>, website software</td><td>Exploited; site takeover. <b>Upgrade and run update step.</b><sup><a href="https://thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html" target="_blank" rel="noopener">[1]</a></sup></td></tr>
+      <tr><td class="cve">No CVE (configuration)</td><td><b>Temenos Quantum Fabric / Infinity Spotlight</b>, digital-banking middleware</td><td>Exploited at a bank. <b>Set login service to private; apply Temenos updates.</b><sup><a href="https://www.forescout.com/?p=116223" target="_blank" rel="noopener">[3]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-133275">CVE-2026-133275, -133303, -133311, -133323, -133324</td><td><b>Mitel MiCollab</b>, business calling server</td><td>Exploited as zero-days. US federal deadline 28 Nov (one 9 Dec). <b>Upgrade.</b><sup><a href="https://www.securityweek.com/mitel-micollab-zero-days-exploited-in-suspected-ai-assisted-attacks/" target="_blank" rel="noopener">[6]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-103406">CVE-2026-103406</td><td><b>Juniper Session Smart Conductor</b>, branch-router management</td><td>Exploited; command injection as root (rated 9.8 of 10). US federal deadline 28 Nov. <b>Upgrade.</b><sup><a href="https://www.securityweek.com/critical-juniper-session-smart-conductor-flaw-exploited-in-attacks/" target="_blank" rel="noopener">[7]</a></sup></td></tr>
+      <tr><td class="cve" id="inc-cve-2026-123007">CVE-2026-123007</td><td><b>NGINX</b>, web server</td><td>Not known exploited; 10M+ exposed. <b>Upgrade.</b><sup><a href="https://thehackernews.com/2026/11/threatsday-250-rogue-extensions-10m.html" target="_blank" rel="noopener">[4]</a></sup></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Threat actors</h2>
+  <div class="actors">
+    <div class="actor">
+      <h3>PolinRider (linked to Contagious Interview)</h3>
+      <dl>
+        <dt>Type</dt><dd>Malware campaign; assessed North Korean (medium confidence)</dd>
+        <dt>Motive</dt><dd>Likely theft of credentials and cryptocurrency</dd>
+        <dt>Methods</dt><dd>Fake recruiters, poisoned code packages, stolen GitHub tokens, rewritten commits that keep the original author's name.<sup><a href="https://thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html" target="_blank" rel="noopener">[5]</a></sup></dd>
+        <dt>Latest</dt><dd>7,609+ repositories; activity may date to February 2025.</dd>
+      </dl>
+    </div>
+    <div class="actor">
+      <h3>BankWeaver operators</h3>
+      <dl>
+        <dt>Type</dt><dd>Unknown; origin unknown</dd>
+        <dt>Methods</dt><dd>Abuse of exposed banking middleware; route traffic through hijacked UK home devices; reuse one victim's servers to attack another.<sup><a href="https://www.forescout.com/?p=116223" target="_blank" rel="noopener">[3]</a></sup></dd>
+        <dt>Targets</dt><dd>Banks and financial institutions.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Regulators and governments</h2>
+  <ul>
+    <li><strong>UK government:</strong> the National Cyber Action Plan, its strategy for defending the economy, slipped again; sources say 9 Dec. Expected pillars: Threat, Growth and Resilience, plus a voluntary board-level Cyber Resilience Pledge.<sup><a href="https://therecord.media/britain-delays-national-cyber-action-plan-again" target="_blank" rel="noopener">[10]</a></sup></li>
+    <li><strong>US Justice Department:</strong> filed a civil action to recover over $1.1 billion taken from crypto exchange Binance in the 29 Oct hack it blames on North Korea; its Scam Center Strike Force reports about $1.08 billion in stolen crypto traced or restrained in six months.<sup><a href="https://thehackernews.com/2026/11/threatsday-250-rogue-extensions-10m.html" target="_blank" rel="noopener">[4]</a></sup> Single source; Unverified.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Watchlist: next 1–3 days</h2>
+  <ul>
+    <li><strong>Temenos:</strong> any customer advisory or confirmed further bank victims.</li>
+    <li><strong>28 Nov:</strong> US federal deadline for Mitel and Juniper fixes.</li>
+    <li><strong>Drupal:</strong> mass site takeovers now that two related flaws are public.</li>
+    <li><strong>Black Friday:</strong> expect a spike in shopping and delivery scams aimed at customers.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Confidence and gaps</h2>
+  <ul>
+    <li>BankWeaver rests on one research firm; the victim and region are not named.</li>
+    <li>PolinRider's North Korea link is an assessment; counts differ by firm (375 to 7,609 repositories).</li>
+    <li>The AI role in the Mitel attacks is suspected only.</li>
+    <li>BleepingComputer could not be loaded; its stories were checked via other outlets.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">9</span>2-minute security fix</h2>
+  <div class="quickfix"><b>Remove browser extensions you don't use</b>
+    <span class="fixmeta">2 minutes · laptop (and iPhone) · Chrome, Edge, Safari or Firefox</span>
+    <p><b>Why now:</b> researchers found over 250 browser add-ons that behave normally but secretly collect browsing data and tamper with shopping links when installed from a paid search ad. Today's fake job tests also steal what's stored in Chrome. Fewer add-ons means fewer ways in.</p>
+    <p class="fixwhere">Where it lives depends on your browser:</p>
+    <div class="fixroutes">
+      <details><summary>Chrome</summary><ol><li>Click <b>⋮</b> (top right) → <b>Extensions</b> → <b>Manage Extensions</b>.</li><li>Click <b>Remove</b> on anything you don't recognise or haven't used in months.</li></ol></details>
+      <details><summary>Microsoft Edge</summary><ol><li>Click <b>···</b> → <b>Extensions</b> → <b>Manage extensions</b>.</li><li>Click <b>Remove</b> on anything unfamiliar.</li></ol></details>
+      <details><summary>Safari (Mac)</summary><ol><li>Open <b>Safari</b> → <b>Settings</b> (may say "Preferences") → <b>Extensions</b>.</li><li>Select one and click <b>Uninstall</b>.</li></ol></details>
+      <details><summary>Firefox</summary><ol><li>Click <b>☰</b> → <b>Add-ons and themes</b> → <b>Extensions</b>.</li><li>Click <b>···</b> next to one → <b>Remove</b>.</li></ol></details>
+      <details><summary>iPhone (Safari)</summary><ol><li>Open <b>Settings</b>, find <b>Safari</b> (newer iPhones: under <b>Apps</b>) → <b>Extensions</b>.</li><li>Turn off or delete the app behind any you don't need.</li></ol></details>
+    </div>
+    <p><b>Done when:</b> only add-ons you know and use are left, ideally from well-known makers. If you can't find the menu, type <code>chrome://extensions</code> or <code>edge://extensions</code> in the address bar. Bonus: do the same on a parent's laptop.</p>
+    <p class="fixnote">For your work devices and accounts, leave this to your IT team.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Glossary</h2>
+  <dl class="gloss">
+    <dt>Middleware</dt><dd>Software that connects customer-facing apps to a company's back-end systems.</dd>
+    <dt>Token</dt><dd>A digital pass a system issues after login, used instead of re-entering a password.</dd>
+    <dt>Web shell</dt><dd>A small hidden program on a server that lets an attacker control it remotely.</dd>
+    <dt>Zero-day</dt><dd>A flaw attackers use before the maker has released a fix.</dd>
+    <dt>Root</dt><dd>The all-powerful administrator account on a computer.</dd>
+    <dt>Identity infrastructure</dt><dd>The systems that manage staff logins and permissions, such as Active Directory.</dd>
+    <dt>Repository</dt><dd>A project folder of code stored on a service such as GitHub.</dd>
+    <dt>Commit</dt><dd>A saved change to code in a repository.</dd>
+    <dt>Loader</dt><dd>A small piece of malware whose job is to download and start the main malware.</dd>
+    <dt>Package (NuGet, npm)</dt><dd>A reusable code library downloaded from a public store.</dd>
+    <dt>Command injection</dt><dd>Tricking software into running the attacker's operating-system commands.</dd>
+    <dt>HTTP/2</dt><dd>A newer, faster version of the protocol web browsers use to talk to websites.</dd>
+    <dt>Ransomware</dt><dd>Malware that locks files and demands payment to unlock them.</dd>
+    <dt>CVE</dt><dd>The standard ID number given to a publicly known security flaw.</dd>
+    <dt>Browser extension</dt><dd>An add-on that gives a web browser extra features; it can often see the pages you visit.</dd>
+  </dl>
+</section>
+
+<section class="sources">
+  <h2>Sources</h2>
+  <ol>
+    <li>The Hacker News, "Drupal Warns of New Highly Critical Site Takeover Vulnerability Under Active Exploitation", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html" target="_blank" rel="noopener">thehackernews.com/2026/11/drupal-warns-of-new-highly-critical.html</a></li>
+    <li>SecurityWeek, "Drupal Installer Patch Left a Gap Attackers Are Already Exploiting", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/drupal-installer-patch-left-a-gap-attackers-are-already-exploiting/" target="_blank" rel="noopener">securityweek.com/drupal-installer-patch-left-a-gap-attackers-are-already-exploiting/</a></li>
+    <li>Forescout Vedere Labs, "BankWeaver Campaign Abuses Digital Banking Middleware to Deploy Web Shells", 19 Nov 2026 <span class="tag">Primary</span><br><a href="https://www.forescout.com/?p=116223" target="_blank" rel="noopener">forescout.com/?p=116223</a></li>
+    <li>The Hacker News, "ThreatsDay: 10M NGINX Services at Risk, 250+ Malicious Extensions, AI Server Hijacking + 17 More Stories", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/threatsday-250-rogue-extensions-10m.html" target="_blank" rel="noopener">thehackernews.com/2026/11/threatsday-250-rogue-extensions-10m.html</a></li>
+    <li>The Hacker News, "North Korea-Linked PolinRider Poisons Over 7,600 GitHub Repositories to Spread Malware", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html" target="_blank" rel="noopener">thehackernews.com/2026/11/north-korea-linked-polinrider-poisons.html</a></li>
+    <li>SecurityWeek, "Mitel MiCollab Zero-Days Exploited in Suspected AI-Assisted Attacks", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/mitel-micollab-zero-days-exploited-in-suspected-ai-assisted-attacks/" target="_blank" rel="noopener">securityweek.com/mitel-micollab-zero-days-exploited-in-suspected-ai-assisted-attacks/</a></li>
+    <li>SecurityWeek, "Critical Juniper Session Smart Conductor Flaw Exploited in Attacks", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://www.securityweek.com/critical-juniper-session-smart-conductor-flaw-exploited-in-attacks/" target="_blank" rel="noopener">securityweek.com/critical-juniper-session-smart-conductor-flaw-exploited-in-attacks/</a></li>
+    <li>The Hacker News, "13 Malicious NuGet Packages Turn Fake .NET Job Assessments Into Malware Delivery Traps", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://thehackernews.com/2026/11/13-malicious-nuget-packages-turn-fake.html" target="_blank" rel="noopener">thehackernews.com/2026/11/13-malicious-nuget-packages-turn-fake.html</a></li>
+    <li>The Record, "Suspected ransomware attack disrupts cancer treatments, surgeries at Guadeloupe hospital", 25 Nov 2026 <span class="tag">Secondary</span><br><a href="https://therecord.media/guadeloupe-ransomware-hospital-cyber" target="_blank" rel="noopener">therecord.media/guadeloupe-ransomware-hospital-cyber</a></li>
+    <li>The Record, "UK's long-awaited National Cyber Action Plan delayed until December", 26 Nov 2026 <span class="tag">Secondary</span><br><a href="https://therecord.media/britain-delays-national-cyber-action-plan-again" target="_blank" rel="noopener">therecord.media/britain-delays-national-cyber-action-plan-again</a></li>
+  </ol>
+</section>
+
+<footer>Automated open-source intelligence; verify before acting. Audio is a machine-read summary of the page. <span class="sisterline">Also read the <a class="sister" href="https://ai.availabiliti.com/" target="_blank" rel="noopener">AI Brief ↗</a></span></footer>
+</div>
+<script>
+(function(){
+  var a=document.getElementById('audio'); if(!a) return;
+  var p=a.closest('.player'), pp=document.getElementById('pp'), seek=document.getElementById('seek'),
+      tcur=document.getElementById('tcur'), tdur=document.getElementById('tdur'), rate=document.getElementById('rate');
+  function fmt(t){t=Math.max(0,Math.floor(t||0));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+  // Speed: one button that cycles 1x -> 1.25x -> 1.5x, remembered on this device.
+  var RATES=[1,1.25,1.5], KR='cyberbrief-rate';
+  function setRate(r){a.playbackRate=r;a.defaultPlaybackRate=r;rate.textContent=r+'×';rate.classList.toggle('on',r!==1);
+    rate.setAttribute('aria-label','Playback speed, '+r+' times');try{localStorage.setItem(KR,String(r));}catch(e){}}
+  var r0=1;try{r0=parseFloat(localStorage.getItem(KR))||1;}catch(e){} if(RATES.indexOf(r0)<0)r0=1; setRate(r0);
+  rate.addEventListener('click',function(){setRate(RATES[(RATES.indexOf(a.playbackRate)+1)%RATES.length]||1);});
+  a.addEventListener('loadedmetadata',function(){a.playbackRate=a.defaultPlaybackRate;});
+  // Play / pause
+  pp.addEventListener('click',function(){if(a.paused){a.play().catch(function(){});}else{a.pause();}});
+  function state(){var on=!a.paused&&!a.ended;p.classList.toggle('playing',on);pp.setAttribute('aria-label',on?'Pause':'Play');}
+  ['play','playing','pause','ended','emptied'].forEach(function(ev){a.addEventListener(ev,state);});
+  // Scrubber and times
+  var dragging=false;
+  function paint(t){var d=a.duration;var f=(isFinite(d)&&d>0)?Math.min(1,t/d):0;seek.style.setProperty('--p',(f*100).toFixed(2)+'%');tcur.textContent=fmt(t);}
+  function tick(){if(dragging)return;var d=a.duration;seek.value=(isFinite(d)&&d>0)?Math.round(a.currentTime/d*1000):0;paint(a.currentTime);}
+  function durUp(){tdur.textContent=isFinite(a.duration)&&a.duration>0?fmt(a.duration):'--:--';tick();}
+  ['timeupdate','seeked','loadedmetadata','durationchange','emptied'].forEach(function(ev){a.addEventListener(ev,ev==='timeupdate'||ev==='seeked'?tick:durUp);});
+  durUp(); state();
+  seek.addEventListener('input',function(){dragging=true;var d=a.duration;if(isFinite(d))paint(seek.value/1000*d);});
+  seek.addEventListener('change',function(){var d=a.duration;if(isFinite(d)&&d>0){try{a.currentTime=seek.value/1000*d;}catch(e){} a.dispatchEvent(new Event('cb-userseek'));}dragging=false;tick();});
+  // Skip 10 seconds (buttons, lock screen and headphones)
+  function skip(s){var d=a.duration,t=(a.currentTime||0)+s;if(isFinite(d)&&d>0)t=Math.min(t,d-0.25);
+    try{a.currentTime=Math.max(0,t);}catch(e){} a.dispatchEvent(new Event('cb-userseek'));tick();}
+  document.querySelectorAll('.player .skip').forEach(function(b){b.addEventListener('click',function(){skip(parseFloat(b.dataset.s));});});
+  if('mediaSession' in navigator){try{
+    navigator.mediaSession.setActionHandler('seekbackward',function(e){skip(-((e&&e.seekOffset)||10));});
+    navigator.mediaSession.setActionHandler('seekforward',function(e){skip((e&&e.seekOffset)||10);});}catch(e){}}
+  if('mediaSession' in navigator){try{navigator.mediaSession.metadata=new MediaMetadata({title:'Cyber Brief, 27 Nov 2026',artist:'Daily threat intelligence'});}catch(e){}}
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+</body>
+</html>
